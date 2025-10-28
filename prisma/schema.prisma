@@ -1,0 +1,285 @@
+// Database schema voor Koubyte IT-diensten platform
+// Bevat: Users, Appointments, Quotes, Reviews, Blog posts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Gebruikers model voor authenticatie
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String
+  password       String
+  phone          String?
+  address        String?
+  role           String    @default("client") // client, admin
+  emailVerified  Boolean   @default(false)
+  verifiedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relaties
+  appointments       Appointment[]
+  reviews            Review[]
+  quotes             Quote[]
+  accounts           Account[]
+  sessions           Session[]
+  cartItems          CartItem[]
+  orders             Order[]
+  verificationTokens VerificationToken[]
+}
+
+// NextAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Email verificatie tokens
+model VerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique // 6-cijferige code
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+// Afspraken model
+model Appointment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        String // Datum in YYYY-MM-DD formaat
+  time        String // Tijdstip in HH:mm formaat
+  service     String // Type dienst: hardware, software, netwerk, virus, onderhoud, dataherstel, config, upgrade
+  description String
+  status      String   @default("pending") // pending, confirmed, completed, cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Offerte model
+model Quote {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Aanvrager gegevens (kan ook zonder account)
+  name        String
+  email       String
+  phone       String?
+  service     String
+  description String
+
+  // Offerte details
+  estimatedPrice Float?
+  status         String  @default("pending") // pending, sent, accepted, rejected
+  adminNotes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Reviews/Testimonials model
+model Review {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Review details
+  name    String
+  rating  Int // 1-5 sterren
+  comment String
+  service String?
+
+  // Moderatie
+  approved Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([approved])
+}
+
+// Blog/Knowledge base artikelen
+model BlogPost {
+  id        String  @id @default(cuid())
+  title     String
+  slug      String  @unique
+  excerpt   String
+  content   String
+  category  String // hardware, software, network, security, tips
+  tags      String // Tags voor categorisatie (comma-separated)
+  image     String?
+  published Boolean @default(false)
+  viewCount Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([category])
+}
+
+// Contactformulier berichten
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    String   @default("new") // new, read, replied
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Diensten model (voor e-commerce)
+model Service {
+  id            String  @id @default(cuid())
+  name          String
+  slug          String  @unique
+  description   String
+  price         Float // Vaste prijs per dienst
+  category      String // hardware, software, netwerk, beveiliging, onderhoud, data
+  image         String?
+  popular       Boolean @default(false)
+  active        Boolean @default(true)
+  features      String? // JSON string met features
+  estimatedTime String? // Bijv: "2-3 uur"
+
+  // Relaties
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active])
+  @@index([category])
+}
+
+// Winkelwagentje items
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, serviceId])
+  @@index([userId])
+}
+
+// Bestellingen model
+model Order {
+  id          String @id @default(cuid())
+  orderNumber String @unique // Bijv: KOU-2024-001
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Bestelling details
+  totalAmount Float
+  status      String @default("pending") // pending, confirmed, in_progress, completed, cancelled
+
+  // Klant info (snapshot)
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  notes         String?
+
+  // Payment
+  paymentStatus String   @default("unpaid") // unpaid, paid, refunded
+  paymentId     String?  @unique
+  payment       Payment? @relation(fields: [paymentId], references: [id])
+
+  // Items
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+// Order items (snapshot van dienst op moment van bestellen)
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  // Snapshot van dienst (voor als prijs later verandert)
+  serviceName String
+  price       Float
+  quantity    Int    @default(1)
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([serviceId])
+}
+
+// Betalingen model
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String?
+  appointmentId   String?
+  orderId         String?  @unique
+  order           Order?
+  amount          Float
+  currency        String   @default("EUR")
+  provider        String // stripe, mollie, paypal, ideal, bancontact, sepa, crypto
+  method          String // card, iDEAL, bancontact, sepa, crypto, etc.
+  status          String   @default("pending") // pending, processing, completed, failed, refunded
+  paymentIntentId String? // Provider-specifieke ID (Stripe, Mollie, etc.)
+  metadata        String? // Extra data als JSON
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}

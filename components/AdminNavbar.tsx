@@ -1,0 +1,190 @@
+'use client'
+
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { signOut } from 'next-auth/react'
+import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package } from 'lucide-react'
+import { useState } from 'react'
+
+interface AdminNavbarProps {
+  userName?: string
+}
+
+export default function AdminNavbar({ userName }: AdminNavbarProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/' })
+  }
+
+  return (
+    <nav 
+      className="bg-white border-b-2 border-slate-200 shadow-sm sticky top-0 z-50"
+      id="admin-navbar"
+    >
+      <div className="container mx-auto max-w-7xl px-4" data-cart="container">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo - Admin Panel */}
+          <Link href="/admin" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <LayoutDashboard className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <span className="text-xl font-bold logo-sharp">
+                <span className="text-blue-600">Kou</span>
+                <span className="text-slate-900">byte</span>
+              </span>
+              <span className="block text-xs text-slate-500">Admin Panel</span>
+            </div>
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-1">
+            <Link 
+              href="/admin" 
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <LayoutDashboard className="w-4 h-4 inline mr-2" />
+              Dashboard
+            </Link>
+            <Link 
+              href="/admin/appointments" 
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Calendar className="w-4 h-4 inline mr-2" />
+              Afspraken
+            </Link>
+            <Link 
+              href="/admin/users" 
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Users className="w-4 h-4 inline mr-2" />
+              Gebruikers
+            </Link>
+            <Link 
+              href="/admin/messages" 
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <MessageSquare className="w-4 h-4 inline mr-2" />
+              Berichten
+            </Link>
+            <Link
+              href="/admin/reviews"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Star className="w-4 h-4 inline mr-2" />
+              Reviews
+            </Link>
+            <Link
+              href="/admin/orders"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Package className="w-4 h-4 inline mr-2" />
+              Bestellingen
+            </Link>
+
+            <div className="ml-4 flex items-center gap-3 border-l border-slate-200 pl-4">
+              <div className="text-sm">
+                <div className="text-slate-500 text-xs">Ingelogd als</div>
+                <div className="font-semibold text-slate-900">{userName || 'Admin'}</div>
+              </div>
+              <Button
+                onClick={handleSignOut}
+                className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Uitloggen
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-900"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 space-y-2 border-t border-slate-200">
+            <Link 
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <LayoutDashboard className="w-4 h-4 inline mr-2" />
+              Dashboard
+            </Link>
+            <Link 
+              href="/admin/appointments"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Calendar className="w-4 h-4 inline mr-2" />
+              Afspraken
+            </Link>
+            <Link 
+              href="/admin/users"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Users className="w-4 h-4 inline mr-2" />
+              Gebruikers
+            </Link>
+            <Link 
+              href="/admin/messages"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <MessageSquare className="w-4 h-4 inline mr-2" />
+              Berichten
+            </Link>
+                <Link
+                  href="/admin/reviews"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <Star className="w-4 h-4 inline mr-2" />
+                  Reviews
+                </Link>
+                <Link
+                  href="/admin/orders"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <Package className="w-4 h-4 inline mr-2" />
+                  Bestellingen
+                </Link>
+
+            <div className="pt-4 border-t border-slate-200">
+              <div className="px-4 py-2 text-sm">
+                <div className="text-slate-500 text-xs mb-1">Ingelogd als</div>
+                <div className="font-semibold text-slate-900 mb-3">{userName || 'Admin'}</div>
+              </div>
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  handleSignOut()
+                }}
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Uitloggen
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  )
+}
+
