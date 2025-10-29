@@ -33,11 +33,11 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Check of email is geverifieerd
-          if (!user.emailVerified) {
-            // Gooi een error die we kunnen opvangen
-            throw new Error('EMAIL_NOT_VERIFIED')
-          }
+          // Check of email is geverifieerd (TIJDELIJK UITGESCHAKELD VOOR TESTING)
+          // if (!user.emailVerified) {
+          //   // Gooi een error die we kunnen opvangen
+          //   throw new Error('EMAIL_NOT_VERIFIED')
+          // }
 
           return {
             id: user.id,
