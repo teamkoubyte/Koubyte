@@ -11,9 +11,6 @@ export const prisma =
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// Enable foreign key constraints for SQLite
-// Dit moet ELKE keer bij connectie worden aangezet voor SQLite
-prisma.$executeRawUnsafe('PRAGMA foreign_keys = ON;').catch((e) => {
-  console.error('Failed to enable foreign keys:', e)
-})
+// Foreign key constraints zijn automatisch enabled in PostgreSQL
+// Geen PRAGMA nodig (dat is alleen voor SQLite)
 
