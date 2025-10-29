@@ -174,24 +174,18 @@ model ContactMessage {
 model Service {
   id            String  @id @default(cuid())
   name          String
-  slug          String  @unique
   description   String
   price         Float // Vaste prijs per dienst
-  category      String // hardware, software, netwerk, beveiliging, onderhoud, data
-  image         String?
-  popular       Boolean @default(false)
-  active        Boolean @default(true)
-  features      String? // JSON string met features
-  estimatedTime String? // Bijv: "2-3 uur"
-
+  duration      String? // Bijv: "2-3 weken", "Per maand"
+  category      String // Webdesign, IT Support, Netwerk, Software, Onderhoud, Consultancy, Training, Beveiliging
+  featured      Boolean @default(false) // Voor featured diensten op homepage
+  
   // Relaties
   cartItems  CartItem[]
   orderItems OrderItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([active])
   @@index([category])
 }
 
