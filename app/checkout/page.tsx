@@ -17,7 +17,7 @@ import { calculateCartTotal } from '@/lib/cart'
 type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'cash' | 'ideal' | 'paypal'
 
 const paymentMethods = [
-  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: null, logoUrl: 'https://www.bancontact.com/nl/professioneel/materialen/_jcr_content/par_left/image.img.png/1539773013941.png', description: 'Online betalen met Bancontact', popular: true },
+  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: null, logoUrl: '/payment-logos/bancontact.png', description: 'Online betalen met Bancontact', popular: true },
   { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logoUrl: null, description: 'Visa, Mastercard, American Express', popular: false },
   { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, logoUrl: null, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
   { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logoUrl: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
