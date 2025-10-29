@@ -4,9 +4,8 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   try {
     const services = await prisma.service.findMany({
-      where: { active: true },
       orderBy: [
-        { popular: 'desc' },
+        { featured: 'desc' },
         { category: 'asc' },
         { price: 'asc' },
       ],
