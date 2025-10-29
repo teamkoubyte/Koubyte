@@ -73,9 +73,13 @@ export async function POST(request: Request) {
       id: order.id,
       orderNumber 
     }, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating order:', error)
-    return NextResponse.json({ error: 'Fout bij plaatsen bestelling' }, { status: 500 })
+    return NextResponse.json({ 
+      error: 'Fout bij plaatsen bestelling',
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }, { status: 500 })
   }
 }
 
