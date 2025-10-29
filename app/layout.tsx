@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import Script from 'next/script'
 import { headers } from 'next/headers'
+import { Analytics } from '@vercel/analytics/react'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -193,6 +194,7 @@ export default async function RootLayout({
           {showClientLayout && <Footer />}
           <CookieConsent />
         </Providers>
+        <Analytics />
       </body>
     </html>
   )
