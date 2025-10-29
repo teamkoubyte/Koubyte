@@ -44,29 +44,66 @@ export async function POST(request: Request) {
       case 'bancontact':
       case 'creditcard':
       case 'ideal':
-        // Stripe payment - call Stripe create endpoint
-        const stripeResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/payments/stripe/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId, amount, method })
-        })
+        // Stripe payment - roep direct aan
+        const stripe = getStripeInstance()
         
-        if (!stripeResponse.ok) {
-          const stripeError = await stripeResponse.json()
-          console.error('Stripe payment creation failed:', stripeError)
+        // Demo mode als Stripe niet geconfigureerd is
+        if (!stripe) {
+          console.log('Stripe API key niet geconfigureerd. Demo mode.')
           return NextResponse.json({
-            error: stripeError.error || 'Stripe payment creation failed',
-            details: stripeError.details || 'Unknown Stripe error'
+            paymentId: 'demo',
+            paymentUrl: `/checkout/success?orderId=${orderId}&demo=true`,
+            orderId,
+            demo: true
+          })
+        }
+
+        // Map payment methods naar Stripe payment method types
+        const stripeMethodMap: Record<string, string[]> = {
+          'bancontact': ['bancontact'],
+          'creditcard': ['card'],
+          'ideal': ['ideal'],
+        }
+
+        const paymentMethodTypes = stripeMethodMap[method] || ['card']
+
+        // Maak Stripe Checkout Session aan
+        try {
+          const checkoutSession = await stripe.checkout.sessions.create({
+            payment_method_types: paymentMethodTypes,
+            line_items: [
+              {
+                price_data: {
+                  currency: 'eur',
+                  product_data: {
+                    name: `Koubyte Order ${orderId}`,
+                    description: 'IT-diensten',
+                  },
+                  unit_amount: Math.round(parseFloat(amount) * 100), // Convert to cents
+                },
+                quantity: 1,
+              },
+            ],
+            mode: 'payment',
+            success_url: `${process.env.NEXTAUTH_URL}/checkout/success?orderId=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.NEXTAUTH_URL}/checkout?canceled=true`,
+            metadata: {
+              orderId,
+            },
+          })
+
+          return NextResponse.json({
+            paymentId: checkoutSession.id,
+            paymentUrl: checkoutSession.url,
+            orderId
+          })
+        } catch (stripeError: any) {
+          console.error('Stripe session creation error:', stripeError)
+          return NextResponse.json({
+            error: 'Stripe payment creation failed',
+            details: stripeError.message || String(stripeError)
           }, { status: 500 })
         }
-        
-        const stripeData = await stripeResponse.json()
-        return NextResponse.json({
-          paymentId: stripeData.sessionId,
-          paymentUrl: stripeData.redirectUrl,
-          orderId,
-          demo: stripeData.demo
-        })
 
       case 'paypal':
         // PayPal SDK
