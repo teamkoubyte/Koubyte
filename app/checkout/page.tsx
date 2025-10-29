@@ -103,7 +103,9 @@ export default function CheckoutPage() {
       })
 
       if (!paymentResponse.ok) {
-        throw new Error('Payment creation failed')
+        const paymentError = await paymentResponse.json()
+        console.error('Payment creation failed:', paymentError)
+        throw new Error(`Payment creation failed: ${paymentError.details || 'Unknown error'}`)
       }
 
       const paymentData = await paymentResponse.json()

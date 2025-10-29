@@ -94,10 +94,14 @@ export async function POST(request: Request) {
       sessionId: checkoutSession.id,
       redirectUrl: checkoutSession.url
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Stripe payment creation error:', error)
     return NextResponse.json(
-      { error: 'Er ging iets mis bij het aanmaken van de betaling' },
+      { 
+        error: 'Er ging iets mis bij het aanmaken van de betaling',
+        details: error.message || String(error),
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     )
   }
