@@ -17,7 +17,7 @@ import { calculateCartTotal } from '@/lib/cart'
 type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'cash' | 'ideal' | 'paypal'
 
 const paymentMethods = [
-  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: null, logoUrl: '/payment-logos/bancontact.png', description: 'Online betalen met Bancontact', popular: true },
+  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: CreditCard, logoUrl: null, description: 'Online betalen met Bancontact', popular: true },
   { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logoUrl: null, description: 'Visa, Mastercard, American Express', popular: false },
   { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, logoUrl: null, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
   { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logoUrl: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
@@ -75,10 +75,13 @@ export default function CheckoutPage() {
       })
 
       if (!orderResponse.ok) {
-        throw new Error('Order creation failed')
+        const errorData = await orderResponse.json()
+        console.error('Order creation failed:', errorData)
+        throw new Error(`Order creation failed: ${errorData.error || 'Unknown error'}`)
       }
 
       const orderData = await orderResponse.json()
+      console.log('Order created successfully:', orderData)
       setOrderNumber(orderData.orderNumber)
 
       // Voor "na afloop" en "banktransfer" geen online payment nodig
