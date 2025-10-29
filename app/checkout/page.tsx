@@ -13,10 +13,21 @@ import Link from 'next/link'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal } from '@/lib/cart'
 
+// Bancontact Logo Component
+const BancontactLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 48 32" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="48" height="32" rx="4" fill="#005498"/>
+    <path d="M8 10h6c2 0 3.5 1 3.5 3s-1.5 3-3.5 3H8v-6zm0 8h6.5c2.5 0 4.5-1.5 4.5-4.5S16.5 9 14 9H6v12h2v-3z" fill="white"/>
+    <path d="M22 10h8v2h-6v2h5v2h-5v2h6v2h-8v-10z" fill="white"/>
+    <circle cx="36" cy="16" r="6" fill="white"/>
+    <path d="M36 13v6m-3-3h6" stroke="#005498" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+)
+
 type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'cash' | 'ideal' | 'paypal'
 
 const paymentMethods = [
-  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: CreditCard, description: 'Online betalen met Bancontact', popular: true },
+  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: BancontactLogo, description: 'Online betalen met Bancontact', popular: true },
   { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, description: 'Visa, Mastercard, American Express', popular: false },
   { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
   { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, description: 'Betaal vooraf via bankoverschrijving', popular: false },
