@@ -33,12 +33,12 @@ export default function DienstenPage() {
 
   const categories = [
     { value: 'all', label: 'Alle Diensten' },
-    { value: 'hardware', label: 'Hardware' },
-    { value: 'software', label: 'Software' },
-    { value: 'beveiliging', label: 'Beveiliging' },
-    { value: 'netwerk', label: 'Netwerk' },
-    { value: 'onderhoud', label: 'Onderhoud' },
-    { value: 'data', label: 'Data' },
+    { value: 'Hardware', label: 'Hardware' },
+    { value: 'Software', label: 'Software' },
+    { value: 'Beveiliging', label: 'Beveiliging' },
+    { value: 'Netwerk', label: 'Netwerk' },
+    { value: 'Onderhoud', label: 'Onderhoud' },
+    { value: 'Data', label: 'Data' },
   ]
 
   useEffect(() => {
