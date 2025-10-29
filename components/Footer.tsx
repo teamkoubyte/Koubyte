@@ -68,7 +68,7 @@ export default function Footer() {
 
           {/* Snelle Links */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-slate-900">Pagina's</h3>
+            <h3 className="text-lg font-bold mb-6 text-slate-900">Pagina&apos;s</h3>
             <ul className="space-y-3">
               {[
                 { href: '/', label: 'Home' },

@@ -55,7 +55,7 @@ export default function PrivacyDashboardPage() {
   // GDPR Recht op Verwijdering
   const handleAccountDeletion = async () => {
     if (deleteConfirm !== 'VERWIJDER') {
-      alert('Typ "VERWIJDER" om te bevestigen')
+      alert('Typ &quot;VERWIJDER&quot; om te bevestigen')
       return
     }
 
@@ -215,7 +215,7 @@ export default function PrivacyDashboardPage() {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Typ "VERWIJDER" om te bevestigen:
+                Typ &quot;VERWIJDER&quot; om te bevestigen:
               </label>
               <input
                 type="text"

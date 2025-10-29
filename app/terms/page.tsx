@@ -75,7 +75,7 @@ export default function TermsPage() {
           <section className="bg-white p-8 rounded-2xl border-2 border-slate-200">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Artikel 6: Prijzen en Betaling</h2>
             <div className="space-y-4 text-slate-700">
-              <p><strong>6.1</strong> Alle genoemde prijzen zijn in euro's en exclusief BTW, tenzij anders vermeld.</p>
+              <p><strong>6.1</strong> Alle genoemde prijzen zijn in euro&apos;s en exclusief BTW, tenzij anders vermeld.</p>
               <p><strong>6.2</strong> Voor werkzaamheden op basis van nacalculatie geldt het overeengekomen uurtarief.</p>
               <p><strong>6.3</strong> Reiskosten kunnen apart in rekening worden gebracht.</p>
               <p><strong>6.4</strong> Betaling dient te geschieden binnen 14 dagen na factuurdatum, tenzij anders overeengekomen.</p>
