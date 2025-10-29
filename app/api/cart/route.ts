@@ -55,8 +55,8 @@ export async function POST(request: Request) {
       where: { id: serviceId },
     })
 
-    if (!service || !service.active) {
-      return NextResponse.json({ error: 'Dienst niet gevonden of niet beschikbaar' }, { status: 404 })
+    if (!service) {
+      return NextResponse.json({ error: 'Dienst niet gevonden' }, { status: 404 })
     }
 
     // Check if item already in cart
