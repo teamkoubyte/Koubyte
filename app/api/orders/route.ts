@@ -33,8 +33,7 @@ export async function POST(request: Request) {
     const orderCount = await prisma.order.count()
     const orderNumber = `KOU-${new Date().getFullYear()}-${String(orderCount + 1).padStart(4, '0')}`
 
-    // Create order
-    const now = new Date()
+    // Create order - ZONDER updatedAt (laat Prisma het automatisch doen)
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -47,15 +46,12 @@ export async function POST(request: Request) {
         customerEmail: session.user.email || '',
         customerPhone: '', // Could be fetched from user profile
         notes,
-        createdAt: now,
-        updatedAt: now,
         items: {
           create: cartItems.map((item) => ({
             serviceId: item.serviceId,
             serviceName: item.service.name,
             price: item.service.price,
             quantity: item.quantity,
-            createdAt: now,
           })),
         },
       },
