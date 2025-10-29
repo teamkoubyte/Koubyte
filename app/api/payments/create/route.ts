@@ -52,7 +52,12 @@ export async function POST(request: Request) {
         })
         
         if (!stripeResponse.ok) {
-          throw new Error('Stripe payment creation failed')
+          const stripeError = await stripeResponse.json()
+          console.error('Stripe payment creation failed:', stripeError)
+          return NextResponse.json({
+            error: stripeError.error || 'Stripe payment creation failed',
+            details: stripeError.details || 'Unknown Stripe error'
+          }, { status: 500 })
         }
         
         const stripeData = await stripeResponse.json()
@@ -102,10 +107,13 @@ export async function POST(request: Request) {
           { status: 400 }
         )
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Payment creation error:', error)
     return NextResponse.json(
-      { error: 'Er ging iets mis bij het aanmaken van de betaling' },
+      { 
+        error: 'Er ging iets mis bij het aanmaken van de betaling',
+        details: error.message || String(error)
+      },
       { status: 500 }
     )
   }
