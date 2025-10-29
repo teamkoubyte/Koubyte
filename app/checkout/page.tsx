@@ -257,11 +257,17 @@ export default function CheckoutPage() {
                                 )}
                               </div>
                               {method.logoUrl ? (
-                                <img 
-                                  src={method.logoUrl} 
-                                  alt={method.name}
-                                  className="h-5 w-auto object-contain"
-                                />
+                                <div className="flex items-center justify-center bg-white border border-slate-200 rounded px-2 py-1">
+                                  <img 
+                                    src={method.logoUrl} 
+                                    alt={method.name}
+                                    className="h-6 w-auto object-contain"
+                                    onError={(e) => {
+                                      console.error('Logo failed to load:', method.logoUrl)
+                                      e.currentTarget.style.display = 'none'
+                                    }}
+                                  />
+                                </div>
                               ) : Icon ? (
                                 <Icon className="w-5 h-5 text-slate-600 flex-shrink-0" />
                               ) : null}
