@@ -223,6 +223,7 @@ model Order {
   notes         String?
 
   // Payment
+  paymentMethod String   @default("bancontact") // bancontact, creditcard, afterservice, banktransfer
   paymentStatus String   @default("unpaid") // unpaid, paid, refunded
   paymentId     String?  @unique
   payment       Payment? @relation(fields: [paymentId], references: [id])

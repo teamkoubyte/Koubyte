@@ -40,6 +40,7 @@ export async function POST(request: Request) {
         userId: session.user.id,
         totalAmount,
         status: 'pending',
+        paymentMethod: paymentMethod || 'bancontact',
         paymentStatus: 'unpaid',
         customerName: session.user.name || '',
         customerEmail: session.user.email || '',
