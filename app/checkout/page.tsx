@@ -10,48 +10,17 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal } from '@/lib/cart'
-
-// Bancontact Logo Component (officiële kleuren)
-const BancontactLogo = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="120" rx="6" fill="#FFFFFF" stroke="#E5E7EB" strokeWidth="1"/>
-    
-    {/* Blue wave - links */}
-    <path 
-      d="M 15 45 Q 25 35 40 38 Q 55 41 70 50 Q 85 59 90 68 L 90 75 L 15 75 Z" 
-      fill="#005498"
-    />
-    
-    {/* Yellow wave - rechts */}
-    <path 
-      d="M 75 35 Q 90 28 110 32 Q 130 36 150 42 Q 165 47 185 50 L 185 65 L 75 65 Z" 
-      fill="#FFB81C"
-    />
-    
-    {/* Bancontact text - vereenvoudigd */}
-    <g transform="translate(20, 88)">
-      <text 
-        fontFamily="Arial, Helvetica, sans-serif" 
-        fontSize="20" 
-        fontWeight="700" 
-        fill="#005498"
-        letterSpacing="0.5"
-      >
-        Bancontact
-      </text>
-    </g>
-  </svg>
-)
 
 type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'cash' | 'ideal' | 'paypal'
 
 const paymentMethods = [
-  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: BancontactLogo, description: 'Online betalen met Bancontact', popular: true },
-  { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, description: 'Visa, Mastercard, American Express', popular: false },
-  { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
-  { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, description: 'Betaal vooraf via bankoverschrijving', popular: false },
+  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: null, logoUrl: 'https://www.bancontact.com/nl/professioneel/materialen/_jcr_content/par_left/image.img.png/1539773013941.png', description: 'Online betalen met Bancontact', popular: true },
+  { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logoUrl: null, description: 'Visa, Mastercard, American Express', popular: false },
+  { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, logoUrl: null, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
+  { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logoUrl: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
 ]
 
 export default function CheckoutPage() {
@@ -277,7 +246,7 @@ export default function CheckoutPage() {
                           >
                             <div className="flex items-center gap-3">
                               <div className={`
-                                w-5 h-5 rounded-full border-2 flex items-center justify-center
+                                w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
                                 ${selectedPaymentMethod === method.id 
                                   ? 'border-blue-600' 
                                   : 'border-slate-300'
@@ -287,7 +256,15 @@ export default function CheckoutPage() {
                                   <div className="w-3 h-3 rounded-full bg-blue-600" />
                                 )}
                               </div>
-                              <Icon className="w-5 h-5 text-slate-600" />
+                              {method.logoUrl ? (
+                                <img 
+                                  src={method.logoUrl} 
+                                  alt={method.name}
+                                  className="h-5 w-auto object-contain"
+                                />
+                              ) : Icon ? (
+                                <Icon className="w-5 h-5 text-slate-600 flex-shrink-0" />
+                              ) : null}
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                   <span className="font-semibold text-slate-900">{method.name}</span>
