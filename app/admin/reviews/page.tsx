@@ -135,35 +135,35 @@ export default function AdminReviewsPage() {
           </div>
         </div>
       )}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Reviews Beheer</h1>
-        <p className="text-slate-600">Keur reviews goed of af, of verwijder ze</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">Reviews Beheer</h1>
+        <p className="text-sm sm:text-base text-slate-600">Keur reviews goed of af, of verwijder ze</p>
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Wacht op goedkeuring</CardTitle>
+            <CardTitle className="text-sm sm:text-lg">Wacht op goedkeuring</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-orange-600">{pendingReviews.length}</p>
+            <p className="text-3xl sm:text-4xl font-bold text-orange-600">{pendingReviews.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Goedgekeurd</CardTitle>
+            <CardTitle className="text-sm sm:text-lg">Goedgekeurd</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-green-600">{approvedReviews.length}</p>
+            <p className="text-3xl sm:text-4xl font-bold text-green-600">{approvedReviews.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Gemiddelde Rating</CardTitle>
+            <CardTitle className="text-sm sm:text-lg">Gemiddelde Rating</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-blue-600">
+            <p className="text-3xl sm:text-4xl font-bold text-blue-600">
               {approvedReviews.length > 0
                 ? (approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length).toFixed(1)
                 : '0.0'}
@@ -201,11 +201,11 @@ export default function AdminReviewsPage() {
                       {new Date(review.createdAt).toLocaleDateString('nl-BE')}
                     </span>
                   </div>
-                  <p className="text-slate-700 mb-4">{review.comment}</p>
-                  <div className="flex gap-2">
+                  <p className="text-sm sm:text-base text-slate-700 mb-4">{review.comment}</p>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={() => handleApprove(review.id)}
-                      className="bg-green-600 hover:bg-green-700"
+                      className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-sm sm:text-base py-2 sm:py-2"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       Goedkeuren
@@ -213,6 +213,7 @@ export default function AdminReviewsPage() {
                     <Button
                       onClick={() => handleDelete(review.id)}
                       variant="destructive"
+                      className="w-full sm:w-auto text-sm sm:text-base py-2 sm:py-2"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Verwijderen
@@ -260,11 +261,12 @@ export default function AdminReviewsPage() {
                       {new Date(review.createdAt).toLocaleDateString('nl-BE')}
                     </span>
                   </div>
-                  <p className="text-slate-700 mb-4">{review.comment}</p>
-                  <div className="flex gap-2">
+                  <p className="text-sm sm:text-base text-slate-700 mb-4">{review.comment}</p>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={() => handleReject(review.id)}
                       variant="outline"
+                      className="w-full sm:w-auto text-sm sm:text-base py-2 sm:py-2"
                     >
                       <XCircle className="w-4 h-4 mr-2" />
                       Afkeuren
@@ -272,6 +274,7 @@ export default function AdminReviewsPage() {
                     <Button
                       onClick={() => handleDelete(review.id)}
                       variant="destructive"
+                      className="w-full sm:w-auto text-sm sm:text-base py-2 sm:py-2"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Verwijderen

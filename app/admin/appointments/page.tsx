@@ -133,11 +133,11 @@ export default function AdminAppointmentsPage() {
       </div>
 
       {/* Filter Knoppen */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
         <Button
           onClick={() => setFilter('all')}
           variant={filter === 'all' ? 'default' : 'outline'}
-          className={filter === 'all' ? 'bg-blue-600 text-white' : ''}
+          className={`text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 ${filter === 'all' ? 'bg-blue-600 text-white' : ''}`}
         >
           Alle ({appointments.length})
         </Button>
@@ -146,7 +146,7 @@ export default function AdminAppointmentsPage() {
             key={option.value}
             onClick={() => setFilter(option.value)}
             variant={filter === option.value ? 'default' : 'outline'}
-            className={filter === option.value ? 'bg-blue-600 text-white' : ''}
+            className={`text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 ${filter === option.value ? 'bg-blue-600 text-white' : ''}`}
           >
             {option.label}
           </Button>
@@ -173,12 +173,12 @@ export default function AdminAppointmentsPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   {/* Afspraak Info */}
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(appointment.status)}`}>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold border ${getStatusColor(appointment.status)}`}>
                         {getStatusIcon(appointment.status)}
                         {statusOptions.find(s => s.value === appointment.status)?.label || appointment.status}
                       </span>
-                      <span className="text-sm text-slate-500">
+                      <span className="text-xs sm:text-sm text-slate-500">
                         {new Date(appointment.createdAt).toLocaleDateString('nl-BE')}
                       </span>
                     </div>
@@ -211,13 +211,13 @@ export default function AdminAppointmentsPage() {
                   </div>
 
                   {/* Acties */}
-                  <div className="flex flex-col sm:flex-row lg:flex-col gap-2 w-full lg:w-auto">
+                  <div className="flex flex-col sm:flex-row lg:flex-col gap-2 w-full lg:w-auto lg:min-w-[140px]">
                     {appointment.status === 'pending' && (
                       <>
                         <Button
                           onClick={() => updateStatus(appointment.id, 'confirmed')}
                           disabled={updating === appointment.id}
-                          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                          className="w-full sm:w-auto lg:w-full bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base py-2 sm:py-2"
                         >
                           {updating === appointment.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                           Bevestig
@@ -226,7 +226,7 @@ export default function AdminAppointmentsPage() {
                           onClick={() => updateStatus(appointment.id, 'cancelled')}
                           disabled={updating === appointment.id}
                           variant="outline"
-                          className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50"
+                          className="w-full sm:w-auto lg:w-full border-red-300 text-red-600 hover:bg-red-50 text-sm sm:text-base py-2 sm:py-2"
                         >
                           Annuleer
                         </Button>
@@ -236,7 +236,7 @@ export default function AdminAppointmentsPage() {
                       <Button
                         onClick={() => updateStatus(appointment.id, 'completed')}
                         disabled={updating === appointment.id}
-                        className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
+                        className="w-full sm:w-auto lg:w-full bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base py-2 sm:py-2"
                       >
                         {updating === appointment.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                         Voltooi
@@ -246,9 +246,10 @@ export default function AdminAppointmentsPage() {
                       onClick={() => deleteAppointment(appointment.id)}
                       disabled={updating === appointment.id}
                       variant="outline"
-                      className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50"
+                      className="w-full sm:w-auto lg:w-full border-red-300 text-red-600 hover:bg-red-50 text-sm sm:text-base py-2 sm:py-2"
                     >
                       {updating === appointment.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      {appointment.status !== 'pending' && appointment.status !== 'confirmed' && <span className="ml-2">Verwijder</span>}
                     </Button>
                   </div>
                 </div>

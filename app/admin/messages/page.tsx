@@ -111,11 +111,11 @@ export default function AdminMessagesPage() {
       </div>
 
       {/* Filter Knoppen */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
         <Button
           onClick={() => setFilter('all')}
           variant={filter === 'all' ? 'default' : 'outline'}
-          className={filter === 'all' ? 'bg-blue-600 text-white' : ''}
+          className={`text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 ${filter === 'all' ? 'bg-blue-600 text-white' : ''}`}
         >
           Alle ({messages.length})
         </Button>
@@ -124,7 +124,7 @@ export default function AdminMessagesPage() {
             key={option.value}
             onClick={() => setFilter(option.value)}
             variant={filter === option.value ? 'default' : 'outline'}
-            className={filter === option.value ? 'bg-blue-600 text-white' : ''}
+            className={`text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 ${filter === option.value ? 'bg-blue-600 text-white' : ''}`}
           >
             {option.label}
           </Button>
@@ -151,11 +151,11 @@ export default function AdminMessagesPage() {
                 <div className="space-y-4">
                   {/* Header */}
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(message.status)}`}>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold border ${getStatusColor(message.status)}`}>
                         {statusOptions.find(s => s.value === message.status)?.label || message.status}
                       </span>
-                      <span className="text-sm text-slate-500">
+                      <span className="text-xs sm:text-sm text-slate-500">
                         {new Date(message.createdAt).toLocaleDateString('nl-BE', { 
                           day: 'numeric', 
                           month: 'long', 
@@ -203,10 +203,11 @@ export default function AdminMessagesPage() {
                       <Button
                         onClick={() => updateStatus(message.id, 'read')}
                         disabled={updating === message.id}
-                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base py-2 sm:py-2"
                       >
                         {updating === message.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-                        Markeer als gelezen
+                        <span className="hidden sm:inline">Markeer als gelezen</span>
+                        <span className="sm:hidden">Gelezen</span>
                       </Button>
                     )}
                     {message.status !== 'archived' && (
@@ -214,7 +215,7 @@ export default function AdminMessagesPage() {
                         onClick={() => updateStatus(message.id, 'archived')}
                         disabled={updating === message.id}
                         variant="outline"
-                        className="w-full sm:w-auto border-slate-300"
+                        className="w-full sm:w-auto border-slate-300 text-sm sm:text-base py-2 sm:py-2"
                       >
                         {updating === message.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Archive className="w-4 h-4 mr-2" />}
                         Archiveer
@@ -224,13 +225,13 @@ export default function AdminMessagesPage() {
                       onClick={() => deleteMessage(message.id)}
                       disabled={updating === message.id}
                       variant="outline"
-                      className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50"
+                      className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50 text-sm sm:text-base py-2 sm:py-2"
                     >
                       {updating === message.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
                       Verwijder
                     </Button>
-                    <a href={`mailto:${message.email}?subject=Re: ${message.subject}`}>
-                      <Button variant="outline" className="w-full sm:w-auto border-blue-300 text-blue-600 hover:bg-blue-50">
+                    <a href={`mailto:${message.email}?subject=Re: ${message.subject}`} className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full sm:w-auto border-blue-300 text-blue-600 hover:bg-blue-50 text-sm sm:text-base py-2 sm:py-2">
                         <Mail className="w-4 h-4 mr-2" />
                         Beantwoord
                       </Button>

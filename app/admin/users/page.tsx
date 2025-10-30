@@ -240,44 +240,44 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Statistieken */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-slate-600">Totaal Gebruikers</div>
-                <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+                <div className="text-xs sm:text-sm text-slate-600">Totaal Gebruikers</div>
+                <div className="text-xl sm:text-2xl font-bold text-slate-900">{stats.total}</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-purple-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
               </div>
               <div>
-                <div className="text-sm text-slate-600">Administrators</div>
-                <div className="text-2xl font-bold text-slate-900">{stats.admins}</div>
+                <div className="text-xs sm:text-sm text-slate-600">Administrators</div>
+                <div className="text-xl sm:text-2xl font-bold text-slate-900">{stats.admins}</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <User className="w-6 h-6 text-blue-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <User className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-slate-600">Klanten</div>
-                <div className="text-2xl font-bold text-slate-900">{stats.clients}</div>
+                <div className="text-xs sm:text-sm text-slate-600">Klanten</div>
+                <div className="text-xl sm:text-2xl font-bold text-slate-900">{stats.clients}</div>
               </div>
             </div>
           </CardContent>
@@ -349,12 +349,12 @@ export default function AdminUsersPage() {
                   </div>
 
                 {/* Acties */}
-                <div className="flex flex-col gap-2 w-full sm:min-w-[200px]">
+                <div className="flex flex-col gap-2 w-full sm:min-w-[200px] lg:w-auto lg:min-w-[180px]">
                     <select
                       value={user.role}
                       onChange={(e) => updateRole(user.id, e.target.value)}
                       disabled={updating === user.id || user.id === session?.user?.id}
-                      className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="client">Klant</option>
                       <option value="admin">Administrator</option>
@@ -364,7 +364,7 @@ export default function AdminUsersPage() {
                       onClick={() => confirmDelete(user.id, user.name)}
                       disabled={updating === user.id || user.id === session?.user?.id}
                       variant="outline"
-                    className="w-full border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50"
+                      className="w-full border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50 text-sm sm:text-base py-2 sm:py-2"
                     >
                       {updating === user.id ? (
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />

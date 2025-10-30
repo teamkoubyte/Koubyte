@@ -220,50 +220,50 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      <div className="container mx-auto max-w-7xl py-8 px-4">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8">Bestellingen Beheer</h1>
+      <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4 sm:mb-6 lg:mb-8">Bestellingen Beheer</h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <Card className="bg-blue-50 border-blue-200">
           <CardHeader>
-            <CardTitle className="text-blue-800 flex items-center gap-2">
-              <Package className="w-5 h-5" />
+            <CardTitle className="text-sm sm:text-base text-blue-800 flex items-center gap-2">
+              <Package className="w-4 h-4 sm:w-5 sm:h-5" />
               Totaal Bestellingen
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-blue-900">{stats.total}</p>
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-900">{stats.total}</p>
           </CardContent>
         </Card>
 
         <Card className="bg-orange-50 border-orange-200">
           <CardHeader>
-            <CardTitle className="text-orange-800">In Behandeling</CardTitle>
+            <CardTitle className="text-sm sm:text-base text-orange-800">In Behandeling</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-orange-900">{stats.pending}</p>
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-900">{stats.pending}</p>
           </CardContent>
         </Card>
 
         <Card className="bg-green-50 border-green-200">
           <CardHeader>
-            <CardTitle className="text-green-800">Afgerond</CardTitle>
+            <CardTitle className="text-sm sm:text-base text-green-800">Afgerond</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-green-900">{stats.completed}</p>
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-900">{stats.completed}</p>
           </CardContent>
         </Card>
 
         <Card className="bg-purple-50 border-purple-200">
           <CardHeader>
-            <CardTitle className="text-purple-800 flex items-center gap-2">
-              <Euro className="w-5 h-5" />
+            <CardTitle className="text-sm sm:text-base text-purple-800 flex items-center gap-2">
+              <Euro className="w-4 h-4 sm:w-5 sm:h-5" />
               Totale Omzet
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-purple-900">€{stats.revenue.toFixed(2)}</p>
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-900">€{stats.revenue.toFixed(2)}</p>
           </CardContent>
         </Card>
       </div>
@@ -292,20 +292,20 @@ export default function AdminOrdersPage() {
           return (
             <Card key={order.id} className="border-2">
               <CardHeader className="bg-slate-50">
-                <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                   <div>
-                    <CardTitle className="text-2xl font-bold text-slate-900">
+                    <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">
                       {order.orderNumber}
                     </CardTitle>
-                    <p className="text-sm text-slate-600 mt-1">
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1">
                       {format(new Date(order.createdAt), 'dd MMMM yyyy - HH:mm', { locale: nlBE })}
                     </p>
                   </div>
-                  <div className="flex gap-3">
-                    <span className={`px-4 py-2 rounded-lg font-semibold border-2 ${statusColors[order.status as keyof typeof statusColors] || 'bg-slate-100'}`}>
+                  <div className="flex flex-wrap gap-2 sm:gap-3">
+                    <span className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold border-2 ${statusColors[order.status as keyof typeof statusColors] || 'bg-slate-100'}`}>
                       {order.status}
                     </span>
-                    <span className={`px-4 py-2 rounded-lg font-semibold border-2 ${paymentColors[order.paymentStatus as keyof typeof paymentColors] || 'bg-slate-100'}`}>
+                    <span className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold border-2 ${paymentColors[order.paymentStatus as keyof typeof paymentColors] || 'bg-slate-100'}`}>
                       {order.paymentStatus}
                     </span>
                   </div>
@@ -362,11 +362,11 @@ export default function AdminOrdersPage() {
                 )}
 
                 {/* Actions */}
-                <div className="flex flex-wrap items-end gap-4">
-                  <div>
-                    <label className="text-sm font-semibold text-slate-700 block mb-2">Bestelling Status:</label>
+                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4">
+                  <div className="w-full sm:flex-1 sm:min-w-[180px]">
+                    <label className="text-xs sm:text-sm font-semibold text-slate-700 block mb-2">Bestelling Status:</label>
                     <Select value={order.status} onValueChange={(value) => updateOrderStatus(order.id, value)}>
-                      <SelectTrigger className="w-full sm:w-48">
+                      <SelectTrigger className="w-full text-sm sm:text-base">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -379,10 +379,10 @@ export default function AdminOrdersPage() {
                     </Select>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-semibold text-slate-700 block mb-2">Betaling Status:</label>
+                  <div className="w-full sm:flex-1 sm:min-w-[180px]">
+                    <label className="text-xs sm:text-sm font-semibold text-slate-700 block mb-2">Betaling Status:</label>
                     <Select value={order.paymentStatus} onValueChange={(value) => updatePaymentStatus(order.id, value)}>
-                      <SelectTrigger className="w-full sm:w-48">
+                      <SelectTrigger className="w-full text-sm sm:text-base">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -393,14 +393,15 @@ export default function AdminOrdersPage() {
                     </Select>
                   </div>
 
-                  <div className="sm:ml-auto w-full sm:w-auto">
+                  <div className="w-full sm:w-auto">
                     <Button
                       onClick={() => handleDeleteClick(order.id, order.orderNumber)}
                       variant="destructive"
-                      className="w-full sm:w-auto flex items-center gap-2"
+                      className="w-full sm:w-auto flex items-center gap-2 text-sm sm:text-base py-2 sm:py-2"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Verwijder Bestelling
+                      <span className="hidden sm:inline">Verwijder Bestelling</span>
+                      <span className="sm:hidden">Verwijder</span>
                     </Button>
                   </div>
                 </div>
