@@ -14,19 +14,74 @@ import Image from 'next/image'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal } from '@/lib/cart'
 
+// Payment Method Logo Components
+const KlarnaLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#FFB3C7"/>
+    <text x="40" y="26" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#000" textAnchor="middle">Klarna</text>
+  </svg>
+)
+
+const IdealLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#CC0066"/>
+    <text x="40" y="26" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#FFF" textAnchor="middle">iDEAL</text>
+  </svg>
+)
+
+const ApplePayLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#000"/>
+    <path d="M25,15c-0.9,0.9-2.3,1.6-3.7,1.5c-0.2-1.4,0.5-2.8,1.3-3.7c0.9-1,2.4-1.7,3.6-1.8C26.4,12.4,25.8,13.9,25,15z M26.2,16.7c-2,0-2.9,1-4.3,1c-1.5,0-2.6-1-4.2-1c-2.2,0-4.5,1.3-6,3.6c-2.1,3.2-1.7,9.3,1.7,14.6c1.2,1.8,2.7,3.9,4.8,3.9c1.8,0,2.3-1.2,4.3-1.2c2,0,2.4,1.2,4.2,1.2c2.1,0,3.5-2,4.7-3.8c0.9-1.4,1.2-2.1,1.9-3.7c-4.9-1.9-5.7-9-0.9-11.5C30.5,17.5,28.3,16.7,26.2,16.7z" fill="#FFF"/>
+    <text x="45" y="26" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="600" fill="#FFF">Pay</text>
+  </svg>
+)
+
+const GooglePayLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#FFF" stroke="#E8E8E8" strokeWidth="1"/>
+    <path d="M35,18.5v7h-1.7v-16h4.6c1.1,0,2.1,0.4,2.8,1.1c0.8,0.7,1.2,1.7,1.2,2.8c0,1.1-0.4,2-1.2,2.7c-0.8,0.7-1.7,1.1-2.8,1.1h-2.9V18.5z M35,11.2v5.6h3c0.7,0,1.3-0.2,1.8-0.7c0.5-0.5,0.7-1.1,0.7-1.8c0-0.7-0.2-1.3-0.7-1.8c-0.5-0.5-1.1-0.7-1.8-0.7h-3V11.2z" fill="#5F6368"/>
+    <path d="M46.8,14.6c1.4,0,2.5,0.4,3.3,1.2c0.8,0.8,1.2,1.9,1.2,3.3v6.3h-1.6v-1.4h-0.1c-0.7,1.1-1.7,1.7-3,1.7c-1.1,0-2-0.3-2.7-1c-0.7-0.6-1.1-1.5-1.1-2.5c0-1.1,0.4-1.9,1.2-2.5c0.8-0.6,1.8-0.9,3.1-0.9c1.1,0,2,0.2,2.7,0.6v-0.4c0-0.7-0.3-1.3-0.8-1.7c-0.5-0.5-1.1-0.7-1.9-0.7c-1.1,0-2,0.5-2.6,1.4l-1.5-0.9C43.9,15.4,45.2,14.6,46.8,14.6z M44.4,21.8c0,0.5,0.2,0.9,0.7,1.3c0.4,0.3,0.9,0.5,1.5,0.5c0.8,0,1.6-0.3,2.2-0.9c0.6-0.6,0.9-1.3,0.9-2.1c-0.6-0.5-1.4-0.7-2.5-0.7c-0.8,0-1.4,0.2-1.9,0.5C44.7,20.8,44.4,21.2,44.4,21.8z" fill="#5F6368"/>
+    <path d="M59.3,14.9l-5.9,13.6h-1.7l2.2-4.7l-3.9-8.9h1.8l2.9,7h0l2.8-7H59.3z" fill="#5F6368"/>
+  </svg>
+)
+
+const SepaLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#003399"/>
+    <text x="40" y="26" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="#FFF" textAnchor="middle">SEPA</text>
+  </svg>
+)
+
+const BancontactLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#005498"/>
+    <rect x="10" y="12" width="60" height="16" rx="2" fill="#FFF"/>
+    <circle cx="25" cy="20" r="5" fill="#005498"/>
+    <circle cx="32" cy="20" r="5" fill="#FFD200" fillOpacity="0.8"/>
+  </svg>
+)
+
+const StripeLogo = () => (
+  <svg viewBox="0 0 80 40" className="h-6 w-auto">
+    <rect width="80" height="40" rx="4" fill="#635BFF"/>
+    <text x="40" y="26" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="600" fill="#FFF" textAnchor="middle">Link</text>
+  </svg>
+)
+
 type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'ideal' | 'klarna' | 'link' | 'applepay' | 'googlepay' | 'sepa_debit'
 
 const paymentMethods = [
-  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: CreditCard, logoUrl: null, description: 'Online betalen met Bancontact', popular: true },
-  { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logoUrl: null, description: 'Visa, Mastercard, American Express', popular: true },
-  { id: 'ideal' as PaymentMethod, name: 'iDEAL', icon: Building2, logoUrl: null, description: 'Online betalen via Nederlandse bank', popular: false },
-  { id: 'klarna' as PaymentMethod, name: 'Klarna', icon: Wallet, logoUrl: null, description: 'Koop nu, betaal later', popular: true },
-  { id: 'link' as PaymentMethod, name: 'Link', icon: Zap, logoUrl: null, description: 'Snelle checkout met Stripe Link', popular: false },
-  { id: 'applepay' as PaymentMethod, name: 'Apple Pay', icon: Apple, logoUrl: null, description: 'Betaal met Apple Pay', popular: false },
-  { id: 'googlepay' as PaymentMethod, name: 'Google Pay', icon: Smartphone, logoUrl: null, description: 'Betaal met Google Pay', popular: false },
-  { id: 'sepa_debit' as PaymentMethod, name: 'SEPA Domiciliëring', icon: Building2, logoUrl: null, description: 'Automatische incasso', popular: false },
-  { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, logoUrl: null, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
-  { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logoUrl: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
+  { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: CreditCard, logo: BancontactLogo, description: 'Online betalen met Bancontact', popular: true },
+  { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logo: null, description: 'Visa, Mastercard, American Express', popular: true },
+  { id: 'ideal' as PaymentMethod, name: 'iDEAL', icon: Building2, logo: IdealLogo, description: 'Online betalen via Nederlandse bank', popular: false },
+  { id: 'klarna' as PaymentMethod, name: 'Klarna', icon: Wallet, logo: KlarnaLogo, description: 'Koop nu, betaal later', popular: true },
+  { id: 'link' as PaymentMethod, name: 'Link', icon: Zap, logo: StripeLogo, description: 'Snelle checkout met Stripe Link', popular: false },
+  { id: 'applepay' as PaymentMethod, name: 'Apple Pay', icon: Apple, logo: ApplePayLogo, description: 'Betaal met Apple Pay', popular: false },
+  { id: 'googlepay' as PaymentMethod, name: 'Google Pay', icon: Smartphone, logo: GooglePayLogo, description: 'Betaal met Google Pay', popular: false },
+  { id: 'sepa_debit' as PaymentMethod, name: 'SEPA Domiciliëring', icon: Building2, logo: SepaLogo, description: 'Automatische incasso', popular: false },
+  { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, logo: null, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
+  { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logo: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
 ]
 
 export default function CheckoutPage() {
@@ -243,6 +298,7 @@ export default function CheckoutPage() {
                     <div className="space-y-2">
                       {paymentMethods.map((method) => {
                         const Icon = method.icon
+                        const Logo = method.logo
                         return (
                           <div
                             key={method.id}
@@ -267,17 +323,9 @@ export default function CheckoutPage() {
                                   <div className="w-3 h-3 rounded-full bg-blue-600" />
                                 )}
                               </div>
-                              {method.logoUrl ? (
-                                <div className="flex items-center justify-center bg-white border border-slate-200 rounded px-2 py-1">
-                                  <img 
-                                    src={method.logoUrl} 
-                                    alt={method.name}
-                                    className="h-6 w-auto object-contain"
-                                    onError={(e) => {
-                                      console.error('Logo failed to load:', method.logoUrl)
-                                      e.currentTarget.style.display = 'none'
-                                    }}
-                                  />
+                              {Logo ? (
+                                <div className="flex items-center justify-center">
+                                  <Logo />
                                 </div>
                               ) : Icon ? (
                                 <Icon className="w-5 h-5 text-slate-600 flex-shrink-0" />
