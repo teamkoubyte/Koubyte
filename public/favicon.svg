@@ -1,15 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <!-- Blauwe gradient achtergrond -->
-  <rect width="100" height="100" rx="20" fill="url(#bg)"/>
-  <!-- Wit vierkant voor contrast -->
-  <rect x="10" y="10" width="80" height="80" rx="8" fill="white"/>
-  <!-- Blauwe K in het midden -->
-  <text x="50" y="70" font-family="Arial, Helvetica, sans-serif" font-size="55" font-weight="900" text-anchor="middle" fill="#2563eb">K</text>
+  <!-- Witte achtergrond -->
+  <rect width="100" height="100" rx="20" fill="white"/>
+  <!-- Koubyte tekst (voor kleine favicon: KB) -->
+  <text x="50" y="65" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" text-anchor="middle" fill="#2563eb">KB</text>
 </svg>
 

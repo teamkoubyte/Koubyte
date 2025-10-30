@@ -7,46 +7,30 @@ export const size = {
 }
 export const contentType = 'image/png'
  
-// Image generation - Verbeterd met duidelijkere K en styling
+// Image generation - Koubyte tekst logo
 export default function AppleIcon() {
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+          background: 'white',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '20%',
-          padding: '20px',
         }}
       >
-        {/* Wit vierkant voor contrast */}
         <div
           style={{
-            background: 'white',
-            width: '100%',
-            height: '100%',
-            borderRadius: '10%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            fontSize: 32,
+            color: '#2563eb',
+            fontWeight: '700',
+            fontFamily: 'Arial, Helvetica, sans-serif',
           }}
         >
-          {/* Blauwe K */}
-          <div
-            style={{
-              fontSize: 90,
-              color: '#2563eb',
-              fontWeight: '900',
-              fontFamily: 'Arial, Helvetica, sans-serif',
-              letterSpacing: '-5px',
-            }}
-          >
-            K
-          </div>
+          Koubyte
         </div>
       </div>
     ),

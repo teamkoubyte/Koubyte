@@ -7,13 +7,13 @@ export const size = {
 }
 export const contentType = 'image/png'
  
-// Image generation - Verbeterd met duidelijkere K
+// Image generation - Koubyte tekst logo (klein formaat: KB)
 export default function Icon() {
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+          background: 'white',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -24,14 +24,14 @@ export default function Icon() {
       >
         <div
           style={{
-            fontSize: 22,
-            color: 'white',
-            fontWeight: '900',
+            fontSize: 11,
+            color: '#2563eb',
+            fontWeight: '700',
             fontFamily: 'Arial, Helvetica, sans-serif',
-            letterSpacing: '-2px',
+            letterSpacing: '-0.5px',
           }}
         >
-          K
+          KB
         </div>
       </div>
     ),
