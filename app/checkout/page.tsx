@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet, Apple, Zap } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -69,17 +70,45 @@ export default function CheckoutPage() {
   const [orderNumber, setOrderNumber] = useState('')
   const [paymentUrl, setPaymentUrl] = useState('')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('bancontact')
+  const [discountCode, setDiscountCode] = useState('')
+  const [appliedDiscount, setAppliedDiscount] = useState<{
+    code: string
+    discountAmount: number
+    finalAmount: number
+    description?: string
+  } | null>(null)
+  const [discountLoading, setDiscountLoading] = useState(false)
   const [formData, setFormData] = useState({
+    // Contactgegevens
+    email: '',
+    phone: '',
+    // Persoonlijke gegevens
+    firstName: '',
+    lastName: '',
+    company: '',
+    // Adresgegevens
+    street: '',
+    houseNumber: '',
+    city: '',
+    postalCode: '',
+    country: 'België',
+    // Opmerkingen
     notes: '',
   })
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   useEffect(() => {
-    if (!session) {
-      router.push('/auth/login')
-      return
+    // Optioneel: vul gegevens in als gebruiker ingelogd is
+    if (session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        email: session.user.email || '',
+        firstName: session.user.name?.split(' ')[0] || '',
+        lastName: session.user.name?.split(' ').slice(1).join(' ') || '',
+      }))
     }
     fetchCart()
-  }, [session, router])
+  }, [session])
 
   const fetchCart = async () => {
     try {
@@ -95,19 +124,92 @@ export default function CheckoutPage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitting(true)
+  const applyDiscountCode = async () => {
+    if (!discountCode.trim()) {
+      alert('Voer een kortingscode in')
+      return
+    }
 
+    setDiscountLoading(true)
     try {
-      // Eerst de order aanmaken
-      const orderResponse = await fetch('/api/orders', {
+      const response = await fetch('/api/discount/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          notes: formData.notes,
-          paymentMethod: selectedPaymentMethod 
+          code: discountCode.trim().toUpperCase(),
+          totalAmount: total 
         }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setAppliedDiscount({
+          code: data.code,
+          discountAmount: data.discountAmount,
+          finalAmount: data.finalAmount,
+          description: data.description
+        })
+        alert(`Kortingscode toegepast! Je bespaart ${formatPrice(data.discountAmount)}`)
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Ongeldige kortingscode')
+        setAppliedDiscount(null)
+      }
+    } catch (error) {
+      console.error('Error applying discount:', error)
+      alert('Er ging iets mis bij het toepassen van de kortingscode')
+      setAppliedDiscount(null)
+    } finally {
+      setDiscountLoading(false)
+    }
+  }
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null)
+    setDiscountCode('')
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Validatie
+    if (!formData.email || !formData.phone || !formData.firstName || !formData.lastName) {
+      alert('Vul alle verplichte velden in')
+      return
+    }
+    
+    if (!agreedToTerms) {
+      alert('Je moet akkoord gaan met de voorwaarden')
+      return
+    }
+    
+    setSubmitting(true)
+
+    try {
+      // Voor guests: stuur cartItems mee (ze hebben geen database cart)
+      const orderPayload: any = { 
+        ...formData,
+        paymentMethod: selectedPaymentMethod,
+        isGuest: !session?.user,
+        // Kortingscode info
+        discountCode: appliedDiscount?.code,
+        discountAmount: appliedDiscount?.discountAmount || 0,
+        finalAmount: appliedDiscount?.finalAmount || total
+      }
+      
+      if (!session?.user) {
+        // Guest: voeg client-side cart items toe
+        orderPayload.cartItems = cartItems.map(item => ({
+          serviceId: item.serviceId,
+          quantity: item.quantity
+        }))
+      }
+      
+      // Eerst de order aanmaken met alle gegevens
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
       })
 
       if (!orderResponse.ok) {
@@ -260,11 +362,157 @@ export default function CheckoutPage() {
                 <CardTitle className="text-2xl">Totaal</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-blue-600 mb-6">
-                  {formatPrice(total)}
+                {/* Totaal met eventuele korting */}
+                <div className="space-y-3 mb-6">
+                  {appliedDiscount ? (
+                    <>
+                      <div className="flex justify-between text-lg text-slate-600">
+                        <span>Subtotaal:</span>
+                        <span>{formatPrice(total)}</span>
+                      </div>
+                      <div className="flex justify-between text-lg text-green-600 font-semibold">
+                        <span>Korting ({appliedDiscount.code}):</span>
+                        <span>-{formatPrice(appliedDiscount.discountAmount)}</span>
+                      </div>
+                      <div className="border-t-2 border-slate-200 pt-3">
+                        <div className="flex justify-between">
+                          <span className="text-2xl font-semibold text-slate-900">Totaal:</span>
+                          <span className="text-4xl font-bold text-blue-600">{formatPrice(appliedDiscount.finalAmount)}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-4xl font-bold text-blue-600">
+                      {formatPrice(total)}
+                    </div>
+                  )}
                 </div>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Contactgegevens */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Contactgegevens</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="email">E-mailadres *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          placeholder="je@email.com"
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Telefoonnummer *</Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                          placeholder="+32 123 45 67 89"
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Persoonlijke gegevens */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Persoonlijke gegevens</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="firstName">Voornaam *</Label>
+                        <Input
+                          id="firstName"
+                          required
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                          placeholder="Jan"
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lastName">Achternaam *</Label>
+                        <Input
+                          id="lastName"
+                          required
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                          placeholder="Jansen"
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="company">Bedrijfsnaam <span className="text-slate-500">(optioneel)</span></Label>
+                      <Input
+                        id="company"
+                        value={formData.company}
+                        onChange={(e) => setFormData({...formData, company: e.target.value})}
+                        placeholder="Jouw bedrijf BV"
+                        className="mt-2"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Adresgegevens */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Adresgegevens</h3>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="col-span-2">
+                        <Label htmlFor="street">Straatnaam</Label>
+                        <Input
+                          id="street"
+                          value={formData.street}
+                          onChange={(e) => setFormData({...formData, street: e.target.value})}
+                          placeholder="Hoofdstraat"
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="houseNumber">Nummer</Label>
+                        <Input
+                          id="houseNumber"
+                          value={formData.houseNumber}
+                          onChange={(e) => setFormData({...formData, houseNumber: e.target.value})}
+                          placeholder="123"
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="postalCode">Postcode</Label>
+                        <Input
+                          id="postalCode"
+                          value={formData.postalCode}
+                          onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
+                          placeholder="1000"
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="city">Stad</Label>
+                        <Input
+                          id="city"
+                          value={formData.city}
+                          onChange={(e) => setFormData({...formData, city: e.target.value})}
+                          placeholder="Brussel"
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Betaalmethode selectie */}
                   <div>
                     <Label className="text-base font-semibold mb-4 block">
@@ -337,9 +585,79 @@ export default function CheckoutPage() {
                     />
                   </div>
 
+                  {/* Kortingscode */}
+                  <div className="space-y-3">
+                    <Label htmlFor="discount" className="text-base font-semibold">
+                      Kortingscode <span className="text-slate-500 font-normal">(optioneel)</span>
+                    </Label>
+                    {appliedDiscount ? (
+                      <div className="flex items-center gap-3 p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="font-semibold text-green-900">
+                            {appliedDiscount.code} toegepast!
+                          </p>
+                          {appliedDiscount.description && (
+                            <p className="text-sm text-green-700">{appliedDiscount.description}</p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={removeDiscount}
+                          className="text-green-600 hover:text-green-700 underline text-sm"
+                        >
+                          Verwijderen
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Input
+                          id="discount"
+                          value={discountCode}
+                          onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                          placeholder="Bijv: WELCOME10"
+                          className="flex-1"
+                          disabled={discountLoading}
+                        />
+                        <Button
+                          type="button"
+                          onClick={applyDiscountCode}
+                          disabled={discountLoading || !discountCode.trim()}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          {discountLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            'Toepassen'
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Algemene voorwaarden */}
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg">
+                    <Checkbox
+                      id="terms"
+                      checked={agreedToTerms}
+                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <Label htmlFor="terms" className="text-sm text-slate-700 cursor-pointer">
+                      Ik ga akkoord met de{' '}
+                      <Link href="/terms" target="_blank" className="text-blue-600 hover:underline font-semibold">
+                        algemene voorwaarden
+                      </Link>
+                      {' '}en het{' '}
+                      <Link href="/privacy" target="_blank" className="text-blue-600 hover:underline font-semibold">
+                        privacybeleid
+                      </Link>
+                    </Label>
+                  </div>
+
                   <Button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !agreedToTerms}
                     className="w-full py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 shadow-lg"
                   >
                     {submitting ? (
@@ -350,7 +668,7 @@ export default function CheckoutPage() {
                     ) : (
                       <span className="flex items-center justify-center gap-2">
                         <CreditCard className="w-5 h-5" />
-                        Betaal {formatPrice(total)}
+                        Betaal {formatPrice(appliedDiscount?.finalAmount || total)}
                       </span>
                     )}
                   </Button>

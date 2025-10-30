@@ -213,14 +213,27 @@ model Order {
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Bestelling details
-  totalAmount Float
-  status      String @default("pending") // pending, confirmed, in_progress, completed, cancelled
+  totalAmount     Float
+  discountAmount  Float?  @default(0)
+  discountCode    String?
+  finalAmount     Float   // totalAmount - discountAmount
+  status          String  @default("pending") // pending, confirmed, in_progress, completed, cancelled
 
   // Klant info (snapshot)
   customerName  String
   customerEmail String
   customerPhone String?
+  // Extra klantgegevens voor guest checkout
+  firstName     String?
+  lastName      String?
+  company       String?
+  street        String?
+  houseNumber   String?
+  city          String?
+  postalCode    String?
+  country       String?
   notes         String?
+  isGuest       Boolean @default(false)
 
   // Payment
   paymentMethod String   @default("bancontact") // bancontact, creditcard, afterservice, banktransfer
@@ -256,6 +269,24 @@ model OrderItem {
 
   @@index([orderId])
   @@index([serviceId])
+}
+
+// Kortingscodes model
+model DiscountCode {
+  id          String   @id @default(cuid())
+  code        String   @unique // Bijv: "WELCOME10"
+  description String?
+  type        String   // percentage, fixed
+  value       Float    // 10 voor 10% of 10 voor €10
+  minAmount   Float?   // Minimum bestelbedrag
+  maxUses     Int?     // Maximum aantal keren te gebruiken
+  usedCount   Int      @default(0)
+  validFrom   DateTime @default(now())
+  validUntil  DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  @@index([code])
 }
 
 // Betalingen model
