@@ -146,6 +146,16 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Success Message */}
+              {successMessage && (
+                <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                    {successMessage}
+                  </p>
+                </div>
+              )}
+
               {/* Email Field */}
               <div>
                 <Label htmlFor="email" className="text-base font-semibold text-slate-700">
