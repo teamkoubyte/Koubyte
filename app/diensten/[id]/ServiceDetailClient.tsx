@@ -131,12 +131,12 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto max-w-6xl px-4 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container mx-auto max-w-6xl px-4 pb-14 sm:pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left Column - Service Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Service Header */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-slate-200">
+            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border-2 border-slate-200">
               {service.featured && (
                 <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-bold mb-4">
                   <Star className="w-4 h-4 fill-blue-700" />
@@ -144,11 +144,11 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
                 </div>
               )}
 
-              <h1 className="text-4xl font-bold text-slate-900 mb-4">
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
                 {service.name}
               </h1>
 
-              <p className="text-xl text-slate-600 leading-relaxed mb-6">
+              <p className="text-base sm:text-xl text-slate-600 leading-relaxed mb-5 sm:mb-6">
                 {service.description}
               </p>
 
@@ -169,7 +169,7 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
             </div>
 
             {/* Benefits Section */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-slate-200">
+            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border-2 border-slate-200">
               <h2 className="text-2xl font-bold text-slate-900 mb-6">Wat is inbegrepen?</h2>
               <ul className="space-y-4">
                 {getCategoryBenefits(service.category).map((benefit, idx) => (
@@ -184,7 +184,7 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
             </div>
 
             {/* How it Works */}
-            <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl p-8 border-2 border-blue-200">
+            <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl p-6 sm:p-8 border-2 border-blue-200">
               <h2 className="text-2xl font-bold text-slate-900 mb-6">Hoe werkt het?</h2>
               <div className="space-y-4">
                 <ProcessStep 
@@ -213,23 +213,23 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
 
           {/* Right Column - Sticky Order Box */}
           <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-24 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-5 sm:space-y-6">
               {/* Price Card */}
               <Card className="border-2 border-blue-500 shadow-2xl">
                 <CardHeader className="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="text-3xl font-bold">
+                  <CardTitle className="text-2xl sm:text-3xl font-bold">
                     {formatPrice(service.price)}
                   </CardTitle>
-                  <CardDescription className="text-blue-100 text-base">
+                  <CardDescription className="text-blue-100 text-sm sm:text-base">
                     Vaste prijs, geen verrassingen
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="p-6 space-y-4">
+                <CardContent className="p-5 sm:p-6 space-y-4">
                   <Button
                     onClick={addToCart}
                     disabled={addingToCart}
-                    className="w-full py-6 text-lg font-bold bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
+                    className="w-full py-5 sm:py-6 text-base sm:text-lg font-bold bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
                   >
                     {addingToCart ? (
                       <span className="flex items-center justify-center gap-2">
@@ -264,12 +264,12 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
               {/* Contact Card */}
               <Card className="border-2 border-slate-200">
                 <CardHeader>
-                  <CardTitle className="text-lg">Vragen over deze dienst?</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">Vragen over deze dienst?</CardTitle>
                   <CardDescription>
                     Neem gerust contact met ons op
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2.5 sm:space-y-3">
                   <a 
                     href="tel:+32484522662"
                     className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition"
@@ -300,8 +300,8 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
         {/* Related Services */}
         {relatedServices.length > 0 && (
           <div className="mt-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">Gerelateerde diensten</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6 sm:mb-8">Gerelateerde diensten</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {relatedServices.map((related) => (
                 <Link 
                   key={related.id} 
