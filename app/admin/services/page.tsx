@@ -213,23 +213,24 @@ export default function AdminServicesPage() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header - RESPONSIVE */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Services Beheer</h1>
-          <p className="text-slate-600 mt-1">Beheer alle diensten die je aanbiedt</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Services Beheer</h1>
+          <p className="text-slate-600 mt-1 text-sm sm:text-base">Beheer alle diensten die je aanbiedt</p>
         </div>
         <Button
           onClick={() => openModal()}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
         >
           <Plus className="w-5 h-5 mr-2" />
-          Nieuwe Service
+          <span className="hidden sm:inline">Nieuwe Service</span>
+          <span className="sm:hidden">Nieuw</span>
         </Button>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Services Grid - RESPONSIVE */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {services.map((service) => (
           <Card key={service.id} className="relative">
             {service.featured && (
@@ -262,7 +263,7 @@ export default function AdminServicesPage() {
                 )}
               </div>
 
-              <div className="flex gap-2 pt-4 border-t">
+              <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
                 <Button
                   onClick={() => openModal(service)}
                   variant="outline"
@@ -270,7 +271,8 @@ export default function AdminServicesPage() {
                   size="sm"
                 >
                   <Edit className="w-4 h-4 mr-1" />
-                  Bewerken
+                  <span className="hidden sm:inline">Bewerken</span>
+                  <span className="sm:hidden">Edit</span>
                 </Button>
                 <Button
                   onClick={() => setDeleteConfirm(service.id)}
@@ -279,7 +281,8 @@ export default function AdminServicesPage() {
                   size="sm"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
-                  Verwijderen
+                  <span className="hidden sm:inline">Verwijderen</span>
+                  <span className="sm:hidden">Delete</span>
                 </Button>
               </div>
             </CardContent>
@@ -303,10 +306,10 @@ export default function AdminServicesPage() {
         </Card>
       )}
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit Modal - RESPONSIVE */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <Card className="w-full max-w-2xl my-8 max-h-[90vh] overflow-y-auto">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl">
