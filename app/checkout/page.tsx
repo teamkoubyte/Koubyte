@@ -127,10 +127,21 @@ export default function CheckoutPage() {
   
   // Toast notifications
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null)
+  
+  // Field validation errors (track which fields are invalid)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({})
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 5000)
+  }
+  
+  const clearFieldError = (fieldName: string) => {
+    setFieldErrors(prev => {
+      const newErrors = { ...prev }
+      delete newErrors[fieldName]
+      return newErrors
+    })
   }
 
   const total = calculateCartTotal(cartItems)
@@ -258,28 +269,53 @@ export default function CheckoutPage() {
 
   // Validation functions
   const validateStep1 = () => {
-    if (!serviceLocation.street || !serviceLocation.houseNumber || !serviceLocation.postalCode || !serviceLocation.city) {
+    const errors: Record<string, boolean> = {}
+    
+    if (!serviceLocation.street) errors['serviceLocation.street'] = true
+    if (!serviceLocation.houseNumber) errors['serviceLocation.houseNumber'] = true
+    if (!serviceLocation.postalCode) errors['serviceLocation.postalCode'] = true
+    if (!serviceLocation.city) errors['serviceLocation.city'] = true
+    
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
       showToast('Vul alle verplichte velden in voor het dienstadres', 'error')
       return false
     }
+    
+    setFieldErrors({})
     return true
   }
 
   const validateStep2 = () => {
+    const errors: Record<string, boolean> = {}
+    
     if (customerType === 'particulier') {
-      if (!particulierData.gender || !particulierData.firstName || !particulierData.lastName || !particulierData.phone || !particulierData.email) {
-        showToast('Vul alle verplichte velden in', 'error')
-        return false
-      }
+      if (!particulierData.gender) errors['particulier.gender'] = true
+      if (!particulierData.firstName) errors['particulier.firstName'] = true
+      if (!particulierData.lastName) errors['particulier.lastName'] = true
+      if (!particulierData.phone) errors['particulier.phone'] = true
+      if (!particulierData.email) errors['particulier.email'] = true
     } else {
-      if (!professioneelData.companyForm || !professioneelData.companyName || !professioneelData.gender || 
-          !professioneelData.firstName || !professioneelData.lastName || !professioneelData.postalCode ||
-          !professioneelData.city || !professioneelData.street || !professioneelData.houseNumber ||
-          !professioneelData.phone || !professioneelData.email) {
-        showToast('Vul alle verplichte velden in', 'error')
-        return false
-      }
+      if (!professioneelData.companyForm) errors['professioneel.companyForm'] = true
+      if (!professioneelData.companyName) errors['professioneel.companyName'] = true
+      if (!professioneelData.gender) errors['professioneel.gender'] = true
+      if (!professioneelData.firstName) errors['professioneel.firstName'] = true
+      if (!professioneelData.lastName) errors['professioneel.lastName'] = true
+      if (!professioneelData.postalCode) errors['professioneel.postalCode'] = true
+      if (!professioneelData.city) errors['professioneel.city'] = true
+      if (!professioneelData.street) errors['professioneel.street'] = true
+      if (!professioneelData.houseNumber) errors['professioneel.houseNumber'] = true
+      if (!professioneelData.phone) errors['professioneel.phone'] = true
+      if (!professioneelData.email) errors['professioneel.email'] = true
     }
+    
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      showToast('Vul alle verplichte velden in', 'error')
+      return false
+    }
+    
+    setFieldErrors({})
     return true
   }
 
@@ -554,9 +590,16 @@ export default function CheckoutPage() {
                           id="serviceStreet"
                           required
                           value={serviceLocation.street}
-                          onChange={(e) => setServiceLocation({...serviceLocation, street: e.target.value})}
+                          onChange={(e) => {
+                            setServiceLocation({...serviceLocation, street: e.target.value})
+                            clearFieldError('serviceLocation.street')
+                          }}
                           placeholder="Hoofdstraat"
+                          className={fieldErrors['serviceLocation.street'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['serviceLocation.street'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="serviceHouseNumber">Nummer *</Label>
@@ -564,9 +607,16 @@ export default function CheckoutPage() {
                           id="serviceHouseNumber"
                           required
                           value={serviceLocation.houseNumber}
-                          onChange={(e) => setServiceLocation({...serviceLocation, houseNumber: e.target.value})}
+                          onChange={(e) => {
+                            setServiceLocation({...serviceLocation, houseNumber: e.target.value})
+                            clearFieldError('serviceLocation.houseNumber')
+                          }}
                           placeholder="123"
+                          className={fieldErrors['serviceLocation.houseNumber'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['serviceLocation.houseNumber'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
                     </div>
 
@@ -577,9 +627,16 @@ export default function CheckoutPage() {
                           id="servicePostalCode"
                           required
                           value={serviceLocation.postalCode}
-                          onChange={(e) => setServiceLocation({...serviceLocation, postalCode: e.target.value})}
+                          onChange={(e) => {
+                            setServiceLocation({...serviceLocation, postalCode: e.target.value})
+                            clearFieldError('serviceLocation.postalCode')
+                          }}
                           placeholder="1000"
+                          className={fieldErrors['serviceLocation.postalCode'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['serviceLocation.postalCode'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="serviceCity">Gemeente *</Label>
@@ -587,9 +644,16 @@ export default function CheckoutPage() {
                           id="serviceCity"
                           required
                           value={serviceLocation.city}
-                          onChange={(e) => setServiceLocation({...serviceLocation, city: e.target.value})}
+                          onChange={(e) => {
+                            setServiceLocation({...serviceLocation, city: e.target.value})
+                            clearFieldError('serviceLocation.city')
+                          }}
                           placeholder="Brussel"
+                          className={fieldErrors['serviceLocation.city'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['serviceLocation.city'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
                     </div>
 
@@ -713,11 +777,16 @@ export default function CheckoutPage() {
                         <div className="flex gap-4 mt-2">
                           <button
                             type="button"
-                            onClick={() => setParticulierData({...particulierData, gender: 'man'})}
+                            onClick={() => {
+                              setParticulierData({...particulierData, gender: 'man'})
+                              clearFieldError('particulier.gender')
+                            }}
                             className={`
                               flex-1 p-4 rounded-lg border-2 transition-all
                               ${particulierData.gender === 'man' 
                                 ? 'border-blue-600 bg-blue-50' 
+                                : fieldErrors['particulier.gender']
+                                ? 'border-red-500'
                                 : 'border-slate-300'
                               }
                             `}
@@ -726,11 +795,16 @@ export default function CheckoutPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => setParticulierData({...particulierData, gender: 'vrouw'})}
+                            onClick={() => {
+                              setParticulierData({...particulierData, gender: 'vrouw'})
+                              clearFieldError('particulier.gender')
+                            }}
                             className={`
                               flex-1 p-4 rounded-lg border-2 transition-all
                               ${particulierData.gender === 'vrouw' 
                                 ? 'border-blue-600 bg-blue-50' 
+                                : fieldErrors['particulier.gender']
+                                ? 'border-red-500'
                                 : 'border-slate-300'
                               }
                             `}
@@ -738,6 +812,9 @@ export default function CheckoutPage() {
                             Vrouw
                           </button>
                         </div>
+                        {fieldErrors['particulier.gender'] && (
+                          <p className="text-red-600 text-sm mt-1">Selecteer een geslacht</p>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -747,9 +824,16 @@ export default function CheckoutPage() {
                             id="partFirstName"
                             required
                             value={particulierData.firstName}
-                            onChange={(e) => setParticulierData({...particulierData, firstName: e.target.value})}
+                            onChange={(e) => {
+                              setParticulierData({...particulierData, firstName: e.target.value})
+                              clearFieldError('particulier.firstName')
+                            }}
                             placeholder="Jan"
+                            className={fieldErrors['particulier.firstName'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['particulier.firstName'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="partLastName">Familienaam *</Label>
@@ -757,9 +841,16 @@ export default function CheckoutPage() {
                             id="partLastName"
                             required
                             value={particulierData.lastName}
-                            onChange={(e) => setParticulierData({...particulierData, lastName: e.target.value})}
+                            onChange={(e) => {
+                              setParticulierData({...particulierData, lastName: e.target.value})
+                              clearFieldError('particulier.lastName')
+                            }}
                             placeholder="Janssen"
+                            className={fieldErrors['particulier.lastName'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['particulier.lastName'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                       </div>
 
@@ -770,9 +861,16 @@ export default function CheckoutPage() {
                           type="tel"
                           required
                           value={particulierData.phone}
-                          onChange={(e) => setParticulierData({...particulierData, phone: e.target.value})}
+                          onChange={(e) => {
+                            setParticulierData({...particulierData, phone: e.target.value})
+                            clearFieldError('particulier.phone')
+                          }}
                           placeholder="+32 123 45 67 89"
+                          className={fieldErrors['particulier.phone'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['particulier.phone'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
 
                       <div>
@@ -782,9 +880,16 @@ export default function CheckoutPage() {
                           type="email"
                           required
                           value={particulierData.email}
-                          onChange={(e) => setParticulierData({...particulierData, email: e.target.value})}
+                          onChange={(e) => {
+                            setParticulierData({...particulierData, email: e.target.value})
+                            clearFieldError('particulier.email')
+                          }}
                           placeholder="jan@email.com"
+                          className={fieldErrors['particulier.email'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['particulier.email'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -804,9 +909,12 @@ export default function CheckoutPage() {
                         <Label htmlFor="profCompanyForm">Ondernemingsvorm *</Label>
                         <Select
                           value={professioneelData.companyForm}
-                          onValueChange={(value) => setProfessioneelData({...professioneelData, companyForm: value})}
+                          onValueChange={(value) => {
+                            setProfessioneelData({...professioneelData, companyForm: value})
+                            clearFieldError('professioneel.companyForm')
+                          }}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className={fieldErrors['professioneel.companyForm'] ? 'border-red-500 border-2 focus:ring-red-500' : ''}>
                             <SelectValue placeholder="Selecteer ondernemingsvorm" />
                           </SelectTrigger>
                           <SelectContent>
@@ -818,6 +926,9 @@ export default function CheckoutPage() {
                             <SelectItem value="cv">CV (Commanditaire Vennootschap)</SelectItem>
                           </SelectContent>
                         </Select>
+                        {fieldErrors['professioneel.companyForm'] && (
+                          <p className="text-red-600 text-sm mt-1">Selecteer een ondernemingsvorm</p>
+                        )}
                       </div>
 
                       <div>
@@ -826,9 +937,16 @@ export default function CheckoutPage() {
                           id="profCompanyName"
                           required
                           value={professioneelData.companyName}
-                          onChange={(e) => setProfessioneelData({...professioneelData, companyName: e.target.value})}
+                          onChange={(e) => {
+                            setProfessioneelData({...professioneelData, companyName: e.target.value})
+                            clearFieldError('professioneel.companyName')
+                          }}
                           placeholder="Bedrijfsnaam BV"
+                          className={fieldErrors['professioneel.companyName'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['professioneel.companyName'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
 
                       <div>
@@ -846,11 +964,16 @@ export default function CheckoutPage() {
                         <div className="flex gap-4 mt-2">
                           <button
                             type="button"
-                            onClick={() => setProfessioneelData({...professioneelData, gender: 'man'})}
+                            onClick={() => {
+                              setProfessioneelData({...professioneelData, gender: 'man'})
+                              clearFieldError('professioneel.gender')
+                            }}
                             className={`
                               flex-1 p-4 rounded-lg border-2 transition-all
                               ${professioneelData.gender === 'man' 
                                 ? 'border-blue-600 bg-blue-50' 
+                                : fieldErrors['professioneel.gender']
+                                ? 'border-red-500'
                                 : 'border-slate-300'
                               }
                             `}
@@ -859,11 +982,16 @@ export default function CheckoutPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => setProfessioneelData({...professioneelData, gender: 'vrouw'})}
+                            onClick={() => {
+                              setProfessioneelData({...professioneelData, gender: 'vrouw'})
+                              clearFieldError('professioneel.gender')
+                            }}
                             className={`
                               flex-1 p-4 rounded-lg border-2 transition-all
                               ${professioneelData.gender === 'vrouw' 
                                 ? 'border-blue-600 bg-blue-50' 
+                                : fieldErrors['professioneel.gender']
+                                ? 'border-red-500'
                                 : 'border-slate-300'
                               }
                             `}
@@ -871,6 +999,9 @@ export default function CheckoutPage() {
                             Vrouw
                           </button>
                         </div>
+                        {fieldErrors['professioneel.gender'] && (
+                          <p className="text-red-600 text-sm mt-1">Selecteer een geslacht</p>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -880,9 +1011,16 @@ export default function CheckoutPage() {
                             id="profFirstName"
                             required
                             value={professioneelData.firstName}
-                            onChange={(e) => setProfessioneelData({...professioneelData, firstName: e.target.value})}
+                            onChange={(e) => {
+                              setProfessioneelData({...professioneelData, firstName: e.target.value})
+                              clearFieldError('professioneel.firstName')
+                            }}
                             placeholder="Jan"
+                            className={fieldErrors['professioneel.firstName'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['professioneel.firstName'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="profLastName">Familienaam *</Label>
@@ -890,9 +1028,16 @@ export default function CheckoutPage() {
                             id="profLastName"
                             required
                             value={professioneelData.lastName}
-                            onChange={(e) => setProfessioneelData({...professioneelData, lastName: e.target.value})}
+                            onChange={(e) => {
+                              setProfessioneelData({...professioneelData, lastName: e.target.value})
+                              clearFieldError('professioneel.lastName')
+                            }}
                             placeholder="Janssen"
+                            className={fieldErrors['professioneel.lastName'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['professioneel.lastName'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                       </div>
 
@@ -903,9 +1048,16 @@ export default function CheckoutPage() {
                             id="profPostalCode"
                             required
                             value={professioneelData.postalCode}
-                            onChange={(e) => setProfessioneelData({...professioneelData, postalCode: e.target.value})}
+                            onChange={(e) => {
+                              setProfessioneelData({...professioneelData, postalCode: e.target.value})
+                              clearFieldError('professioneel.postalCode')
+                            }}
                             placeholder="1000"
+                            className={fieldErrors['professioneel.postalCode'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['professioneel.postalCode'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="profCity">Gemeente *</Label>
@@ -913,9 +1065,16 @@ export default function CheckoutPage() {
                             id="profCity"
                             required
                             value={professioneelData.city}
-                            onChange={(e) => setProfessioneelData({...professioneelData, city: e.target.value})}
+                            onChange={(e) => {
+                              setProfessioneelData({...professioneelData, city: e.target.value})
+                              clearFieldError('professioneel.city')
+                            }}
                             placeholder="Brussel"
+                            className={fieldErrors['professioneel.city'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['professioneel.city'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                       </div>
 
@@ -926,9 +1085,16 @@ export default function CheckoutPage() {
                             id="profStreet"
                             required
                             value={professioneelData.street}
-                            onChange={(e) => setProfessioneelData({...professioneelData, street: e.target.value})}
+                            onChange={(e) => {
+                              setProfessioneelData({...professioneelData, street: e.target.value})
+                              clearFieldError('professioneel.street')
+                            }}
                             placeholder="Hoofdstraat"
+                            className={fieldErrors['professioneel.street'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['professioneel.street'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="profHouseNumber">Nummer *</Label>
@@ -936,9 +1102,16 @@ export default function CheckoutPage() {
                             id="profHouseNumber"
                             required
                             value={professioneelData.houseNumber}
-                            onChange={(e) => setProfessioneelData({...professioneelData, houseNumber: e.target.value})}
+                            onChange={(e) => {
+                              setProfessioneelData({...professioneelData, houseNumber: e.target.value})
+                              clearFieldError('professioneel.houseNumber')
+                            }}
                             placeholder="123"
+                            className={fieldErrors['professioneel.houseNumber'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                           />
+                          {fieldErrors['professioneel.houseNumber'] && (
+                            <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                          )}
                         </div>
                       </div>
 
@@ -969,9 +1142,16 @@ export default function CheckoutPage() {
                           type="tel"
                           required
                           value={professioneelData.phone}
-                          onChange={(e) => setProfessioneelData({...professioneelData, phone: e.target.value})}
+                          onChange={(e) => {
+                            setProfessioneelData({...professioneelData, phone: e.target.value})
+                            clearFieldError('professioneel.phone')
+                          }}
                           placeholder="+32 123 45 67 89"
+                          className={fieldErrors['professioneel.phone'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['professioneel.phone'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
 
                       <div>
@@ -981,9 +1161,16 @@ export default function CheckoutPage() {
                           type="email"
                           required
                           value={professioneelData.email}
-                          onChange={(e) => setProfessioneelData({...professioneelData, email: e.target.value})}
+                          onChange={(e) => {
+                            setProfessioneelData({...professioneelData, email: e.target.value})
+                            clearFieldError('professioneel.email')
+                          }}
                           placeholder="info@bedrijf.be"
+                          className={fieldErrors['professioneel.email'] ? 'border-red-500 border-2 focus-visible:ring-red-500' : ''}
                         />
+                        {fieldErrors['professioneel.email'] && (
+                          <p className="text-red-600 text-sm mt-1">Dit veld is verplicht</p>
+                        )}
                       </div>
                     </>
                   )}
