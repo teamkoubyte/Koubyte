@@ -30,16 +30,28 @@ export async function POST(request: Request) {
     }
 
     // Invalideer oude reset tokens voor deze gebruiker
-    await prisma.resetPasswordToken.updateMany({
-      where: {
-        userId: user.id,
-        used: false,
-        expiresAt: { gt: new Date() } // Alleen nog geldige tokens
-      },
-      data: {
-        used: true
+    try {
+      await prisma.resetPasswordToken.updateMany({
+        where: {
+          userId: user.id,
+          used: false,
+          expiresAt: { gt: new Date() } // Alleen nog geldige tokens
+        },
+        data: {
+          used: true
+        }
+      })
+    } catch (error: any) {
+      // Als tabel niet bestaat, probeer migration uit te voeren
+      if (error.message?.includes('does not exist') || error.message?.includes('Unknown model') || error.code === 'P2021') {
+        console.error('ResetPasswordToken tabel bestaat nog niet, probeer eerst de migration uit te voeren')
+        return NextResponse.json(
+          { error: 'Database configuratie ontbreekt. Neem contact op met de beheerder.' },
+          { status: 500 }
+        )
       }
-    })
+      throw error
+    }
 
     // Genereer secure random token (32 bytes = 64 hex characters)
     const resetToken = crypto.randomBytes(32).toString('hex')
@@ -48,14 +60,26 @@ export async function POST(request: Request) {
     const expiresAt = new Date()
     expiresAt.setHours(expiresAt.getHours() + 1)
     
-    await prisma.resetPasswordToken.create({
-      data: {
-        userId: user.id,
-        token: resetToken,
-        expiresAt,
-        used: false,
+    try {
+      await prisma.resetPasswordToken.create({
+        data: {
+          userId: user.id,
+          token: resetToken,
+          expiresAt,
+          used: false,
+        }
+      })
+    } catch (error: any) {
+      // Als tabel niet bestaat, probeer migration uit te voeren
+      if (error.message?.includes('does not exist') || error.message?.includes('Unknown model') || error.code === 'P2021') {
+        console.error('ResetPasswordToken tabel bestaat nog niet, probeer eerst de migration uit te voeren')
+        return NextResponse.json(
+          { error: 'Database configuratie ontbreekt. Neem contact op met de beheerder.' },
+          { status: 500 }
+        )
       }
-    })
+      throw error
+    }
 
     // Verstuur reset email
     try {
