@@ -67,8 +67,8 @@ export default function ReviewsSection() {
   return (
     <section className="py-24 px-4 bg-slate-50">
       <div className="container mx-auto max-w-7xl">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+        <div className="text-center mb-10 sm:mb-12">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Wat onze klanten zeggen
           </h2>
           <div className="flex items-center justify-center gap-4 mb-4">
@@ -86,7 +86,7 @@ export default function ReviewsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-12">
           {reviews.map((review) => (
             <Card key={review.id} className="bg-white hover:shadow-xl transition-shadow">
               <CardContent className="pt-6">

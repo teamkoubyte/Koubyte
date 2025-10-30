@@ -490,7 +490,7 @@ export default function CheckoutPage() {
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`
-                  flex items-center justify-center w-12 h-12 rounded-full font-bold text-lg
+                  flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full font-bold text-base sm:text-lg
                   ${currentStep >= step ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-600'}
                 `}>
                   {step}
@@ -685,7 +685,7 @@ export default function CheckoutPage() {
 
               {/* Summary */}
               <div>
-                <Card className="shadow-2xl sticky top-4">
+                <Card className="shadow-2xl lg:sticky lg:top-4">
                   <CardHeader>
                     <CardTitle className="text-2xl">Samenvatting</CardTitle>
                   </CardHeader>
@@ -719,7 +719,7 @@ export default function CheckoutPage() {
                     <Button
                       type="button"
                       onClick={nextStep}
-                      className="w-full py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+                      className="w-full py-5 sm:py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
                     >
                       Volgende stap
                       <ArrowRight className="w-5 h-5 ml-2" />
@@ -1177,12 +1177,12 @@ export default function CheckoutPage() {
                     </>
                   )}
 
-                  <div className="flex gap-4 pt-6 border-t">
+                  <div className="flex gap-3 sm:gap-4 pt-6 border-t">
                     <Button
                       type="button"
                       onClick={prevStep}
                       variant="outline"
-                      className="flex-1 py-6 text-lg"
+                      className="flex-1 py-5 sm:py-6 text-lg"
                     >
                       <ArrowLeft className="w-5 h-5 mr-2" />
                       Vorige
@@ -1190,7 +1190,7 @@ export default function CheckoutPage() {
                     <Button
                       type="button"
                       onClick={nextStep}
-                      className="flex-1 py-6 text-lg bg-blue-600 hover:bg-blue-700"
+                      className="flex-1 py-5 sm:py-6 text-lg bg-blue-600 hover:bg-blue-700"
                     >
                       Volgende
                       <ArrowRight className="w-5 h-5 ml-2" />
@@ -1352,12 +1352,12 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-4">
+                  <div className="flex gap-3 sm:gap-4">
                     <Button
                       type="button"
                       onClick={prevStep}
                       variant="outline"
-                      className="flex-1 py-6 text-lg"
+                      className="flex-1 py-5 sm:py-6 text-lg"
                     >
                       <ArrowLeft className="w-5 h-5 mr-2" />
                       Vorige
@@ -1365,7 +1365,7 @@ export default function CheckoutPage() {
                     <Button
                       type="submit"
                       disabled={submitting || !agreedToTerms}
-                      className="flex-1 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
+                      className="flex-1 py-5 sm:py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
                     >
                       {submitting ? (
                         <>

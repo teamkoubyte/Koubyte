@@ -14,8 +14,8 @@ export default function Footer() {
   
   return (
     <footer className="bg-white border-t border-slate-200 mt-auto">
-      <div className="container mx-auto max-w-7xl px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="container mx-auto max-w-7xl px-4 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Bedrijfsinfo */}
           <div className="space-y-4">
             <div className="text-3xl font-bold logo-sharp">
@@ -151,8 +151,8 @@ export default function Footer() {
         </div>
 
         {/* Onderbalk */}
-        <div className="mt-12 pt-8 border-t border-slate-200">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-600">
+        <div className="mt-10 md:mt-12 pt-6 md:pt-8 border-t border-slate-200">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 text-xs sm:text-sm text-slate-600">
             <p>
               &copy; {currentYear} Koubyte. Alle rechten voorbehouden.
             </p>

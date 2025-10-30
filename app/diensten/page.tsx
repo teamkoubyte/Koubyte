@@ -161,7 +161,7 @@ export default function DienstenPage() {
       {/* Services Grid */}
       <section className="py-16 px-4 bg-slate-50">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {filteredServices.map((service) => {
               const features = service.features ? JSON.parse(service.features) : []
               
