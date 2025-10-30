@@ -4,9 +4,10 @@ import { prisma } from '@/lib/prisma'
 import ServiceDetailClient from './ServiceDetailClient'
 
 // Dynamische metadata per service
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
   const service = await prisma.service.findUnique({
-    where: { id: params.id },
+    where: { id },
   })
 
   if (!service) {
@@ -29,9 +30,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 // Server Component - fetch data
-export default async function ServiceDetailPage({ params }: { params: { id: string } }) {
+export default async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const service = await prisma.service.findUnique({
-    where: { id: params.id },
+    where: { id },
   })
 
   if (!service) {
@@ -67,7 +69,7 @@ export default async function ServiceDetailPage({ params }: { params: { id: stri
       price: service.price,
       priceCurrency: 'EUR',
       availability: 'https://schema.org/InStock',
-      url: `https://koubyte.be/diensten/${service.id}`,
+      url: `https://koubyte.be/diensten/${id}`,
     },
     ...(service.duration && {
       serviceOutput: service.duration,
