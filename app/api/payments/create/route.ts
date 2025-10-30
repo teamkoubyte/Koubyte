@@ -44,6 +44,11 @@ export async function POST(request: Request) {
       case 'bancontact':
       case 'creditcard':
       case 'ideal':
+      case 'klarna':
+      case 'link':
+      case 'applepay':
+      case 'googlepay':
+      case 'sepa_debit':
         // Stripe payment - roep direct aan
         const stripe = getStripeInstance()
         
@@ -60,16 +65,22 @@ export async function POST(request: Request) {
 
         // Map payment methods naar Stripe payment method types
         const stripeMethodMap: Record<string, string[]> = {
-          'bancontact': ['bancontact'],
+          'bancontact': ['bancontact', 'card'],
           'creditcard': ['card'],
-          'ideal': ['ideal'],
+          'ideal': ['ideal', 'card'],
+          'klarna': ['klarna'],
+          'link': ['card', 'link'],
+          'applepay': ['card'],  // Apple Pay wordt automatisch getoond
+          'googlepay': ['card'], // Google Pay wordt automatisch getoond
+          'sepa_debit': ['sepa_debit'],
         }
 
         const paymentMethodTypes = stripeMethodMap[method] || ['card']
 
         // Maak Stripe Checkout Session aan
         try {
-          const checkoutSession = await stripe.checkout.sessions.create({
+          // Config voor wallets (Apple Pay / Google Pay)
+          const sessionConfig: any = {
             payment_method_types: paymentMethodTypes,
             line_items: [
               {
@@ -90,7 +101,18 @@ export async function POST(request: Request) {
             metadata: {
               orderId,
             },
-          })
+          }
+
+          // Voor Apple Pay en Google Pay: schakel automatische wallets in
+          if (['applepay', 'googlepay'].includes(method)) {
+            sessionConfig.payment_method_options = {
+              card: {
+                request_three_d_secure: 'automatic',
+              },
+            }
+          }
+
+          const checkoutSession = await stripe.checkout.sessions.create(sessionConfig)
 
           return NextResponse.json({
             paymentId: checkoutSession.id,
@@ -104,39 +126,6 @@ export async function POST(request: Request) {
             details: stripeError.message || String(stripeError)
           }, { status: 500 })
         }
-
-      case 'paypal':
-        // PayPal SDK
-        return NextResponse.json({
-          paymentId: payment.id,
-          paymentUrl: `/api/payments/paypal/create?orderId=${orderId}&amount=${amount}`,
-          orderId
-        })
-
-      case 'klarna':
-        // Klarna integration
-        return NextResponse.json({
-          paymentId: payment.id,
-          paymentUrl: `/api/payments/klarna/create?orderId=${orderId}&amount=${amount}`,
-          orderId
-        })
-
-      case 'crypto':
-        // Crypto payment
-        return NextResponse.json({
-          paymentId: payment.id,
-          paymentUrl: `/api/payments/crypto/create?orderId=${orderId}&amount=${amount}`,
-          orderId
-        })
-
-      case 'sepa':
-      case 'sepa-direct':
-        // SEPA bank transfer
-        return NextResponse.json({
-          paymentId: payment.id,
-          paymentUrl: `/api/payments/sepa/create?orderId=${orderId}&amount=${amount}`,
-          orderId
-        })
 
       default:
         return NextResponse.json(

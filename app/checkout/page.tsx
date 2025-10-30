@@ -8,17 +8,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet } from 'lucide-react'
+import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet, Apple, Zap } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal } from '@/lib/cart'
 
-type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'cash' | 'ideal' | 'paypal'
+type PaymentMethod = 'bancontact' | 'creditcard' | 'afterservice' | 'banktransfer' | 'ideal' | 'klarna' | 'link' | 'applepay' | 'googlepay' | 'sepa_debit'
 
 const paymentMethods = [
   { id: 'bancontact' as PaymentMethod, name: 'Bancontact', icon: CreditCard, logoUrl: null, description: 'Online betalen met Bancontact', popular: true },
-  { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logoUrl: null, description: 'Visa, Mastercard, American Express', popular: false },
+  { id: 'creditcard' as PaymentMethod, name: 'Creditcard', icon: CreditCard, logoUrl: null, description: 'Visa, Mastercard, American Express', popular: true },
+  { id: 'ideal' as PaymentMethod, name: 'iDEAL', icon: Building2, logoUrl: null, description: 'Online betalen via Nederlandse bank', popular: false },
+  { id: 'klarna' as PaymentMethod, name: 'Klarna', icon: Wallet, logoUrl: null, description: 'Koop nu, betaal later', popular: true },
+  { id: 'link' as PaymentMethod, name: 'Link', icon: Zap, logoUrl: null, description: 'Snelle checkout met Stripe Link', popular: false },
+  { id: 'applepay' as PaymentMethod, name: 'Apple Pay', icon: Apple, logoUrl: null, description: 'Betaal met Apple Pay', popular: false },
+  { id: 'googlepay' as PaymentMethod, name: 'Google Pay', icon: Smartphone, logoUrl: null, description: 'Betaal met Google Pay', popular: false },
+  { id: 'sepa_debit' as PaymentMethod, name: 'SEPA Domiciliëring', icon: Building2, logoUrl: null, description: 'Automatische incasso', popular: false },
   { id: 'afterservice' as PaymentMethod, name: 'Betalen na afloop', icon: CheckCircle, logoUrl: null, description: 'Betaal ter plaatse (cash, bancontact, overschrijving)', popular: false },
   { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logoUrl: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
 ]
