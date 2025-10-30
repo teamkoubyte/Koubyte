@@ -78,12 +78,12 @@ export default function BookPage() {
 
   if (success) {
     return (
-      <div className="container mx-auto max-w-2xl py-16 px-4">
+      <div className="container mx-auto max-w-2xl py-12 sm:py-16 px-4">
         <Card className="border-green-200 bg-green-50">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-16 w-16 mx-auto mb-4 text-green-600" />
-            <h2 className="text-2xl font-bold mb-2 text-green-800">Afspraak aangemaakt!</h2>
-            <p className="text-green-700">Je wordt doorgestuurd naar je dashboard...</p>
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 text-green-800">Afspraak aangemaakt!</h2>
+            <p className="text-sm sm:text-base text-green-700">Je wordt doorgestuurd naar je dashboard...</p>
           </CardContent>
         </Card>
       </div>
@@ -91,14 +91,14 @@ export default function BookPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-2xl py-16 px-4">
+    <div className="container mx-auto max-w-2xl py-12 sm:py-16 px-4">
       {/* Annuleringsbeleid - Zoals vermeld in Algemene Voorwaarden */}
-      <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 mb-8">
-        <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+      <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8">
+        <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 sm:mb-3 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-blue-600" />
           Annuleringsbeleid
         </h3>
-        <div className="space-y-2 text-slate-700">
+        <div className="space-y-2 text-sm sm:text-base text-slate-700">
           <p>✓ <strong>Gratis annuleren tot 24 uur</strong> voor de afspraak</p>
           <p>• Binnen 24 uur: 50% van de prijs wordt in rekening gebracht</p>
           <p>• Na aanvang werkzaamheden: volledige prijs verschuldigd</p>
@@ -107,13 +107,13 @@ export default function BookPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Afspraak boeken</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">Afspraak boeken</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Boek een afspraak voor IT-hulp. We nemen zo snel mogelijk contact met je op.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             <div>
               <Label htmlFor="name">Naam *</Label>
               <Input
@@ -160,7 +160,7 @@ export default function BookPage() {
             <div>
               <Label htmlFor="time">Tijdstip *</Label>
               <Select value={formData.time} onValueChange={(value) => setFormData({ ...formData, time: value })}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecteer tijd" />
                 </SelectTrigger>
                 <SelectContent>
@@ -176,7 +176,7 @@ export default function BookPage() {
             <div>
               <Label htmlFor="service">Type dienst *</Label>
               <Select value={formData.service} onValueChange={(value) => setFormData({ ...formData, service: value })}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecteer dienst" />
                 </SelectTrigger>
                 <SelectContent>
@@ -209,7 +209,7 @@ export default function BookPage() {
                   checked={acceptedPrivacy}
                   onChange={(e) => setAcceptedPrivacy(e.target.checked)}
                   required
-                  className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm text-slate-700">
                   Ik ga akkoord met het <a href="/privacy" target="_blank" className="text-blue-600 hover:text-blue-700 font-semibold underline">privacybeleid</a> en geef toestemming om mijn persoons gegevens te verwerken voor het plannen en uitvoeren van de afspraak. *
@@ -222,7 +222,7 @@ export default function BookPage() {
                   checked={acceptedTerms}
                   onChange={(e) => setAcceptedTerms(e.target.checked)}
                   required
-                  className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm text-slate-700">
                   Ik heb de <a href="/terms" target="_blank" className="text-blue-600 hover:text-blue-700 font-semibold underline">algemene voorwaarden</a> gelezen en ga hiermee akkoord, inclusief het annuleringsbeleid. *
@@ -244,7 +244,7 @@ export default function BookPage() {
 
             <Button 
               type="submit" 
-              className="w-full" 
+              className="w-full py-5 sm:py-6 text-base sm:text-lg" 
               disabled={loading || !acceptedPrivacy || !acceptedTerms}
             >
               {loading ? 'Afspraak aanmaken...' : 'Afspraak bevestigen'}

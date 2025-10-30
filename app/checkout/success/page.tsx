@@ -101,24 +101,24 @@ export default function CheckoutSuccessPage() {
 
   if (paymentStatus === 'failed') {
     return (
-      <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-gradient-to-br from-slate-50 to-red-50">
+      <div className="min-h-screen flex items-center justify-center py-14 sm:py-16 px-4 bg-gradient-to-br from-slate-50 to-red-50">
         <div className="container mx-auto max-w-2xl">
-          <div className="bg-white border-2 border-red-500 rounded-2xl p-12 text-center shadow-2xl">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <XCircle className="h-10 w-10 text-red-600" />
+          <div className="bg-white border-2 border-red-500 rounded-2xl p-8 sm:p-12 text-center shadow-2xl">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6">
+              <XCircle className="h-8 w-8 sm:h-10 sm:w-10 text-red-600" />
             </div>
-            <h2 className="text-4xl font-bold mb-4 text-slate-900">Betaling mislukt</h2>
-            <p className="text-xl text-slate-600 mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-slate-900">Betaling mislukt</h2>
+            <p className="text-base sm:text-xl text-slate-600 mb-6 sm:mb-8">
               Er ging iets mis met je betaling. Je kunt het opnieuw proberen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/checkout">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-semibold rounded-lg shadow-lg">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-lg shadow-lg">
                   Opnieuw proberen
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button variant="outline" className="bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-6 text-lg font-semibold rounded-lg shadow-md">
+                <Button variant="outline" className="bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-semibold rounded-lg shadow-md">
                   Neem contact op
                 </Button>
               </Link>
@@ -133,14 +133,14 @@ export default function CheckoutSuccessPage() {
     <div className="min-h-screen py-12 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto max-w-4xl">
         {/* Success Header */}
-        <div className="bg-white border-2 border-green-500 rounded-2xl p-8 text-center shadow-xl mb-6 animate-fadeInUp">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-10 w-10 text-green-600" />
+        <div className="bg-white border-2 border-green-500 rounded-2xl p-6 sm:p-8 text-center shadow-xl mb-6 animate-fadeInUp">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" />
           </div>
-          <h1 className="text-4xl font-bold mb-3 text-slate-900">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-3 text-slate-900">
             {paymentStatus === 'success' ? 'Betaling geslaagd!' : 'Bestelling ontvangen!'}
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className="text-sm sm:text-lg text-slate-600">
             {paymentStatus === 'success' 
               ? 'Je betaling is succesvol verwerkt. Bedankt voor je vertrouwen!'
               : 'We verwerken je betaling. Je ontvangt een bevestiging zodra de betaling is voltooid.'
@@ -156,7 +156,7 @@ export default function CheckoutSuccessPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
           {/* Order Details - Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Order Number Card */}
@@ -168,9 +168,9 @@ export default function CheckoutSuccessPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white mb-6">
-                  <p className="text-sm opacity-90 mb-1">Bestelnummer</p>
-                  <p className="text-3xl font-bold tracking-wide">{orderData?.orderNumber || 'Laden...'}</p>
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-5 sm:p-6 text-white mb-5 sm:mb-6">
+                  <p className="text-xs sm:text-sm opacity-90 mb-1">Bestelnummer</p>
+                  <p className="text-2xl sm:text-3xl font-bold tracking-wide">{orderData?.orderNumber || 'Laden...'}</p>
                 </div>
 
                 {/* Order Items */}
@@ -178,22 +178,22 @@ export default function CheckoutSuccessPage() {
                   <div className="space-y-3">
                     <h3 className="font-semibold text-slate-900 mb-3">Bestelde diensten:</h3>
                     {orderData.items.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <div key={item.id} className="flex justify-between items-center p-3 sm:p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <div className="flex-1">
                           <p className="font-medium text-slate-900">{item.serviceName}</p>
                           <p className="text-sm text-slate-600">Aantal: {item.quantity}</p>
                         </div>
-                        <p className="text-lg font-semibold text-slate-900">{formatPrice(item.price)}</p>
+                        <p className="text-base sm:text-lg font-semibold text-slate-900">{formatPrice(item.price)}</p>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {/* Total */}
-                <div className="mt-6 pt-6 border-t-2 border-slate-200">
+                <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t-2 border-slate-200">
                   <div className="flex justify-between items-center">
-                    <p className="text-xl font-semibold text-slate-900">Totaal</p>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-lg sm:text-xl font-semibold text-slate-900">Totaal</p>
+                    <p className="text-xl sm:text-2xl font-bold text-blue-600">
                       {formatPrice(orderData?.totalAmount || 0)}
                     </p>
                   </div>
@@ -217,7 +217,7 @@ export default function CheckoutSuccessPage() {
                   Volgende stappen
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="pt-5 sm:pt-6">
                 <div className="space-y-4">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -261,7 +261,7 @@ export default function CheckoutSuccessPage() {
           </div>
 
           {/* Payment & Actions - Right Column */}
-          <div className="space-y-6">
+          <div className="space-y-5 sm:space-y-6">
             {/* Payment Info Card */}
             <Card className="shadow-lg">
               <CardHeader className="bg-slate-50 border-b">
@@ -270,7 +270,7 @@ export default function CheckoutSuccessPage() {
                   Betaling
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6 space-y-4">
+              <CardContent className="pt-5 sm:pt-6 space-y-3 sm:space-y-4">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">Betaalmethode</p>
                   <p className="font-semibold text-slate-900">
@@ -309,7 +309,7 @@ export default function CheckoutSuccessPage() {
 
             {/* Actions Card */}
             <Card className="shadow-lg">
-              <CardContent className="pt-6 space-y-3">
+              <CardContent className="pt-5 sm:pt-6 space-y-2.5 sm:space-y-3">
                 <Button 
                   onClick={handlePrint}
                   variant="outline" 
@@ -319,12 +319,12 @@ export default function CheckoutSuccessPage() {
                   Print bevestiging
                 </Button>
                 <Link href="/dashboard" className="block">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full py-5 sm:py-6 text-base sm:text-lg bg-blue-600 hover:bg-blue-700">
                     Naar Dashboard
                   </Button>
                 </Link>
                 <Link href="/diensten" className="block">
-                  <Button variant="outline" className="w-full border-2 border-slate-300 hover:bg-slate-50">
+                  <Button variant="outline" className="w-full py-5 sm:py-6 text-base sm:text-lg border-2 border-slate-300 hover:bg-slate-50">
                     Meer diensten bekijken
                   </Button>
                 </Link>
