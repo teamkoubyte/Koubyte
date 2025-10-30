@@ -67,8 +67,12 @@ export default function Navbar({ session }: NavbarProps) {
             </Link>
 
             <div className="ml-4 flex items-center gap-3">
-              {/* Shopping Cart Widget - alleen voor ingelogde gebruikers */}
-              {session && <ShoppingCartWidget />}
+              {/* Shopping Cart Widget - alleen voor ingelogde gebruikers en HIDDEN op mobiel */}
+              {session && (
+                <div className="hidden xl:block">
+                  <ShoppingCartWidget />
+                </div>
+              )}
               
               {session ? (
                 <>
@@ -177,12 +181,19 @@ export default function Navbar({ session }: NavbarProps) {
                       </Button>
                     </Link>
                   ) : (
-                    // Normale gebruikers zien dashboard
-                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full rounded-lg font-semibold border-slate-300">
-                        Dashboard
-                      </Button>
-                    </Link>
+                    // Normale gebruikers zien dashboard EN checkout (mobiel alternatief voor cart)
+                    <>
+                      <Link href="/checkout" onClick={() => setMobileMenuOpen(false)}>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
+                          🛒 Winkelwagen
+                        </Button>
+                      </Link>
+                      <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full rounded-lg font-semibold border-slate-300">
+                          Dashboard
+                        </Button>
+                      </Link>
+                    </>
                   )}
                   <Button 
                     variant="ghost" 

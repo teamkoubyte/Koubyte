@@ -497,21 +497,21 @@ export default function CheckoutPage() {
                 </div>
                 {step < 3 && (
                   <div className={`
-                    w-24 h-1 mx-2
+                    w-12 sm:w-20 lg:w-24 h-1 mx-1 sm:mx-2
                     ${currentStep > step ? 'bg-blue-600' : 'bg-slate-300'}
                   `} />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-4 gap-32">
-            <span className={`text-sm font-semibold ${currentStep === 1 ? 'text-blue-600' : 'text-slate-600'}`}>
+          <div className="flex justify-center mt-4 gap-4 sm:gap-16 lg:gap-32">
+            <span className={`text-xs sm:text-sm font-semibold ${currentStep === 1 ? 'text-blue-600' : 'text-slate-600'}`}>
               Winkelmandje
             </span>
-            <span className={`text-sm font-semibold ${currentStep === 2 ? 'text-blue-600' : 'text-slate-600'}`}>
+            <span className={`text-xs sm:text-sm font-semibold ${currentStep === 2 ? 'text-blue-600' : 'text-slate-600'}`}>
               Gegevens
             </span>
-            <span className={`text-sm font-semibold ${currentStep === 3 ? 'text-blue-600' : 'text-slate-600'}`}>
+            <span className={`text-xs sm:text-sm font-semibold ${currentStep === 3 ? 'text-blue-600' : 'text-slate-600'}`}>
               Betaling
             </span>
           </div>
@@ -529,46 +529,48 @@ export default function CheckoutPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center gap-4 p-5 bg-slate-50 rounded-lg border border-slate-200">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-slate-900 text-lg truncate">{item.service.name}</h3>
+                      <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 bg-slate-50 rounded-lg border border-slate-200">
+                        <div className="flex-1 min-w-0 w-full sm:w-auto">
+                          <h3 className="font-semibold text-slate-900 text-lg">{item.service.name}</h3>
                           <p className="text-sm text-slate-600 mt-1 line-clamp-2">{item.service.description}</p>
                           <p className="text-base font-semibold text-slate-700 mt-2">{formatPrice(item.service.price)} per stuk</p>
                         </div>
                         
-                        <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-slate-300">
+                        <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-3">
+                          <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-slate-300">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 disabled:opacity-30"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+                            <span className="w-10 text-center font-bold text-lg">{item.quantity}</span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                          
+                          <div className="text-right sm:min-w-[120px]">
+                            <p className="text-sm text-slate-600 mb-1">Totaal:</p>
+                            <p className="text-xl font-bold text-blue-600">
+                              {formatPrice(item.service.price * item.quantity)}
+                            </p>
+                          </div>
+                          
                           <button
                             type="button"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 disabled:opacity-30"
+                            onClick={() => removeItem(item.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 p-3 rounded-lg"
                           >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="w-10 text-center font-bold text-lg">{item.quantity}</span>
-                          <button
-                            type="button"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100"
-                          >
-                            <Plus className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
-                        
-                        <div className="text-right min-w-[120px]">
-                          <p className="text-sm text-slate-600 mb-1">Totaal:</p>
-                          <p className="text-xl font-bold text-blue-600">
-                            {formatPrice(item.service.price * item.quantity)}
-                          </p>
-                        </div>
-                        
-                        <button
-                          type="button"
-                          onClick={() => removeItem(item.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 p-3 rounded-lg"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
                       </div>
                     ))}
                   </CardContent>
@@ -583,8 +585,8 @@ export default function CheckoutPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="col-span-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="sm:col-span-2">
                         <Label htmlFor="serviceStreet">Straatnaam *</Label>
                         <Input
                           id="serviceStreet"
@@ -620,7 +622,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="servicePostalCode">Postcode *</Label>
                         <Input
@@ -817,7 +819,7 @@ export default function CheckoutPage() {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="partFirstName">Voornaam *</Label>
                           <Input
@@ -1004,7 +1006,7 @@ export default function CheckoutPage() {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="profFirstName">Voornaam *</Label>
                           <Input
@@ -1041,7 +1043,7 @@ export default function CheckoutPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="profPostalCode">Postcode *</Label>
                           <Input
@@ -1078,8 +1080,8 @@ export default function CheckoutPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="col-span-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="sm:col-span-2">
                           <Label htmlFor="profStreet">Straatnaam *</Label>
                           <Input
                             id="profStreet"

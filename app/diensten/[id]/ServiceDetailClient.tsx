@@ -213,7 +213,7 @@ export default function ServiceDetailClient({ service, relatedServices }: Servic
 
           {/* Right Column - Sticky Order Box */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-6">
               {/* Price Card */}
               <Card className="border-2 border-blue-500 shadow-2xl">
                 <CardHeader className="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-t-lg">
