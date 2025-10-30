@@ -128,8 +128,8 @@ export default function AdminAppointmentsPage() {
   return (
     <div className="container mx-auto max-w-7xl py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">Afspraken Beheer</h1>
-        <p className="text-slate-600">Bekijk en beheer alle afspraken</p>
+        <h1 className="text-2xl sm:text-4xl font-bold text-slate-900 mb-1 sm:mb-2">Afspraken Beheer</h1>
+        <p className="text-slate-600 text-sm sm:text-base">Bekijk en beheer alle afspraken</p>
       </div>
 
       {/* Filter Knoppen */}
@@ -211,13 +211,13 @@ export default function AdminAppointmentsPage() {
                   </div>
 
                   {/* Acties */}
-                  <div className="flex lg:flex-col gap-2">
+                  <div className="flex flex-col sm:flex-row lg:flex-col gap-2 w-full lg:w-auto">
                     {appointment.status === 'pending' && (
                       <>
                         <Button
                           onClick={() => updateStatus(appointment.id, 'confirmed')}
                           disabled={updating === appointment.id}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           {updating === appointment.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                           Bevestig
@@ -226,7 +226,7 @@ export default function AdminAppointmentsPage() {
                           onClick={() => updateStatus(appointment.id, 'cancelled')}
                           disabled={updating === appointment.id}
                           variant="outline"
-                          className="border-red-300 text-red-600 hover:bg-red-50"
+                          className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50"
                         >
                           Annuleer
                         </Button>
@@ -236,7 +236,7 @@ export default function AdminAppointmentsPage() {
                       <Button
                         onClick={() => updateStatus(appointment.id, 'completed')}
                         disabled={updating === appointment.id}
-                        className="bg-green-600 hover:bg-green-700 text-white"
+                        className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
                       >
                         {updating === appointment.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                         Voltooi
@@ -246,7 +246,7 @@ export default function AdminAppointmentsPage() {
                       onClick={() => deleteAppointment(appointment.id)}
                       disabled={updating === appointment.id}
                       variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50"
+                      className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50"
                     >
                       {updating === appointment.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     </Button>

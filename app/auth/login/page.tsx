@@ -118,18 +118,18 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8 animate-fadeInDown">
+        <div className="text-center mb-6 sm:mb-8 animate-fadeInDown">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Welkom terug!</h1>
-          <p className="text-slate-600">Log in op je Koubyte account</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">Welkom terug!</h1>
+          <p className="text-slate-600 text-sm sm:text-base">Log in op je Koubyte account</p>
         </div>
 
         <Card className="shadow-2xl border-2 animate-fadeInUp">
           <CardHeader>
-            <CardTitle className="text-2xl">Inloggen</CardTitle>
-            <CardDescription>Vul je gegevens in om verder te gaan</CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">Inloggen</CardTitle>
+            <CardDescription className="text-sm sm:text-base">Vul je gegevens in om verder te gaan</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">

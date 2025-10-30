@@ -137,27 +137,27 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col">
       {/* Hero Sectie */}
-      <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-24 px-4">
+      <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-20 sm:py-24 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 animate-fadeInDown">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-900 mb-5 sm:mb-6 animate-fadeInDown">
             Neem contact op
           </h1>
-          <p className="text-xl text-slate-600 mb-4 animate-fadeInUp">
+          <p className="text-base sm:text-xl text-slate-600 mb-3 sm:mb-4 animate-fadeInUp">
             Heb je een vraag of hulp nodig met je computer?
           </p>
-          <p className="text-lg text-slate-500 animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
+          <p className="text-sm sm:text-lg text-slate-500 animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
             Ik help je graag verder. Stuur een bericht of bel direct!
           </p>
         </div>
       </section>
 
       {/* Contact Methodes */}
-      <section className="py-16 px-4 bg-white">
+      <section className="py-14 sm:py-16 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-14 sm:mb-16">
             {/* Telefoon Card */}
             <Card className="border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-6 md:p-8 text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 transition-colors">
                   <Phone className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
                 </div>
@@ -180,7 +180,7 @@ export default function ContactPage() {
 
             {/* Email Card */}
             <Card className="border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-6 md:p-8 text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 transition-colors">
                   <Mail className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
                 </div>
@@ -199,7 +199,7 @@ export default function ContactPage() {
 
             {/* Openingstijden Card */}
             <Card className="border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-6 md:p-8 text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 transition-colors">
                   <Clock className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
                 </div>
@@ -221,10 +221,10 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="max-w-3xl mx-auto">
             <Card className="border-2 shadow-2xl">
-              <CardContent className="p-8 md:p-12">
+              <CardContent className="p-6 md:p-12">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-slate-900 mb-3">Stuur een bericht</h2>
-                  <p className="text-slate-600">Vul het formulier in en ik neem zo snel mogelijk contact met je op</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2 sm:mb-3">Stuur een bericht</h2>
+                  <p className="text-slate-600 text-sm sm:text-base">Vul het formulier in en ik neem zo snel mogelijk contact met je op</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -354,7 +354,7 @@ export default function ContactPage() {
                   {/* Submit Button */}
                   <Button
                     type="submit"
-                    className="w-full h-14 text-lg font-semibold bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-300"
                     disabled={loading}
                   >
                     {loading ? (

@@ -171,18 +171,18 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8 animate-fadeInDown">
+        <div className="text-center mb-6 sm:mb-8 animate-fadeInDown">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg">
             <User className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Maak een account</h1>
-          <p className="text-slate-600">Word lid van Koubyte</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1 sm:mb-2">Maak een account</h1>
+          <p className="text-slate-600 text-sm sm:text-base">Word lid van Koubyte</p>
         </div>
 
         <Card className="shadow-2xl border-2 animate-fadeInUp">
           <CardHeader>
-            <CardTitle className="text-2xl">Registreren</CardTitle>
-            <CardDescription>Vul je gegevens in om te beginnen</CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">Registreren</CardTitle>
+            <CardDescription className="text-sm sm:text-base">Vul je gegevens in om te beginnen</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">

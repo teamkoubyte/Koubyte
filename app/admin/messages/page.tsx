@@ -106,8 +106,8 @@ export default function AdminMessagesPage() {
   return (
     <div className="container mx-auto max-w-7xl py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">Berichten Beheer</h1>
-        <p className="text-slate-600">Bekijk en beheer alle contactberichten</p>
+        <h1 className="text-2xl sm:text-4xl font-bold text-slate-900 mb-1 sm:mb-2">Berichten Beheer</h1>
+        <p className="text-slate-600 text-sm sm:text-base">Bekijk en beheer alle contactberichten</p>
       </div>
 
       {/* Filter Knoppen */}
@@ -198,12 +198,12 @@ export default function AdminMessagesPage() {
                   </div>
 
                   {/* Acties */}
-                  <div className="flex flex-wrap gap-2 pt-2">
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-2">
                     {message.status === 'new' && (
                       <Button
                         onClick={() => updateStatus(message.id, 'read')}
                         disabled={updating === message.id}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         {updating === message.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                         Markeer als gelezen
@@ -214,7 +214,7 @@ export default function AdminMessagesPage() {
                         onClick={() => updateStatus(message.id, 'archived')}
                         disabled={updating === message.id}
                         variant="outline"
-                        className="border-slate-300"
+                        className="w-full sm:w-auto border-slate-300"
                       >
                         {updating === message.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Archive className="w-4 h-4 mr-2" />}
                         Archiveer
@@ -224,13 +224,13 @@ export default function AdminMessagesPage() {
                       onClick={() => deleteMessage(message.id)}
                       disabled={updating === message.id}
                       variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50"
+                      className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50"
                     >
                       {updating === message.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
                       Verwijder
                     </Button>
                     <a href={`mailto:${message.email}?subject=Re: ${message.subject}`}>
-                      <Button variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-50">
+                      <Button variant="outline" className="w-full sm:w-auto border-blue-300 text-blue-600 hover:bg-blue-50">
                         <Mail className="w-4 h-4 mr-2" />
                         Beantwoord
                       </Button>
