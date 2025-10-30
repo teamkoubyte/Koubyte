@@ -127,8 +127,18 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Niet ingelogd' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url)
-    const cartItemId = searchParams.get('id')
+    // Probeer eerst body JSON, dan query parameter voor backwards compatibility
+    let cartItemId: string | null = null
+    
+    try {
+      const body = await request.json()
+      cartItemId = body.cartItemId || body.id
+    } catch {
+      // Als JSON parsing faalt, probeer query parameter
+      const { searchParams } = new URL(request.url)
+      cartItemId = searchParams.get('id')
+    }
+    
     console.log('DELETE /api/cart - Cart item ID:', cartItemId)
 
     if (!cartItemId) {
