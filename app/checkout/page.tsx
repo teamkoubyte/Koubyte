@@ -10,11 +10,32 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet, Apple, Zap, Plus, Minus, ArrowRight, ArrowLeft, MapPin, User, Briefcase } from 'lucide-react'
+import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet, Apple, Zap, Plus, Minus, ArrowRight, ArrowLeft, MapPin, User, Briefcase, X } from 'lucide-react'
 import Link from 'next/link'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
+
+// Toast Notification Component
+function Toast({ message, type, onClose }: { message: string, type: 'success' | 'error' | 'info', onClose: () => void }) {
+  const bgColor = type === 'success' ? 'bg-green-50 border-green-500' : type === 'error' ? 'bg-red-50 border-red-500' : 'bg-blue-50 border-blue-500'
+  const textColor = type === 'success' ? 'text-green-900' : type === 'error' ? 'text-red-900' : 'text-blue-900'
+  const iconColor = type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600'
+  
+  return (
+    <div className={`fixed top-4 right-4 z-50 ${bgColor} border-2 rounded-lg shadow-2xl p-4 min-w-[300px] max-w-md animate-slideInRight`}>
+      <div className="flex items-start gap-3">
+        {type === 'success' && <CheckCircle className={`w-6 h-6 ${iconColor} flex-shrink-0`} />}
+        {type === 'error' && <X className={`w-6 h-6 ${iconColor} flex-shrink-0`} />}
+        {type === 'info' && <CheckCircle className={`w-6 h-6 ${iconColor} flex-shrink-0`} />}
+        <p className={`flex-1 ${textColor} font-medium`}>{message}</p>
+        <button onClick={onClose} className={`${textColor} hover:opacity-70`}>
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  )
+}
 
 // Payment Method Logo Components
 const KlarnaLogo = () => (<div className="px-3 py-1 rounded bg-pink-200 text-black font-bold text-xs">Klarna</div>)
@@ -103,6 +124,14 @@ export default function CheckoutPage() {
   })
   
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  
+  // Toast notifications
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 5000)
+  }
 
   const total = calculateCartTotal(cartItems)
 
@@ -162,8 +191,6 @@ export default function CheckoutPage() {
   }
 
   const removeItem = async (itemId: string) => {
-    if (!confirm('Weet je zeker dat je dit item wilt verwijderen?')) return
-    
     try {
       const response = await fetch('/api/cart', {
         method: 'DELETE',
@@ -174,15 +201,19 @@ export default function CheckoutPage() {
       if (response.ok) {
         await fetchCart()
         window.dispatchEvent(new CustomEvent('cart-updated'))
+        showToast('Item verwijderd uit winkelwagen', 'success')
+      } else {
+        showToast('Kon item niet verwijderen', 'error')
       }
     } catch (error) {
       console.error('Error removing item:', error)
+      showToast('Er ging iets mis', 'error')
     }
   }
 
   const applyDiscountCode = async () => {
     if (!discountCode.trim()) {
-      alert('Voer een kortingscode in')
+      showToast('Voer een kortingscode in', 'error')
       return
     }
 
@@ -205,15 +236,15 @@ export default function CheckoutPage() {
           finalAmount: data.finalAmount,
           description: data.description
         })
-        alert(`Kortingscode toegepast! Je bespaart ${formatPrice(data.discountAmount)}`)
+        showToast(`Kortingscode toegepast! Je bespaart ${formatPrice(data.discountAmount)}`, 'success')
       } else {
         const error = await response.json()
-        alert(error.error || 'Ongeldige kortingscode')
+        showToast(error.error || 'Ongeldige kortingscode', 'error')
         setAppliedDiscount(null)
       }
     } catch (error) {
       console.error('Error applying discount:', error)
-      alert('Er ging iets mis bij het toepassen van de kortingscode')
+      showToast('Er ging iets mis bij het toepassen van de kortingscode', 'error')
       setAppliedDiscount(null)
     } finally {
       setDiscountLoading(false)
@@ -228,7 +259,7 @@ export default function CheckoutPage() {
   // Validation functions
   const validateStep1 = () => {
     if (!serviceLocation.street || !serviceLocation.houseNumber || !serviceLocation.postalCode || !serviceLocation.city) {
-      alert('Vul alle verplichte velden in voor het dienstadres')
+      showToast('Vul alle verplichte velden in voor het dienstadres', 'error')
       return false
     }
     return true
@@ -237,7 +268,7 @@ export default function CheckoutPage() {
   const validateStep2 = () => {
     if (customerType === 'particulier') {
       if (!particulierData.gender || !particulierData.firstName || !particulierData.lastName || !particulierData.phone || !particulierData.email) {
-        alert('Vul alle verplichte velden in')
+        showToast('Vul alle verplichte velden in', 'error')
         return false
       }
     } else {
@@ -245,7 +276,7 @@ export default function CheckoutPage() {
           !professioneelData.firstName || !professioneelData.lastName || !professioneelData.postalCode ||
           !professioneelData.city || !professioneelData.street || !professioneelData.houseNumber ||
           !professioneelData.phone || !professioneelData.email) {
-        alert('Vul alle verplichte velden in')
+        showToast('Vul alle verplichte velden in', 'error')
         return false
       }
     }
@@ -266,7 +297,7 @@ export default function CheckoutPage() {
     e.preventDefault()
     
     if (!agreedToTerms) {
-      alert('Je moet akkoord gaan met de voorwaarden')
+      showToast('Je moet akkoord gaan met de voorwaarden', 'error')
       return
     }
     
@@ -337,7 +368,7 @@ export default function CheckoutPage() {
       }
     } catch (error: any) {
       console.error('Checkout error:', error)
-      alert('Er ging iets mis bij het plaatsen van je bestelling. Probeer het opnieuw.')
+      showToast('Er ging iets mis bij het plaatsen van je bestelling. Probeer het opnieuw.', 'error')
     } finally {
       setSubmitting(false)
     }
@@ -405,8 +436,18 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="container mx-auto max-w-7xl">
+    <>
+      {/* Toast Notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+      
+      <div className="min-h-screen py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="container mx-auto max-w-7xl">
         {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-center">
@@ -1155,8 +1196,9 @@ export default function CheckoutPage() {
             </div>
           )}
         </form>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
