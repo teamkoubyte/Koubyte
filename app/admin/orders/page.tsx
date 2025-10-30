@@ -349,7 +349,7 @@ export default function AdminOrdersPage() {
                   <div>
                     <label className="text-sm font-semibold text-slate-700 block mb-2">Bestelling Status:</label>
                     <Select value={order.status} onValueChange={(value) => updateOrderStatus(order.id, value)}>
-                      <SelectTrigger className="w-48">
+                      <SelectTrigger className="w-full sm:w-48">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -365,7 +365,7 @@ export default function AdminOrdersPage() {
                   <div>
                     <label className="text-sm font-semibold text-slate-700 block mb-2">Betaling Status:</label>
                     <Select value={order.paymentStatus} onValueChange={(value) => updatePaymentStatus(order.id, value)}>
-                      <SelectTrigger className="w-48">
+                      <SelectTrigger className="w-full sm:w-48">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -376,11 +376,11 @@ export default function AdminOrdersPage() {
                     </Select>
                   </div>
 
-                  <div className="ml-auto">
+                  <div className="sm:ml-auto w-full sm:w-auto">
                     <Button
                       onClick={() => handleDeleteClick(order.id, order.orderNumber)}
                       variant="destructive"
-                      className="flex items-center gap-2"
+                      className="w-full sm:w-auto flex items-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
                       Verwijder Bestelling

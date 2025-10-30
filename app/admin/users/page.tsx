@@ -210,12 +210,12 @@ export default function AdminUsersPage() {
 
       <div className="container mx-auto max-w-7xl py-8 px-4">
         <div className="mb-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">Gebruikers Beheer</h1>
-            <p className="text-slate-600">Bekijk en beheer alle gebruikers</p>
+            <h1 className="text-2xl sm:text-4xl font-bold text-slate-900 mb-1 sm:mb-2">Gebruikers Beheer</h1>
+            <p className="text-slate-600 text-sm sm:text-base">Bekijk en beheer alle gebruikers</p>
           </div>
-          <Button onClick={createTestUser} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={createTestUser} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
             ➕ Maak Test Gebruiker
           </Button>
         </div>
@@ -330,8 +330,8 @@ export default function AdminUsersPage() {
                     </div>
                   </div>
 
-                  {/* Acties */}
-                  <div className="flex flex-col gap-2 min-w-[200px]">
+                {/* Acties */}
+                <div className="flex flex-col gap-2 w-full sm:min-w-[200px]">
                     <select
                       value={user.role}
                       onChange={(e) => updateRole(user.id, e.target.value)}
@@ -346,7 +346,7 @@ export default function AdminUsersPage() {
                       onClick={() => confirmDelete(user.id, user.name)}
                       disabled={updating === user.id || user.id === session?.user?.id}
                       variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50"
+                    className="w-full border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50"
                     >
                       {updating === user.id ? (
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
