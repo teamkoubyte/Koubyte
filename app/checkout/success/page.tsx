@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, Loader2, XCircle, Package, CreditCard, Calendar, Phone, Mail, Printer, Download, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { formatPrice } from '@/lib/utils'
 
 type OrderItem = {
   id: string
@@ -182,7 +183,7 @@ export default function CheckoutSuccessPage() {
                           <p className="font-medium text-slate-900">{item.serviceName}</p>
                           <p className="text-sm text-slate-600">Aantal: {item.quantity}</p>
                         </div>
-                        <p className="text-lg font-semibold text-slate-900">€{item.price.toFixed(2)}</p>
+                        <p className="text-lg font-semibold text-slate-900">{formatPrice(item.price)}</p>
                       </div>
                     ))}
                   </div>
@@ -193,7 +194,7 @@ export default function CheckoutSuccessPage() {
                   <div className="flex justify-between items-center">
                     <p className="text-xl font-semibold text-slate-900">Totaal</p>
                     <p className="text-2xl font-bold text-blue-600">
-                      €{orderData?.totalAmount ? orderData.totalAmount.toFixed(2) : '0.00'}
+                      {formatPrice(orderData?.totalAmount || 0)}
                     </p>
                   </div>
                 </div>

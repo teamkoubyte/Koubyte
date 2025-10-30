@@ -13,6 +13,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal } from '@/lib/cart'
+import { formatPrice } from '@/lib/utils'
 
 // Payment Method Logo Components (Simple colored badges)
 const KlarnaLogo = () => (
@@ -244,7 +245,7 @@ export default function CheckoutPage() {
                       <p className="text-sm text-slate-600">Aantal: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-blue-600">€{(item.service.price * item.quantity).toFixed(2)}</p>
+                      <p className="font-bold text-blue-600">{formatPrice(item.service.price * item.quantity)}</p>
                     </div>
                   </div>
                 ))}
@@ -260,7 +261,7 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-bold text-blue-600 mb-6">
-                  €{total.toFixed(2)}
+                  {formatPrice(total)}
                 </div>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -349,7 +350,7 @@ export default function CheckoutPage() {
                     ) : (
                       <span className="flex items-center justify-center gap-2">
                         <CreditCard className="w-5 h-5" />
-                        Betaal €{total.toFixed(2)}
+                        Betaal {formatPrice(total)}
                       </span>
                     )}
                   </Button>

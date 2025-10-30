@@ -7,6 +7,7 @@ import { Button } from './ui/button'
 import Link from 'next/link'
 import type { CartItemWithService } from '@/lib/cart'
 import { calculateCartTotal, getCartItemCount } from '@/lib/cart'
+import { formatPrice } from '@/lib/utils'
 
 export default function ShoppingCartWidget() {
   const { data: session } = useSession()
@@ -209,7 +210,7 @@ export default function ShoppingCartWidget() {
                             {item.service.description}
                           </p>
                           <div className="text-lg font-bold text-blue-600 mt-2">
-                            €{item.service.price.toFixed(2)}
+                            {formatPrice(item.service.price)}
                           </div>
                         </div>
                       </div>
@@ -254,7 +255,7 @@ export default function ShoppingCartWidget() {
               <div className="border-t p-6 space-y-4">
                 <div className="flex justify-between items-center text-xl font-bold">
                   <span>Totaal:</span>
-                  <span className="text-blue-600">€{total.toFixed(2)}</span>
+                  <span className="text-blue-600">{formatPrice(total)}</span>
                 </div>
                 <Link href="/checkout" onClick={() => setIsOpen(false)}>
                   <Button className="w-full py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 shadow-lg">
