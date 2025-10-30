@@ -11,6 +11,7 @@ import { authOptions } from '@/lib/auth'
 import Script from 'next/script'
 import { headers } from 'next/headers'
 import { Analytics } from '@vercel/analytics/react'
+import { prisma } from '@/lib/prisma'
 
 const inter = Inter({ 
   subsets: ['latin'],
