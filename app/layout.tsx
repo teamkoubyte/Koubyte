@@ -83,9 +83,9 @@ async function getStructuredData() {
   try {
     // Haal statistieken en reviews uit database
     const [reviewsCount, averageRating] = await Promise.all([
-      prisma.review.count({ where: { status: 'approved' } }),
+      prisma.review.count({ where: { approved: true } }),
       prisma.review.aggregate({
-        where: { status: 'approved' },
+        where: { approved: true },
         _avg: { rating: true },
       }),
     ])
