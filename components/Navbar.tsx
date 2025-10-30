@@ -115,7 +115,8 @@ export default function Navbar({ session }: NavbarProps) {
           {/* Mobile Menu Knop */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            className="lg:hidden p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]"
+            aria-label={mobileMenuOpen ? 'Sluit menu' : 'Open menu'}
           >
             {mobileMenuOpen ? 
               <X className="h-6 w-6 text-slate-700" /> : 
