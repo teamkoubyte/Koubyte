@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet, Apple, Zap } from 'lucide-react'
+import { Loader2, CheckCircle, Trash2, ShoppingCart, CreditCard, Building2, Smartphone, Wallet, Apple, Zap, Plus, Minus } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { CartItemWithService } from '@/lib/cart'
@@ -121,6 +121,50 @@ export default function CheckoutPage() {
       console.error('Error fetching cart:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const updateQuantity = async (itemId: string, newQuantity: number) => {
+    if (newQuantity < 1) return
+    
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cartItemId: itemId, quantity: newQuantity }),
+      })
+
+      if (response.ok) {
+        await fetchCart()
+        window.dispatchEvent(new CustomEvent('cart-updated'))
+      } else {
+        alert('Kon aantal niet bijwerken')
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error)
+      alert('Er ging iets mis')
+    }
+  }
+
+  const removeItem = async (itemId: string) => {
+    if (!confirm('Weet je zeker dat je dit item wilt verwijderen?')) return
+    
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cartItemId: itemId }),
+      })
+
+      if (response.ok) {
+        await fetchCart()
+        window.dispatchEvent(new CustomEvent('cart-updated'))
+      } else {
+        alert('Kon item niet verwijderen')
+      }
+    } catch (error) {
+      console.error('Error removing item:', error)
+      alert('Er ging iets mis')
     }
   }
 
@@ -329,7 +373,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="container mx-auto max-w-5xl">
+      <div className="container mx-auto max-w-7xl">
         <h1 className="text-4xl font-bold text-slate-900 mb-8 text-center">Bestelling afronden</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -341,14 +385,51 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-slate-900">{item.service.name}</h3>
-                      <p className="text-sm text-slate-600">Aantal: {item.quantity}</p>
+                  <div key={item.id} className="flex items-center gap-4 p-5 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-300 transition-colors">
+                    {/* Item Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 text-lg truncate">{item.service.name}</h3>
+                      <p className="text-sm text-slate-600 mt-1 line-clamp-2">{item.service.description}</p>
+                      <p className="text-base font-semibold text-slate-700 mt-2">{formatPrice(item.service.price)} per stuk</p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-blue-600">{formatPrice(item.service.price * item.quantity)}</p>
+                    
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-slate-300">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                        className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Verminder aantal"
+                      >
+                        <Minus className="w-4 h-4 text-slate-700" />
+                      </button>
+                      <span className="w-10 text-center font-bold text-lg text-slate-900">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+                        aria-label="Verhoog aantal"
+                      >
+                        <Plus className="w-4 h-4 text-slate-700" />
+                      </button>
                     </div>
+                    
+                    {/* Total Price */}
+                    <div className="text-right min-w-[120px]">
+                      <p className="text-sm text-slate-600 mb-1">Totaal:</p>
+                      <p className="text-xl font-bold text-blue-600">
+                        {formatPrice(item.service.price * item.quantity)}
+                      </p>
+                    </div>
+                    
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 p-3 rounded-lg transition-colors flex-shrink-0"
+                      aria-label="Verwijder item"
+                      title="Verwijder uit winkelwagen"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
                 ))}
               </CardContent>
