@@ -132,7 +132,7 @@ export async function POST(request: Request) {
         notes,
         isGuest: isGuest || false,
         items: {
-          create: cartItems.map((item) => ({
+          create: cartItems.map((item: any) => ({
             serviceId: item.serviceId,
             serviceName: item.service.name,
             price: item.service.price,
