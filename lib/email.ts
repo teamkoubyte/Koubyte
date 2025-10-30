@@ -986,3 +986,152 @@ export async function sendAdminNotificationEmail(type: 'order' | 'appointment' |
   }
 }
 
+// Verstuur review request email naar klant na voltooide order
+export async function sendReviewRequestEmail(email: string, data: {
+  name: string
+  orderNumber: string
+  orderDate: string
+  services: string[]
+}) {
+  try {
+    // In development zonder email config, log naar console
+    if (isDevelopmentWithoutEmail) {
+      console.log('\n========================================')
+      console.log('📧 REVIEW REQUEST EMAIL (Development Mode)')
+      console.log('========================================')
+      console.log(`Naar: ${email}`)
+      console.log(`Naam: ${data.name}`)
+      console.log(`Ordernummer: ${data.orderNumber}`)
+      console.log(`Diensten: ${data.services.join(', ')}`)
+      console.log(`Review Link: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://koubyte.be'}/review?order=${data.orderNumber}`)
+      console.log('========================================\n')
+      return
+    }
+
+    if (!transporter) {
+      console.log('Email transporter not configured, skipping email')
+      return
+    }
+
+    const reviewUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://koubyte.be'}/review?order=${data.orderNumber}`
+    const servicesList = data.services.map(service => `<li>${service}</li>`).join('')
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || 'info@koubyte.be',
+      to: email,
+      subject: 'Hoe was je ervaring met Koubyte?',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .header {
+              background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+              color: white;
+              padding: 30px;
+              text-align: center;
+              border-radius: 10px 10px 0 0;
+            }
+            .content {
+              background: #f8fafc;
+              padding: 30px;
+              border-radius: 0 0 10px 10px;
+            }
+            .order-box {
+              background: white;
+              border-left: 4px solid #2563eb;
+              padding: 20px;
+              margin: 20px 0;
+              border-radius: 5px;
+            }
+            .button {
+              display: inline-block;
+              background: #2563eb;
+              color: white !important;
+              padding: 15px 30px;
+              text-decoration: none;
+              border-radius: 8px;
+              font-weight: bold;
+              margin: 20px 0;
+              text-align: center;
+            }
+            .button:hover {
+              background: #1e40af;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              color: #64748b;
+              font-size: 14px;
+            }
+            .services-list {
+              background: #f1f5f9;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 15px 0;
+            }
+            .services-list ul {
+              margin: 10px 0;
+              padding-left: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1 style="margin: 0;">Hoe was je ervaring?</h1>
+          </div>
+          <div class="content">
+            <h2>Beste ${data.name},</h2>
+            <p>Bedankt voor je bestelling bij Koubyte IT-diensten! We hopen dat je tevreden bent met onze service.</p>
+            
+            <div class="order-box">
+              <p style="margin: 0 0 10px 0; color: #64748b; font-size: 14px;">Bestelnummer</p>
+              <p style="margin: 0; font-size: 18px; font-weight: bold; color: #2563eb;">${data.orderNumber}</p>
+              <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">${data.orderDate}</p>
+            </div>
+
+            <div class="services-list">
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Jouw bestelde diensten:</p>
+              <ul style="margin: 0;">
+                ${servicesList}
+              </ul>
+            </div>
+
+            <p>We zouden het enorm waarderen als je een korte review zou willen achterlaten. Je feedback helpt ons om nog beter te worden en helpt andere klanten bij hun keuze.</p>
+
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${reviewUrl}" class="button">Schrijf een Review</a>
+            </p>
+
+            <p style="color: #64748b; font-size: 14px; text-align: center;">
+              Of kopieer deze link: <br>
+              <span style="word-break: break-all; color: #2563eb;">${reviewUrl}</span>
+            </p>
+
+            <p style="margin-top: 30px;">
+              Alvast bedankt!<br>
+              <strong>Team Koubyte</strong>
+            </p>
+          </div>
+          <div class="footer">
+            <p>Koubyte IT-diensten | Professionele IT-oplossingen</p>
+            <p style="font-size: 12px;">Email: info@koubyte.be | Website: https://koubyte.be</p>
+          </div>
+        </body>
+        </html>
+      `,
+    })
+  } catch (error) {
+    console.error('Error sending review request email:', error)
+    throw error
+  }
+}
+

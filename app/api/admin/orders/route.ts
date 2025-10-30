@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { sendReviewRequestEmail } from '@/lib/email'
 
 // GET - Fetch all orders (admin only)
 export async function GET() {
@@ -51,6 +52,20 @@ export async function PATCH(request: Request) {
   try {
     const { orderId, status, paymentStatus } = await request.json()
 
+    // Haal huidige order op om te checken of status verandert naar completed
+    const currentOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: { service: true }
+        },
+      },
+    })
+
+    if (!currentOrder) {
+      return NextResponse.json({ error: 'Order niet gevonden' }, { status: 404 })
+    }
+
     const updateData: any = {}
     if (status) updateData.status = status
     if (paymentStatus) updateData.paymentStatus = paymentStatus
@@ -58,7 +73,35 @@ export async function PATCH(request: Request) {
     const order = await prisma.order.update({
       where: { id: orderId },
       data: updateData,
+      include: {
+        items: {
+          include: { service: true }
+        },
+      },
     })
+
+    // Als status wordt gewijzigd naar 'completed', verstuur review request email
+    if (status === 'completed' && currentOrder.status !== 'completed') {
+      try {
+        const orderDate = new Date(order.createdAt).toLocaleDateString('nl-BE', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+
+        const services = order.items.map((item: any) => item.serviceName)
+
+        await sendReviewRequestEmail(order.customerEmail, {
+          name: order.customerName,
+          orderNumber: order.orderNumber,
+          orderDate,
+          services,
+        })
+      } catch (emailError) {
+        console.error('Failed to send review request email:', emailError)
+        // Email fout mag order update niet blokkeren
+      }
+    }
 
     return NextResponse.json({ order }, { status: 200 })
   } catch (error) {

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,16 +13,47 @@ import Link from 'next/link'
 
 export default function ReviewPage() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
+  const orderNumber = searchParams.get('order')
+  
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+  const [orderData, setOrderData] = useState<{ services: string[]; orderNumber: string } | null>(null)
+  const [loadingOrder, setLoadingOrder] = useState(false)
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 3500)
   }
+
+  // Haal order data op als orderNumber in URL staat
+  useEffect(() => {
+    if (orderNumber) {
+      setLoadingOrder(true)
+      fetch(`/api/orders/order-by-number?orderNumber=${orderNumber}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.order) {
+            const services = data.order.items.map((item: any) => item.serviceName)
+            setOrderData({
+              services,
+              orderNumber: data.order.orderNumber,
+            })
+            // Pre-fill service veld met eerste service
+            setFormData(prev => ({
+              ...prev,
+              service: services[0] || '',
+            }))
+          }
+        })
+        .catch(err => console.error('Error fetching order:', err))
+        .finally(() => setLoadingOrder(false))
+    }
+  }, [orderNumber])
+
   const [formData, setFormData] = useState({
     name: session?.user?.name || '',
     email: session?.user?.email || '',
@@ -117,6 +149,18 @@ export default function ReviewPage() {
           <p className="text-xl text-slate-600">
             Hoe was de service van Koubyte? We horen graag je mening!
           </p>
+          {orderData && (
+            <div className="mt-4 inline-block bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-2">
+              <p className="text-sm text-blue-900">
+                Review voor bestelling: <strong>{orderData.orderNumber}</strong>
+              </p>
+            </div>
+          )}
+          {loadingOrder && (
+            <div className="mt-4 text-sm text-slate-500">
+              Bestelling ophalen...
+            </div>
+          )}
         </div>
 
         <Card className="shadow-2xl">
@@ -124,6 +168,11 @@ export default function ReviewPage() {
             <CardTitle>Schrijf een review</CardTitle>
             <CardDescription>
               Je review helpt andere klanten en ons om beter te worden
+              {orderData && (
+                <span className="block mt-2 text-blue-600 font-medium">
+                  ✅ Bedankt voor je bestelling! We waarderen je feedback enorm.
+                </span>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -192,14 +241,37 @@ export default function ReviewPage() {
 
               <div>
                 <Label htmlFor="service">Welke dienst heb je gebruikt? *</Label>
-                <Input
-                  id="service"
-                  value={formData.service}
-                  onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                  required
-                  className="mt-2"
-                  placeholder="Bijv. Hardware reparatie, Software installatie"
-                />
+                {orderData && orderData.services.length > 0 ? (
+                  <div className="mt-2">
+                    <select
+                      id="service"
+                      value={formData.service}
+                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Selecteer een dienst</option>
+                      {orderData.services.map((service, index) => (
+                        <option key={index} value={service}>
+                          {service}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Selecteer de dienst uit je bestelling
+                    </p>
+                  </div>
+                ) : (
+                  <Input
+                    id="service"
+                    value={formData.service}
+                    onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                    required
+                    className="mt-2"
+                    placeholder="Bijv. Hardware reparatie, Software installatie"
+                    disabled={loadingOrder}
+                  />
+                )}
               </div>
 
               <div>
