@@ -38,6 +38,12 @@ export default function AdminOrdersPage() {
     orderNumber: '',
   })
   const [deleting, setDeleting] = useState(false)
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3500)
+  }
 
   useEffect(() => {
     fetchOrders()
@@ -106,13 +112,14 @@ export default function AdminOrdersPage() {
       if (response.ok) {
         await fetchOrders()
         setDeleteConfirm({ show: false, orderId: '', orderNumber: '' })
+        showToast('Bestelling verwijderd', 'success')
       } else {
         const data = await response.json()
-        alert('Fout bij verwijderen: ' + (data.error || 'Onbekende fout'))
+        showToast('Fout bij verwijderen: ' + (data.error || 'Onbekende fout'), 'error')
       }
     } catch (error) {
       console.error('Error deleting order:', error)
-      alert('Er ging iets mis bij het verwijderen van de bestelling')
+      showToast('Er ging iets mis bij het verwijderen van de bestelling', 'error')
     } finally {
       setDeleting(false)
     }
@@ -141,6 +148,16 @@ export default function AdminOrdersPage() {
 
   return (
     <>
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+          toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
+        }`}>
+          <div className="flex items-start gap-3">
+            <span className="font-semibold flex-1">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">×</button>
+          </div>
+        </div>
+      )}
       {/* Delete Confirmation Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center">

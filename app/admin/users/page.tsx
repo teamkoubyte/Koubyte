@@ -25,6 +25,12 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3500)
+  }
 
   useEffect(() => {
     fetchUsers()
@@ -57,9 +63,10 @@ export default function AdminUsersPage() {
 
       if (response.ok) {
         fetchUsers()
+        showToast('Rol succesvol bijgewerkt', 'success')
       } else {
         const data = await response.json()
-        alert(data.error || 'Fout bij updaten gebruiker')
+        showToast(data.error || 'Fout bij updaten gebruiker', 'error')
       }
     } catch (error) {
       console.error('Error updating user:', error)
@@ -83,14 +90,14 @@ export default function AdminUsersPage() {
       })
       
       if (response.ok) {
-        alert('Test gebruiker aangemaakt! Refresh de pagina.')
+        showToast('Test gebruiker aangemaakt!', 'success')
         fetchUsers()
       } else {
         const data = await response.json()
-        alert('Fout: ' + data.error)
+        showToast('Fout: ' + data.error, 'error')
       }
     } catch (error) {
-      alert('Fout bij aanmaken: ' + error)
+      showToast('Fout bij aanmaken: ' + (error instanceof Error ? error.message : String(error)), 'error')
     }
   }
 
@@ -120,15 +127,15 @@ export default function AdminUsersPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        alert(`Fout: ${data.error || 'Onbekende fout'}`)
+        showToast(`Fout: ${data.error || 'Onbekende fout'}`, 'error')
         return
       }
 
-      alert('✅ Gebruiker succesvol verwijderd!')
+      showToast('Gebruiker succesvol verwijderd!', 'success')
       fetchUsers()
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('Fout bij verwijderen: ' + (error instanceof Error ? error.message : String(error)))
+      showToast('Fout bij verwijderen: ' + (error instanceof Error ? error.message : String(error)), 'error')
     } finally {
       setUpdating(null)
     }
@@ -164,6 +171,17 @@ export default function AdminUsersPage() {
 
   return (
     <>
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+          toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
+        }`}>
+          <div className="flex items-start gap-3">
+            <span className="font-semibold flex-1">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">×</button>
+          </div>
+        </div>
+      )}
       {/* Custom Confirm Dialog */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

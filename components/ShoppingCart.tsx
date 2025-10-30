@@ -14,6 +14,12 @@ export default function ShoppingCartWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [cartItems, setCartItems] = useState<CartItemWithService[]>([])
   const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   useEffect(() => {
     if (session?.user?.id) {
@@ -91,11 +97,11 @@ export default function ShoppingCartWidget() {
       } else {
         const error = await response.json()
         console.error('Error updating quantity:', error)
-        alert('Kon aantal niet bijwerken: ' + (error.error || 'Onbekende fout'))
+        showToast('Kon aantal niet bijwerken: ' + (error.error || 'Onbekende fout'), 'error')
       }
     } catch (error) {
       console.error('Error updating quantity:', error)
-      alert('Er ging iets mis bij het bijwerken')
+      showToast('Er ging iets mis bij het bijwerken', 'error')
     } finally {
       setLoading(false)
     }
@@ -123,14 +129,14 @@ export default function ShoppingCartWidget() {
         
         try {
           const errorJson = JSON.parse(errorText)
-          alert('Kon item niet verwijderen: ' + (errorJson.error || 'Onbekende fout'))
+          showToast('Kon item niet verwijderen: ' + (errorJson.error || 'Onbekende fout'), 'error')
         } catch {
-          alert('Kon item niet verwijderen: ' + errorText)
+          showToast('Kon item niet verwijderen: ' + errorText, 'error')
         }
       }
     } catch (error) {
       console.error('Exception removing item:', error)
-      alert('Er ging iets mis bij het verwijderen: ' + (error instanceof Error ? error.message : 'Onbekende fout'))
+      showToast('Er ging iets mis bij het verwijderen: ' + (error instanceof Error ? error.message : 'Onbekende fout'), 'error')
     } finally {
       setLoading(false)
     }
@@ -143,6 +149,16 @@ export default function ShoppingCartWidget() {
 
   return (
     <>
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[260px] max-w-sm animate-slideInRight ${
+          toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
+        }`}>
+          <div className="flex items-start gap-3">
+            <span className="font-semibold flex-1">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">×</button>
+          </div>
+        </div>
+      )}
       {/* Cart Button */}
       <button
         onClick={() => setIsOpen(true)}
