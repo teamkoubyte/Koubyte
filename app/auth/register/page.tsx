@@ -196,6 +196,7 @@ export default function RegisterPage() {
                   <Input
                     id="name"
                     type="text"
+                    autoComplete="name"
                     value={formData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
                     onBlur={() => validateField('name', formData.name)}
@@ -223,6 +224,7 @@ export default function RegisterPage() {
                   <Input
                     id="email"
                     type="email"
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
                     onBlur={() => validateField('email', formData.email)}
@@ -250,6 +252,7 @@ export default function RegisterPage() {
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
                     value={formData.password}
                     onChange={(e) => handleChange('password', e.target.value)}
                     onBlur={() => validateField('password', formData.password)}
@@ -295,6 +298,7 @@ export default function RegisterPage() {
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleChange('confirmPassword', e.target.value)}
                     onBlur={() => validateField('confirmPassword', formData.confirmPassword)}
