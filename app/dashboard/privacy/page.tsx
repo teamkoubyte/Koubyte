@@ -14,6 +14,12 @@ export default function PrivacyDashboardPage() {
   const [deleteConfirm, setDeleteConfirm] = useState('')
   const [exportSuccess, setExportSuccess] = useState(false)
   const [deleteSuccess, setDeleteSuccess] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 4000)
+  }
 
   // GDPR Recht op Inzage - Data Export
   const handleDataExport = async () => {
@@ -42,11 +48,11 @@ export default function PrivacyDashboardPage() {
         setExportSuccess(true)
         setTimeout(() => setExportSuccess(false), 5000)
       } else {
-        alert('Er ging iets mis bij het exporteren van je gegevens.')
+        showToast('Er ging iets mis bij het exporteren van je gegevens.', 'error')
       }
     } catch (error) {
       console.error('Export error:', error)
-      alert('Er ging iets mis. Probeer het opnieuw.')
+      showToast('Er ging iets mis. Probeer het opnieuw.', 'error')
     } finally {
       setLoading(false)
     }
@@ -55,11 +61,7 @@ export default function PrivacyDashboardPage() {
   // GDPR Recht op Verwijdering
   const handleAccountDeletion = async () => {
     if (deleteConfirm !== 'VERWIJDER') {
-      alert('Typ &quot;VERWIJDER&quot; om te bevestigen')
-      return
-    }
-
-    if (!confirm('Weet je het zeker? Dit kan niet ongedaan worden gemaakt!')) {
+      showToast('Typ "VERWIJDER" om te bevestigen', 'error')
       return
     }
 
@@ -76,11 +78,11 @@ export default function PrivacyDashboardPage() {
           signOut({ callbackUrl: '/' })
         }, 3000)
       } else {
-        alert('Er ging iets mis bij het verwijderen van je account.')
+        showToast('Er ging iets mis bij het verwijderen van je account.', 'error')
       }
     } catch (error) {
       console.error('Delete error:', error)
-      alert('Er ging iets mis. Probeer het opnieuw.')
+      showToast('Er ging iets mis. Probeer het opnieuw.', 'error')
     } finally {
       setLoading(false)
     }
@@ -102,6 +104,16 @@ export default function PrivacyDashboardPage() {
 
   return (
     <div className="container mx-auto max-w-4xl py-16 px-4">
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+          toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
+        }`}>
+          <div className="flex items-start gap-3">
+            <span className="font-semibold flex-1">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">×</button>
+          </div>
+        </div>
+      )}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-slate-900 mb-2">Privacy & Gegevens</h1>
         <p className="text-slate-600">

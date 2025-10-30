@@ -16,6 +16,12 @@ export default function ReviewPage() {
   const [hoveredRating, setHoveredRating] = useState(0)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3500)
+  }
   const [formData, setFormData] = useState({
     name: session?.user?.name || '',
     email: session?.user?.email || '',
@@ -27,7 +33,7 @@ export default function ReviewPage() {
     e.preventDefault()
     
     if (rating === 0) {
-      alert('Geef een beoordeling (1-5 sterren)')
+      showToast('Geef een beoordeling (1-5 sterren)', 'error')
       return
     }
 
@@ -47,11 +53,11 @@ export default function ReviewPage() {
       if (response.ok) {
         setSuccess(true)
       } else {
-        alert('Er ging iets mis. Probeer het opnieuw.')
+        showToast('Er ging iets mis. Probeer het opnieuw.', 'error')
       }
     } catch (error) {
       console.error('Review error:', error)
-      alert('Er ging iets mis.')
+      showToast('Er ging iets mis.', 'error')
     } finally {
       setLoading(false)
     }
@@ -94,6 +100,16 @@ export default function ReviewPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-16 px-4">
       <div className="container mx-auto max-w-2xl">
+        {toast && (
+          <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+            toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
+          }`}>
+            <div className="flex items-start gap-3">
+              <span className="font-semibold flex-1">{toast.message}</span>
+              <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">×</button>
+            </div>
+          </div>
+        )}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Deel je ervaring

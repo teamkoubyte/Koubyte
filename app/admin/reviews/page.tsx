@@ -18,6 +18,12 @@ interface Review {
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3500)
+  }
 
   useEffect(() => {
     fetchReviews()
@@ -48,15 +54,15 @@ export default function AdminReviewsPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        alert('Fout: ' + (data.error || 'Onbekende fout'))
+        showToast('Fout: ' + (data.error || 'Onbekende fout'), 'error')
         return
       }
 
-      alert('✅ Review goedgekeurd!')
+      showToast('Review goedgekeurd', 'success')
       fetchReviews()
     } catch (error) {
       console.error('Approve error:', error)
-      alert('Fout: ' + (error instanceof Error ? error.message : 'Onbekende fout'))
+      showToast('Fout: ' + (error instanceof Error ? error.message : 'Onbekende fout'), 'error')
     }
   }
 
@@ -71,21 +77,20 @@ export default function AdminReviewsPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        alert('Fout: ' + (data.error || 'Onbekende fout'))
+        showToast('Fout: ' + (data.error || 'Onbekende fout'), 'error')
         return
       }
 
-      alert('✅ Review afgekeurd!')
+      showToast('Review afgekeurd', 'success')
       fetchReviews()
     } catch (error) {
       console.error('Reject error:', error)
-      alert('Fout: ' + (error instanceof Error ? error.message : 'Onbekende fout'))
+      showToast('Fout: ' + (error instanceof Error ? error.message : 'Onbekende fout'), 'error')
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('⚠️ Weet je zeker dat je deze review PERMANENT wilt verwijderen?')) return
-    if (!window.confirm('Laatste kans! Review verwijderen?')) return
+    if (!window.confirm('Weet je zeker dat je deze review wilt verwijderen?')) return
 
     try {
       const response = await fetch(`/api/admin/reviews/${id}`, {
@@ -95,15 +100,15 @@ export default function AdminReviewsPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        alert('Fout: ' + (data.error || 'Onbekende fout'))
+        showToast('Fout: ' + (data.error || 'Onbekende fout'), 'error')
         return
       }
 
-      alert('✅ Review verwijderd!')
+      showToast('Review verwijderd', 'success')
       fetchReviews()
     } catch (error) {
       console.error('Delete error:', error)
-      alert('Fout: ' + (error instanceof Error ? error.message : 'Onbekende fout'))
+      showToast('Fout: ' + (error instanceof Error ? error.message : 'Onbekende fout'), 'error')
     }
   }
 
@@ -120,6 +125,16 @@ export default function AdminReviewsPage() {
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8">
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+          toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
+        }`}>
+          <div className="flex items-start gap-3">
+            <span className="font-semibold flex-1">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">×</button>
+          </div>
+        </div>
+      )}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">Reviews Beheer</h1>
         <p className="text-slate-600">Keur reviews goed of af, of verwijder ze</p>
