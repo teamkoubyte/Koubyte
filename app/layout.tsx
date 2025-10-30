@@ -52,7 +52,9 @@ export const metadata: Metadata = {
       { url: '/icon-192', sizes: '192x192' },
       { url: '/icon-512', sizes: '512x512' },
     ],
-    apple: '/apple-icon',
+    apple: [
+      { url: '/apple-icon', sizes: '180x180', type: 'image/png' },
+    ],
   },
   openGraph: {
     type: 'website',
