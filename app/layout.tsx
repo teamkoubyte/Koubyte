@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Providers from '@/components/Providers'
 import CookieConsent from '@/components/CookieConsent'
+import Breadcrumbs from '@/components/Breadcrumbs'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import Script from 'next/script'
@@ -76,74 +77,112 @@ export const metadata: Metadata = {
   },
 }
 
-// Structured Data voor SEO
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  name: 'Koubyte',
-  description: 'Professionele IT-diensten voor particulieren en kleine bedrijven',
-  url: 'https://koubyte.be',
-  telephone: '+32484522662',
-  email: 'info@koubyte.be',
-  address: {
-    '@type': 'PostalAddress',
-    addressCountry: 'BE',
-    addressLocality: 'België',
-    addressRegion: 'Vlaanderen',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: '51.2194',
-    longitude: '4.4025',
-  },
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
-      closes: '18:00',
-    },
-  ],
-  priceRange: '€€',
-  // AggregateRating wordt dynamisch toegevoegd via reviews
-  // Geen fake ratings in structured data!
-  sameAs: [
-    // Social media links - Echte Koubyte accounts
-    'https://facebook.com/Koubyte',
-    'https://x.com/Koubyte',
-    'https://instagram.com/Koubyte',
-    'https://linkedin.com/company/Koubyte',
-  ],
-  hasOfferCatalog: {
-    '@type': 'OfferCatalog',
-    name: 'IT-diensten',
-    itemListElement: [
-      {
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: 'Hardware reparatie',
-          description: 'Reparatie en vervanging van hardware componenten',
-        },
+// Dynamische Structured Data genereren met echte reviews uit database
+async function getStructuredData() {
+  try {
+    // Haal statistieken en reviews uit database
+    const [reviewsCount, averageRating] = await Promise.all([
+      prisma.review.count({ where: { status: 'approved' } }),
+      prisma.review.aggregate({
+        where: { status: 'approved' },
+        _avg: { rating: true },
+      }),
+    ])
+
+    const hasReviews = reviewsCount > 0 && averageRating._avg.rating
+
+    // Base structured data
+    const structuredData: any = {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: 'Koubyte',
+      description: 'Professionele IT-diensten voor particulieren en kleine bedrijven',
+      url: 'https://koubyte.be',
+      telephone: '+32484522662',
+      email: 'info@koubyte.be',
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'BE',
+        addressLocality: 'België',
+        addressRegion: 'Vlaanderen',
       },
-      {
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: 'Software installatie',
-          description: 'Installeren en configureren van software',
-        },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: '51.2194',
+        longitude: '4.4025',
       },
-      {
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: 'Netwerk installatie',
-          description: 'Router configuratie en netwerkbeveiliging',
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          opens: '09:00',
+          closes: '18:00',
         },
+      ],
+      priceRange: '€€',
+      sameAs: [
+        'https://facebook.com/Koubyte',
+        'https://x.com/Koubyte',
+        'https://instagram.com/Koubyte',
+        'https://linkedin.com/company/Koubyte',
+      ],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'IT-diensten',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Hardware reparatie',
+              description: 'Reparatie en vervanging van hardware componenten',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Software installatie',
+              description: 'Installeren en configureren van software',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Netwerk installatie',
+              description: 'Router configuratie en netwerkbeveiliging',
+            },
+          },
+        ],
       },
-    ],
-  },
+    }
+
+    // Voeg ECHTE aggregateRating toe als er reviews zijn
+    if (hasReviews) {
+      structuredData.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: averageRating._avg.rating.toFixed(1),
+        reviewCount: reviewsCount,
+        bestRating: '5',
+        worstRating: '1',
+      }
+    }
+
+    return structuredData
+  } catch (error) {
+    console.error('Error generating structured data:', error)
+    // Return basis structured data zonder ratings bij error
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: 'Koubyte',
+      description: 'Professionele IT-diensten voor particulieren en kleine bedrijven',
+      url: 'https://koubyte.be',
+      telephone: '+32484522662',
+      email: 'info@koubyte.be',
+    }
+  }
 }
 
 export default async function RootLayout({
@@ -167,10 +206,39 @@ export default async function RootLayout({
   // Admin gebruikers zien NOOIT de klanten navbar/footer
   const showClientLayout = !isAdminRoute && !isAdminUser
 
+  // Google Analytics ID
+  const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID
+
+  // Genereer dynamische structured data met reviews
+  const structuredData = await getStructuredData()
+
   return (
     <html lang="nl">
       <head>
-        {/* Structured Data */}
+        {/* Google Analytics */}
+        {GA_TRACKING_ID && (
+          <>
+            <Script
+              strategy="afterInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+            />
+            <Script
+              id="google-analytics"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_TRACKING_ID}', {
+                    page_path: window.location.pathname,
+                  });
+                `,
+              }}
+            />
+          </>
+        )}
+        {/* Structured Data met echte reviews */}
         <Script
           id="structured-data"
           type="application/ld+json"
@@ -187,6 +255,8 @@ export default async function RootLayout({
         <Providers session={session}>
           {/* Toon klanten Navbar ALLEEN voor niet-admins */}
           {showClientLayout && <Navbar session={session} />}
+          {/* Breadcrumbs voor navigatie en SEO */}
+          {showClientLayout && <Breadcrumbs />}
           <main className="min-h-screen">
             {children}
           </main>

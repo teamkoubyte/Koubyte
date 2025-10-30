@@ -1,4 +1,17 @@
 import { Card, CardContent } from '@/components/ui/card'
+import type { Metadata } from 'next'
+import Script from 'next/script'
+
+export const metadata: Metadata = {
+  title: 'Veelgestelde Vragen - Koubyte FAQ',
+  description: 'Antwoorden op veelgestelde vragen over Koubyte IT-diensten. Prijzen, diensten, afspraak maken, support en meer. Alles wat je moet weten over onze IT-hulp.',
+  keywords: ['FAQ', 'veelgestelde vragen', 'IT-diensten vragen', 'Koubyte support', 'computer hulp België', 'IT-prijzen'],
+  openGraph: {
+    title: 'Veelgestelde Vragen - Koubyte',
+    description: 'Vind antwoorden op je vragen over Koubyte IT-diensten',
+    type: 'website',
+  },
+}
 
 const faqs = [
   {
@@ -44,14 +57,38 @@ const faqs = [
 ]
 
 export default function FAQPage() {
+  // Structured Data voor FAQ pagina (Google Rich Results)
+  const faqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+
   return (
-    <div className="container mx-auto max-w-4xl py-16 px-4">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Veelgestelde vragen</h1>
-        <p className="text-xl text-slate-600">
-          Kunnen we je vraag niet beantwoorden? Neem gerust contact met me op.
-        </p>
-      </div>
+    <>
+      {/* Structured Data Script */}
+      <Script
+        id="faq-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqStructuredData),
+        }}
+      />
+
+      <div className="container mx-auto max-w-4xl py-16 px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Veelgestelde vragen</h1>
+          <p className="text-xl text-slate-600">
+            Kunnen we je vraag niet beantwoorden? Neem gerust contact met me op.
+          </p>
+        </div>
 
       <div className="space-y-4">
         {faqs.map((faq, index) => (
@@ -85,6 +122,7 @@ export default function FAQPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   )
 }
 
