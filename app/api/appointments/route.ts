@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { sendAppointmentEmail, sendAdminNotificationEmail } from '@/lib/email'
 import { z } from 'zod'
 
 const appointmentSchema = z.object({
@@ -40,16 +41,30 @@ export async function POST(request: Request) {
       data: appointmentData,
     })
 
-    // Email versturen (optioneel, als geconfigureerd)
+    // Email versturen naar klant
     try {
-      // await sendAppointmentEmail(validatedData.email, {
-      //   name: validatedData.name,
-      //   date: validatedData.date,
-      //   time: validatedData.time,
-      //   service: validatedData.service,
-      // })
+      await sendAppointmentEmail(validatedData.email, {
+        name: validatedData.name,
+        date: validatedData.date,
+        time: validatedData.time,
+        service: validatedData.service,
+        description: validatedData.description,
+      })
     } catch (emailError) {
-      console.error('Failed to send email:', emailError)
+      console.error('Failed to send appointment email:', emailError)
+    }
+
+    // Admin notification email
+    try {
+      await sendAdminNotificationEmail('appointment', {
+        customerName: validatedData.name,
+        customerEmail: validatedData.email,
+        date: validatedData.date,
+        time: validatedData.time,
+        service: validatedData.service,
+      })
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError)
     }
 
     return NextResponse.json({ success: true, appointment }, { status: 201 })

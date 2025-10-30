@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { sendOrderConfirmationEmail, sendAdminNotificationEmail } from '@/lib/email'
 
 // POST - Create new order (supports both logged in users and guests)
 export async function POST(request: Request) {
@@ -154,9 +155,55 @@ export async function POST(request: Request) {
       })
     }
 
+    // Email versturen naar klant
+    try {
+      const customerName = `${firstName} ${lastName}`
+      const orderDate = new Date().toLocaleDateString('nl-BE', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+
+      await sendOrderConfirmationEmail(email, {
+        name: customerName,
+        orderNumber,
+        orderDate,
+        items: order.items.map((item: any) => ({
+          serviceName: item.serviceName,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal: totalAmount,
+        discountAmount: discountAmount || 0,
+        total: finalAmount || totalAmount,
+        paymentMethod: paymentMethod || 'bancontact',
+        address: street && houseNumber ? {
+          street,
+          houseNumber,
+          postalCode,
+          city,
+          country: country || 'België',
+        } : undefined,
+      })
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError)
+    }
+
+    // Admin notification email
+    try {
+      await sendAdminNotificationEmail('order', {
+        orderNumber,
+        customerName: `${firstName} ${lastName}`,
+        customerEmail: email,
+        total: finalAmount || totalAmount,
+      })
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError)
+    }
+
     return NextResponse.json({ 
       message: 'Bestelling geplaatst', 
-      order,
+      order, 
       id: order.id,
       orderNumber 
     }, { status: 201 })

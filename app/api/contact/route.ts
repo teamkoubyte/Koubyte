@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendContactEmail, sendAdminNotificationEmail } from '@/lib/email'
 import { z } from 'zod'
 
 const contactSchema = z.object({
@@ -20,9 +21,15 @@ export async function POST(request: Request) {
       data: validatedData,
     })
 
-    // Email versturen (optioneel, als geconfigureerd)
+    // Email versturen naar admin
     try {
-      // await sendContactEmail(validatedData)
+      await sendContactEmail(validatedData)
+      // Admin notification wordt al in sendContactEmail verstuurd, maar we sturen ook een aparte notification
+      await sendAdminNotificationEmail('contact', {
+        customerName: validatedData.name,
+        customerEmail: validatedData.email,
+        subject: validatedData.subject,
+      })
     } catch (emailError) {
       console.error('Failed to send contact email:', emailError)
     }
