@@ -90,7 +90,7 @@ async function getStructuredData() {
       }),
     ])
 
-    const hasReviews = reviewsCount > 0 && averageRating._avg.rating
+    const hasReviews = reviewsCount > 0 && averageRating._avg.rating !== null
 
     // Base structured data
     const structuredData: any = {
@@ -160,7 +160,7 @@ async function getStructuredData() {
     }
 
     // Voeg ECHTE aggregateRating toe als er reviews zijn
-    if (hasReviews) {
+    if (hasReviews && averageRating._avg.rating) {
       structuredData.aggregateRating = {
         '@type': 'AggregateRating',
         ratingValue: averageRating._avg.rating.toFixed(1),
