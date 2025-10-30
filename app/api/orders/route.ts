@@ -64,7 +64,7 @@ export async function POST(request: Request) {
           email: 'guest@koubyte.be',
           name: 'Guest User',
           password: '', // Geen wachtwoord voor guest user
-          emailVerified: new Date()
+          emailVerified: true // Boolean, niet Date
         }
       })
       userId = guestUser.id
