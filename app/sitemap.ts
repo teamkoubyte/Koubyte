@@ -69,9 +69,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   try {
-    // Haal alle actieve services op uit database
+    // Haal alle services op uit database
     const services = await prisma.service.findMany({
-      where: { active: true },
       select: {
         id: true,
         name: true,
