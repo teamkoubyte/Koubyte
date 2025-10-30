@@ -7,26 +7,45 @@ export const size = {
 }
 export const contentType = 'image/png'
  
-// Image generation
+// Image generation - Verbeterd met duidelijkere K
 export default function Icon512() {
   return new ImageResponse(
     (
       <div
         style={{
-          fontSize: 280,
           background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'white',
-          fontWeight: 'bold',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
           borderRadius: '15%',
+          padding: '50px',
         }}
       >
-        K
+        <div
+          style={{
+            background: 'white',
+            width: '100%',
+            height: '100%',
+            borderRadius: '10%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontSize: 280,
+              color: '#2563eb',
+              fontWeight: '900',
+              fontFamily: 'Arial, Helvetica, sans-serif',
+              letterSpacing: '-10px',
+            }}
+          >
+            K
+          </div>
+        </div>
       </div>
     ),
     {
