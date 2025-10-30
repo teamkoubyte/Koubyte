@@ -83,89 +83,51 @@ export async function DELETE(request: Request) {
     const session = await getServerSession(authOptions)
     
     if (!session || session.user.role !== 'admin') {
-      console.log('❌ Unauthorized - not admin')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
-    console.log(`🔵 DELETE request received for user ID: ${id}`)
-
     if (!id) {
-      console.log('❌ No ID provided')
       return NextResponse.json({ error: 'ID is verplicht' }, { status: 400 })
     }
 
     // Voorkom dat admin zichzelf verwijdert
     if (id === session.user.id) {
-      console.log('❌ Cannot delete self')
       return NextResponse.json({ error: 'Je kunt jezelf niet verwijderen' }, { status: 400 })
     }
 
-    console.log(`🗑️ Starting delete process for user ${id}...`)
-
-    // Schakel foreign keys UIT voor deze connectie
-    await prisma.$executeRawUnsafe('PRAGMA foreign_keys = OFF;')
-    console.log('   ⚙️ Foreign keys disabled')
-
-    try {
-      // Verwijder ALLES zonder transactie (simpeler)
-      console.log('   🔄 Deleting OrderItems...')
-      const orders = await prisma.order.findMany({ where: { userId: id }, select: { id: true } })
-      for (const order of orders) {
-        const deleted = await prisma.orderItem.deleteMany({ where: { orderId: order.id } })
-        console.log(`      ✓ Deleted ${deleted.count} OrderItems for order ${order.id}`)
-      }
-      
-      console.log('   🔄 Deleting Orders...')
-      const deletedOrders = await prisma.order.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedOrders.count} Orders`)
-      
-      console.log('   🔄 Deleting CartItems...')
-      const deletedCart = await prisma.cartItem.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedCart.count} CartItems`)
-      
-      console.log('   🔄 Deleting Appointments...')
-      const deletedAppt = await prisma.appointment.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedAppt.count} Appointments`)
-      
-      console.log('   🔄 Deleting Reviews...')
-      const deletedReviews = await prisma.review.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedReviews.count} Reviews`)
-      
-      console.log('   🔄 Deleting Quotes...')
-      const deletedQuotes = await prisma.quote.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedQuotes.count} Quotes`)
-      
-      console.log('   🔄 Deleting Sessions...')
-      const deletedSessions = await prisma.session.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedSessions.count} Sessions`)
-      
-      console.log('   🔄 Deleting Accounts...')
-      const deletedAccounts = await prisma.account.deleteMany({ where: { userId: id } })
-      console.log(`      ✓ Deleted ${deletedAccounts.count} Accounts`)
-      
-      console.log('   🔄 Deleting User...')
-      await prisma.user.delete({ where: { id } })
-      console.log(`   ✅ USER DELETED SUCCESSFULLY!`)
-
-      return NextResponse.json({ success: true, message: 'Gebruiker succesvol verwijderd' })
-    } finally {
-      // Schakel foreign keys weer AAN
-      await prisma.$executeRawUnsafe('PRAGMA foreign_keys = ON;')
-      console.log('   ⚙️ Foreign keys re-enabled')
+    // Controleer of user bestaat
+    const user = await prisma.user.findUnique({ where: { id }, select: { id: true } })
+    if (!user) {
+      return NextResponse.json({ error: 'Gebruiker niet gevonden' }, { status: 404 })
     }
-  } catch (error) {
-    console.error('❌ FATAL ERROR during delete:', error)
-    console.error('❌ Error details:', {
-      name: error instanceof Error ? error.name : 'Unknown',
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
+
+    // Verwijder in correcte volgorde in een transactie (database-agnostisch)
+    await prisma.$transaction(async (tx) => {
+      // Order gerelateerde items
+      await tx.orderItem.deleteMany({ where: { order: { userId: id } } })
+      await tx.order.deleteMany({ where: { userId: id } })
+
+      // Overige entiteiten die naar user verwijzen
+      await tx.cartItem.deleteMany({ where: { userId: id } })
+      await tx.appointment.deleteMany({ where: { userId: id } })
+      await tx.review.deleteMany({ where: { userId: id } })
+      await tx.quote.deleteMany({ where: { userId: id } })
+      await tx.session.deleteMany({ where: { userId: id } })
+      await tx.account.deleteMany({ where: { userId: id } })
+
+      // Tenslotte de gebruiker
+      await tx.user.delete({ where: { id } })
     })
-    return NextResponse.json({ 
-      error: 'Fout bij verwijderen: ' + (error instanceof Error ? error.message : 'Onbekende fout')
-    }, { status: 500 })
+
+    return NextResponse.json({ success: true, message: 'Gebruiker succesvol verwijderd' })
+  } catch (error: any) {
+    if (error?.code === 'P2003') {
+      return NextResponse.json({ error: 'Kan gebruiker niet verwijderen door gekoppelde gegevens' }, { status: 400 })
+    }
+    return NextResponse.json({ error: 'Fout bij verwijderen: ' + (error?.message || 'Onbekende fout') }, { status: 500 })
   }
 }
 
