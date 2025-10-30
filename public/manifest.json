@@ -1,0 +1,28 @@
+{
+  "name": "Koubyte - Professionele IT-diensten",
+  "short_name": "Koubyte",
+  "description": "Betrouwbare IT-oplossingen voor particulieren en kleine bedrijven. Hardware reparatie, software installatie, netwerken en meer.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "utilities"],
+  "lang": "nl-BE",
+  "dir": "ltr"
+}
+

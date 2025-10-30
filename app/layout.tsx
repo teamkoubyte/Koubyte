@@ -35,6 +35,25 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  // PWA Manifest
+  manifest: '/manifest.json',
+  // Theme color for mobile browsers
+  themeColor: '#2563eb',
+  // Apple Web App
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Koubyte',
+  },
+  // Icons (Next.js auto-generates from icon.tsx, apple-icon.tsx, etc.)
+  icons: {
+    icon: [
+      { url: '/icon', sizes: '32x32' },
+      { url: '/icon-192', sizes: '192x192' },
+      { url: '/icon-512', sizes: '512x512' },
+    ],
+    apple: '/apple-icon',
+  },
   openGraph: {
     type: 'website',
     locale: 'nl_BE',
@@ -42,20 +61,13 @@ export const metadata: Metadata = {
     title: 'Koubyte - Professionele IT-diensten',
     description: 'Betrouwbare IT-oplossingen voor particulieren en bedrijven. Hardware, software, netwerken en meer.',
     siteName: 'Koubyte',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Koubyte IT-diensten',
-      }
-    ],
+    // Next.js auto-generates from opengraph-image.tsx
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Koubyte - Professionele IT-diensten',
     description: 'Betrouwbare IT-oplossingen voor particulieren en bedrijven',
-    images: ['/og-image.jpg'],
+    // Next.js auto-uses opengraph-image.tsx
   },
   robots: {
     index: true,
