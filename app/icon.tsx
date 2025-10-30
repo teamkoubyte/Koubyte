@@ -25,10 +25,10 @@ export default function Icon() {
         <div
           style={{
             fontSize: 11,
-            color: '#2563eb',
-            fontWeight: '700',
-            fontFamily: 'Arial, Helvetica, sans-serif',
-            letterSpacing: '-0.5px',
+            color: '#1e40af',
+            fontWeight: '600',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            letterSpacing: '0px',
           }}
         >
           KB
