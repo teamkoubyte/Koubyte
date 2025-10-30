@@ -89,8 +89,12 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     const existingService = await prisma.service.findUnique({
       where: { id },
       include: {
-        cartItems: true,
-        orderItems: true,
+        _count: {
+          select: {
+            cartItems: true,
+            orderItems: true,
+          }
+        }
       },
     })
 
@@ -98,15 +102,16 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Service niet gevonden' }, { status: 404 })
     }
 
-    // Check of service in gebruik is
-    if (existingService.orderItems.length > 0) {
+    // Check of service in gebruik is (via _count)
+    if (existingService._count.orderItems > 0) {
       return NextResponse.json({ 
         error: 'Service kan niet verwijderd worden omdat er bestellingen mee geplaatst zijn' 
       }, { status: 400 })
     }
 
-    // Verwijder eerst gerelateerde cart items
-    if (existingService.cartItems.length > 0) {
+    // Prisma cascade delete zorgt automatisch voor cart items cleanup
+    // Maar we doen het expliciet voor de zekerheid
+    if (existingService._count.cartItems > 0) {
       await prisma.cartItem.deleteMany({
         where: { serviceId: id },
       })
@@ -120,9 +125,19 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     return NextResponse.json({ 
       message: 'Service succesvol verwijderd' 
     }, { status: 200 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting service:', error)
-    return NextResponse.json({ error: 'Fout bij verwijderen service' }, { status: 500 })
+    
+    // Specifieke error handling
+    if (error.code === 'P2003') {
+      return NextResponse.json({ 
+        error: 'Service kan niet verwijderd worden omdat deze nog in gebruik is' 
+      }, { status: 400 })
+    }
+    
+    return NextResponse.json({ 
+      error: 'Fout bij verwijderen service: ' + (error.message || 'Onbekende fout')
+    }, { status: 500 })
   }
 }
 
