@@ -200,7 +200,7 @@ export default function CheckoutPage() {
       if (!session?.user) {
         // Guest: voeg client-side cart items toe
         orderPayload.cartItems = cartItems.map(item => ({
-          serviceId: item.serviceId,
+          serviceId: item.service.id,
           quantity: item.quantity
         }))
       }
