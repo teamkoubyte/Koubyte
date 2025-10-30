@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package } from 'lucide-react'
+import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package, Wrench } from 'lucide-react'
 import { useState } from 'react'
 
 interface AdminNavbarProps {
@@ -81,6 +81,13 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             >
               <Package className="w-4 h-4 inline mr-2" />
               Bestellingen
+            </Link>
+            <Link
+              href="/admin/services"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Wrench className="w-4 h-4 inline mr-2" />
+              Services
             </Link>
 
             <div className="ml-4 flex items-center gap-3 border-l border-slate-200 pl-4">
@@ -163,6 +170,14 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
                 >
                   <Package className="w-4 h-4 inline mr-2" />
                   Bestellingen
+                </Link>
+                <Link
+                  href="/admin/services"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <Wrench className="w-4 h-4 inline mr-2" />
+                  Services
                 </Link>
 
             <div className="pt-4 border-t border-slate-200">
