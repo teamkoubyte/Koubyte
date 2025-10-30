@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     }
 
     // Calculate total (gebruik echte database prijzen)
-    const totalAmount = cartItems.reduce((sum, item) => {
+    const totalAmount = cartItems.reduce((sum: number, item: any) => {
       return sum + (item.service.price * item.quantity)
     }, 0)
 
