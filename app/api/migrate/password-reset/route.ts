@@ -21,79 +21,49 @@ export async function POST() {
       }
     }
 
-    // Probeer SQLite syntax eerst
+    // Probeer PostgreSQL syntax eerst (want DATABASE_URL geeft aan dat het PostgreSQL is)
     try {
       await prisma.$executeRaw`
-        CREATE TABLE "ResetPasswordToken" (
+        CREATE TABLE IF NOT EXISTS "ResetPasswordToken" (
           "id" TEXT NOT NULL PRIMARY KEY,
           "userId" TEXT NOT NULL,
           "token" TEXT NOT NULL,
-          "expiresAt" DATETIME NOT NULL,
-          "used" BOOLEAN NOT NULL DEFAULT 0,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "expiresAt" TIMESTAMP NOT NULL,
+          "used" BOOLEAN NOT NULL DEFAULT false,
+          "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           CONSTRAINT "ResetPasswordToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
         )
       `
 
       await prisma.$executeRaw`
-        CREATE UNIQUE INDEX "ResetPasswordToken_token_key" ON "ResetPasswordToken"("token")
+        CREATE UNIQUE INDEX IF NOT EXISTS "ResetPasswordToken_token_key" ON "ResetPasswordToken"("token")
       `
 
       await prisma.$executeRaw`
-        CREATE INDEX "ResetPasswordToken_userId_idx" ON "ResetPasswordToken"("userId")
+        CREATE INDEX IF NOT EXISTS "ResetPasswordToken_userId_idx" ON "ResetPasswordToken"("userId")
       `
 
       await prisma.$executeRaw`
-        CREATE INDEX "ResetPasswordToken_token_idx" ON "ResetPasswordToken"("token")
+        CREATE INDEX IF NOT EXISTS "ResetPasswordToken_token_idx" ON "ResetPasswordToken"("token")
       `
 
       await prisma.$executeRaw`
-        CREATE INDEX "ResetPasswordToken_expiresAt_idx" ON "ResetPasswordToken"("expiresAt")
+        CREATE INDEX IF NOT EXISTS "ResetPasswordToken_expiresAt_idx" ON "ResetPasswordToken"("expiresAt")
       `
 
       return NextResponse.json(
-        { message: '✅ ResetPasswordToken tabel succesvol aangemaakt (SQLite)!' },
+        { message: '✅ ResetPasswordToken tabel succesvol aangemaakt (PostgreSQL)!' },
         { status: 200 }
       )
-    } catch (sqliteError: any) {
-      // Probeer PostgreSQL syntax
-      if (sqliteError.message?.includes('syntax error') || sqliteError.message?.includes('near "DATETIME"')) {
-        console.log('🔄 Probeert PostgreSQL syntax...')
-
-        await prisma.$executeRaw`
-          CREATE TABLE IF NOT EXISTS "ResetPasswordToken" (
-            "id" TEXT NOT NULL PRIMARY KEY,
-            "userId" TEXT NOT NULL,
-            "token" TEXT NOT NULL,
-            "expiresAt" TIMESTAMP NOT NULL,
-            "used" BOOLEAN NOT NULL DEFAULT false,
-            "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            CONSTRAINT "ResetPasswordToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-          )
-        `
-
-        await prisma.$executeRaw`
-          CREATE UNIQUE INDEX IF NOT EXISTS "ResetPasswordToken_token_key" ON "ResetPasswordToken"("token")
-        `
-
-        await prisma.$executeRaw`
-          CREATE INDEX IF NOT EXISTS "ResetPasswordToken_userId_idx" ON "ResetPasswordToken"("userId")
-        `
-
-        await prisma.$executeRaw`
-          CREATE INDEX IF NOT EXISTS "ResetPasswordToken_token_idx" ON "ResetPasswordToken"("token")
-        `
-
-        await prisma.$executeRaw`
-          CREATE INDEX IF NOT EXISTS "ResetPasswordToken_expiresAt_idx" ON "ResetPasswordToken"("expiresAt")
-        `
-
+    } catch (error: any) {
+      // Als tabel al bestaat, is dat ok
+      if (error.message?.includes('already exists') || error.message?.includes('duplicate')) {
         return NextResponse.json(
-          { message: '✅ ResetPasswordToken tabel succesvol aangemaakt (PostgreSQL)!' },
+          { message: '✅ ResetPasswordToken tabel bestaat al!' },
           { status: 200 }
         )
       }
-      throw sqliteError
+      throw error
     }
   } catch (error: any) {
     console.error('❌ Fout bij aanmaken tabel:', error)
