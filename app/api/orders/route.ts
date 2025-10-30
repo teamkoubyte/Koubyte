@@ -89,6 +89,11 @@ export async function POST(request: Request) {
       return sum + (item.service.price * item.quantity)
     }, 0)
 
+    // Ensure userId is defined
+    if (!userId) {
+      return NextResponse.json({ error: 'Geen gebruikers ID beschikbaar' }, { status: 400 })
+    }
+
     // Generate order number
     const orderCount = await prisma.order.count()
     const orderNumber = `KOU-${new Date().getFullYear()}-${String(orderCount + 1).padStart(4, '0')}`
@@ -105,7 +110,7 @@ export async function POST(request: Request) {
     const order = await prisma.order.create({
       data: {
         orderNumber,
-        userId,
+        userId: userId,
         totalAmount,
         discountCode: discountCode || null,
         discountAmount: discountAmount || 0,
