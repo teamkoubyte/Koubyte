@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, CheckCircle } from 'lucide-react'
 
 export default function LoginPage() {
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -17,6 +19,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+
+  // Check for password reset success message
+  useEffect(() => {
+    const message = searchParams.get('message')
+    if (message === 'password-reset-success') {
+      setSuccessMessage('Je wachtwoord is succesvol gereset. Je kunt nu inloggen met je nieuwe wachtwoord.')
+      // Clear message after 5 seconds
+      setTimeout(() => setSuccessMessage(''), 5000)
+    }
+  }, [searchParams])
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -229,6 +242,16 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
+            {/* Forgot Password Link */}
+            <div className="mt-4 text-center">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+              >
+                Wachtwoord vergeten?
+              </Link>
+            </div>
 
             {/* Register Link */}
             <div className="mt-6 text-center">

@@ -242,3 +242,136 @@ export async function sendVerificationEmail(email: string, data: {
   }
 }
 
+// Verstuur wachtwoord reset email
+export async function sendPasswordResetEmail(email: string, data: {
+  name: string
+  resetToken: string
+}) {
+  try {
+    // In development zonder email config, log naar console
+    if (isDevelopmentWithoutEmail) {
+      console.log('\n========================================')
+      console.log('📧 PASSWORD RESET EMAIL (Development Mode)')
+      console.log('========================================')
+      console.log(`Naar: ${email}`)
+      console.log(`Naam: ${data.name}`)
+      console.log(`Reset Link: ${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/auth/reset-password?token=${data.resetToken}`)
+      console.log('========================================\n')
+      return
+    }
+
+    if (!transporter) {
+      throw new Error('Email transporter niet geconfigureerd')
+    }
+
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://koubyte.be'}/auth/reset-password?token=${data.resetToken}`
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || 'info@koubyte.be',
+      to: email,
+      subject: 'Wachtwoord resetten - Koubyte',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .header {
+              background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+              color: white;
+              padding: 30px;
+              text-align: center;
+              border-radius: 10px 10px 0 0;
+            }
+            .content {
+              background: #f8fafc;
+              padding: 30px;
+              border-radius: 0 0 10px 10px;
+            }
+            .button {
+              display: inline-block;
+              background: #2563eb;
+              color: white !important;
+              padding: 15px 30px;
+              text-decoration: none;
+              border-radius: 8px;
+              font-weight: bold;
+              margin: 20px 0;
+              text-align: center;
+            }
+            .button:hover {
+              background: #1e40af;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              color: #64748b;
+              font-size: 14px;
+            }
+            .warning {
+              background: #fef3c7;
+              border-left: 4px solid #f59e0b;
+              padding: 15px;
+              margin: 20px 0;
+              border-radius: 5px;
+            }
+            .link-fallback {
+              background: #e0e7ff;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 20px 0;
+              word-break: break-all;
+              font-size: 12px;
+              color: #1e40af;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1 style="margin: 0;">Wachtwoord Resetten</h1>
+          </div>
+          <div class="content">
+            <h2>Hallo ${data.name},</h2>
+            <p>Je hebt aangevraagd om je wachtwoord te resetten voor je Koubyte account.</p>
+            
+            <p style="text-align: center;">
+              <a href="${resetUrl}" class="button">Reset Wachtwoord</a>
+            </p>
+
+            <p>Of kopieer en plak deze link in je browser:</p>
+            <div class="link-fallback">
+              ${resetUrl}
+            </div>
+
+            <div class="warning">
+              <strong>⚠️ Belangrijk:</strong> Deze link is <strong>1 uur geldig</strong> en kan slechts één keer gebruikt worden. Als je deze link niet hebt aangevraagd, kun je deze email negeren.
+            </div>
+
+            <p>Als je geen wachtwoord reset hebt aangevraagd, kan je je account veilig negeren. Je huidige wachtwoord blijft geldig.</p>
+
+            <p style="margin-top: 30px;">
+              Met vriendelijke groet,<br>
+              <strong>Team Koubyte</strong>
+            </p>
+          </div>
+          <div class="footer">
+            <p>Koubyte IT-diensten | Professionele IT-oplossingen</p>
+            <p style="font-size: 12px;">Deze email is verstuurd naar ${email}</p>
+          </div>
+        </body>
+        </html>
+      `,
+    })
+  } catch (error) {
+    console.error('Error sending password reset email:', error)
+    throw error
+  }
+}
+
