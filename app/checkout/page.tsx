@@ -578,7 +578,7 @@ export default function CheckoutPage() {
                     <Textarea
                       id="notes"
                       value={formData.notes}
-                      onChange={(e) => setFormData({ notes: e.target.value })}
+                      onChange={(e) => setFormData({...formData, notes: e.target.value})}
                       placeholder="Bijv: Voorkeur voor datum/tijd, specifieke wensen..."
                       rows={3}
                       className="mt-2"
