@@ -513,7 +513,7 @@ export default function AdminBlogPage() {
                       className="mt-2"
                       placeholder="tag1, tag2, tag3"
                     />
-                    <p className="text-xs text-slate-500 mt-1">Gescheiden door komma's</p>
+                    <p className="text-xs text-slate-500 mt-1">Gescheiden door komma&apos;s</p>
                   </div>
 
                   <div className="md:col-span-2">
