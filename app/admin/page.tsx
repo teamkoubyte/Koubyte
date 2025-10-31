@@ -4,78 +4,79 @@ import { Calendar, Users, MessageSquare, Star, Package, TrendingUp, DollarSign, 
 import { prisma } from '@/lib/prisma'
 
 export default async function AdminPage() {
-  // Haal statistieken op
-  const [
-    totalAppointments,
-    pendingAppointments,
-    confirmedAppointments,
-    totalUsers,
-    pendingReviews,
-    totalOrders,
-    paidOrders,
-    totalRevenue,
-    pendingQuotes,
-    totalQuotes,
-    newMessages,
-    todayAppointments,
-  ] = await Promise.all([
-    prisma.appointment.count(),
-    prisma.appointment.count({ where: { status: 'pending' } }),
-    prisma.appointment.count({ where: { status: 'confirmed' } }),
-    prisma.user.count(),
-    prisma.review.count({ where: { approved: false } }),
-    prisma.order.count(),
-    prisma.order.count({ where: { paymentStatus: 'paid' } }),
-    prisma.order.aggregate({
-      where: { paymentStatus: 'paid' },
-      _sum: { finalAmount: true },
-    }),
-    prisma.quote.count({ where: { status: 'pending' } }),
-    prisma.quote.count(),
-    prisma.contactMessage.count({ where: { status: 'new' } }),
-    prisma.appointment.count({
-      where: {
-        date: new Date().toISOString().split('T')[0],
-      },
-    }),
-  ])
-
-  const revenue = totalRevenue._sum.finalAmount || 0
-
-  // Haal recente activiteiten op
-  const [
-    recentOrders,
-    recentAppointments,
-    recentQuotes,
-    recentMessages,
-  ] = await Promise.all([
-    prisma.order.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: { name: true, email: true },
+  try {
+    // Haal statistieken op
+    const [
+      totalAppointments,
+      pendingAppointments,
+      confirmedAppointments,
+      totalUsers,
+      pendingReviews,
+      totalOrders,
+      paidOrders,
+      totalRevenue,
+      pendingQuotes,
+      totalQuotes,
+      newMessages,
+      todayAppointments,
+    ] = await Promise.all([
+      prisma.appointment.count(),
+      prisma.appointment.count({ where: { status: 'pending' } }),
+      prisma.appointment.count({ where: { status: 'confirmed' } }),
+      prisma.user.count(),
+      prisma.review.count({ where: { approved: false } }),
+      prisma.order.count(),
+      prisma.order.count({ where: { paymentStatus: 'paid' } }),
+      prisma.order.aggregate({
+        where: { paymentStatus: 'paid' },
+        _sum: { finalAmount: true },
+      }).catch(() => ({ _sum: { finalAmount: null } })),
+      prisma.quote.count({ where: { status: 'pending' } }),
+      prisma.quote.count(),
+      prisma.contactMessage.count({ where: { status: 'new' } }),
+      prisma.appointment.count({
+        where: {
+          date: new Date().toISOString().split('T')[0],
         },
-      },
-    }),
-    prisma.appointment.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: { name: true, email: true },
+      }),
+    ])
+
+    const revenue = totalRevenue._sum?.finalAmount || 0
+
+    // Haal recente activiteiten op
+    const [
+      recentOrders,
+      recentAppointments,
+      recentQuotes,
+      recentMessages,
+    ] = await Promise.all([
+      prisma.order.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
         },
-      },
-    }),
-    prisma.quote.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-    }),
-    prisma.contactMessage.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-    }),
-  ])
+      }).catch(() => []),
+      prisma.appointment.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
+        },
+      }).catch(() => []),
+      prisma.quote.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+      }).catch(() => []),
+      prisma.contactMessage.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+      }).catch(() => []),
+    ])
 
   return (
     <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
