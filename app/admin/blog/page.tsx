@@ -81,7 +81,7 @@ export default function AdminBlogPage() {
     setTimeout(() => setToast(null), 4000)
   }
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const params = new URLSearchParams()
       if (filter === 'published') {
