@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DollarSign, CreditCard, CheckCircle, XCircle, Clock, RefreshCw, Filter, Search, Loader2, RotateCcw } from 'lucide-react'
@@ -59,7 +59,7 @@ export default function AdminPaymentsPage() {
       if (response.ok) {
         const data = await response.json()
         setPayments(data.payments || [])
-        setStats(data.stats || stats)
+        setStats((prevStats) => data.stats || prevStats)
       }
     } catch (error) {
       console.error('Error fetching payments:', error)

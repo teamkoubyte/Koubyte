@@ -60,12 +60,12 @@ export default function AdminServicesPage() {
     featured: false,
   })
 
-  const showToast = (message: string, type: 'success' | 'error') => {
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 4000)
-  }
+  }, [])
 
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     try {
       const response = await fetch('/api/services')
       if (response.ok) {
@@ -78,11 +78,11 @@ export default function AdminServicesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
 
   useEffect(() => {
     fetchServices()
-  }, [])
+  }, [fetchServices])
 
   const openModal = (service?: Service) => {
     if (service) {

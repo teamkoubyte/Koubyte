@@ -45,25 +45,20 @@ export default function BookPage() {
     'Anders',
   ]
 
-  const allTimeSlots = [
-    '09:00', '10:00', '11:00', '12:00',
-    '13:00', '14:00', '15:00', '16:00', '17:00',
-  ]
-
   const checkAvailability = useCallback(async (date: string) => {
     setCheckingAvailability(true)
     try {
       const response = await fetch(`/api/appointments/availability?date=${date}`)
       if (response.ok) {
         const data = await response.json()
-        setAvailableSlots(data.availableSlots || allTimeSlots)
+        setAvailableSlots(data.availableSlots || ALL_TIME_SLOTS)
       } else {
         // Fallback naar alle slots als API faalt
-        setAvailableSlots(allTimeSlots)
+        setAvailableSlots(ALL_TIME_SLOTS)
       }
     } catch (error) {
       console.error('Error checking availability:', error)
-      setAvailableSlots(allTimeSlots)
+      setAvailableSlots(ALL_TIME_SLOTS)
     } finally {
       setCheckingAvailability(false)
     }
@@ -74,7 +69,7 @@ export default function BookPage() {
     if (formData.date) {
       checkAvailability(formData.date)
     } else {
-      setAvailableSlots(allTimeSlots)
+      setAvailableSlots(ALL_TIME_SLOTS)
     }
   }, [formData.date, checkAvailability])
 

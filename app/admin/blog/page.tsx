@@ -76,10 +76,10 @@ export default function AdminBlogPage() {
       .replace(/^-+|-+$/g, '')
   }
 
-  const showToast = (message: string, type: 'success' | 'error') => {
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
     setToast({ message, type })
     setTimeout(() => setToast(null), 4000)
-  }
+  }, [])
 
   const fetchPosts = useCallback(async () => {
     try {
