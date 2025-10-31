@@ -101,7 +101,14 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
               className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
             >
               <Wrench className="w-4 h-4 inline mr-2" />
-              Services
+              Diensten
+            </Link>
+            <Link
+              href="/admin/discounts"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Tag className="w-4 h-4 inline mr-2" />
+              Kortingscodes
             </Link>
             <Link
               href="/admin/blog"
@@ -229,7 +236,15 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
                   className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
                 >
                   <Wrench className="w-4 h-4 inline mr-2" />
-                  Services
+                  Diensten
+                </Link>
+                <Link
+                  href="/admin/discounts"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <Tag className="w-4 h-4 inline mr-2" />
+                  Kortingscodes
                 </Link>
                 <Link
                   href="/admin/blog"

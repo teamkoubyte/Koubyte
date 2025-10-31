@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DollarSign, CreditCard, CheckCircle, XCircle, Clock, RefreshCw, Filter, Search, Loader2 } from 'lucide-react'
+import { DollarSign, CreditCard, CheckCircle, XCircle, Clock, RefreshCw, Filter, Search, Loader2, RotateCcw } from 'lucide-react'
 
 interface Payment {
   id: string
@@ -43,6 +43,10 @@ export default function AdminPaymentsPage() {
     totalAmount: 0,
     completedAmount: 0,
   })
+  const [refunding, setRefunding] = useState<string | null>(null)
+  const [refundModal, setRefundModal] = useState<{ show: boolean; paymentId: string; amount: number } | null>(null)
+  const [refundReason, setRefundReason] = useState('')
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -70,6 +74,47 @@ export default function AdminPaymentsPage() {
 
   const handleRefresh = () => {
     fetchPayments()
+  }
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 4000)
+  }
+
+  const handleRefundClick = (paymentId: string, amount: number) => {
+    setRefundModal({ show: true, paymentId, amount })
+    setRefundReason('')
+  }
+
+  const handleRefund = async () => {
+    if (!refundModal) return
+
+    try {
+      setRefunding(refundModal.paymentId)
+      const response = await fetch('/api/admin/payments/refund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentId: refundModal.paymentId,
+          reason: refundReason || 'Geen reden opgegeven',
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        showToast(data.message || 'Betaling succesvol terugbetaald', 'success')
+        setRefundModal(null)
+        fetchPayments()
+      } else {
+        showToast(data.error || 'Fout bij terugbetaling', 'error')
+      }
+    } catch (error) {
+      console.error('Error processing refund:', error)
+      showToast('Er is een fout opgetreden', 'error')
+    } finally {
+      setRefunding(null)
+    }
   }
 
   const getStatusColor = (status: string) => {
@@ -356,21 +401,122 @@ export default function AdminPaymentsPage() {
                         minute: '2-digit',
                       })}
                     </p>
-                    {payment.orderId && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3 w-full"
-                        onClick={() => window.open(`/admin/orders?orderId=${payment.orderId}`, '_blank')}
-                      >
-                        Bekijk Order
-                      </Button>
-                    )}
+                    <div className="mt-3 space-y-2">
+                      {payment.orderId && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => window.open(`/admin/orders?orderId=${payment.orderId}`, '_blank')}
+                        >
+                          Bekijk Order
+                        </Button>
+                      )}
+                      {payment.status === 'completed' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                          onClick={() => handleRefundClick(payment.id, payment.amount)}
+                          disabled={refunding === payment.id}
+                        >
+                          {refunding === payment.id ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Verwerken...
+                            </>
+                          ) : (
+                            <>
+                              <RotateCcw className="w-4 h-4 mr-2" />
+                              Terugbetalen
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+            toast.type === 'success'
+              ? 'bg-green-50 border-green-500 text-green-900'
+              : 'bg-red-50 border-red-500 text-red-900'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <span className="font-semibold flex-1">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Refund Modal */}
+      {refundModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Terugbetaling bevestigen</CardTitle>
+              <CardDescription>
+                Weet je zeker dat je deze betaling wilt terugbetalen?
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Bedrag:</p>
+                  <p className="text-xl font-bold text-slate-900">
+                    €{refundModal.amount.toFixed(2).replace('.', ',')}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                    Reden (optioneel):
+                  </label>
+                  <textarea
+                    value={refundReason}
+                    onChange={(e) => setRefundReason(e.target.value)}
+                    placeholder="Bijv. Klant heeft om terugbetaling gevraagd"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setRefundModal(null)}
+                    className="flex-1"
+                    disabled={refunding !== null}
+                  >
+                    Annuleren
+                  </Button>
+                  <Button
+                    onClick={handleRefund}
+                    className="flex-1 bg-orange-600 hover:bg-orange-700"
+                    disabled={refunding !== null}
+                  >
+                    {refunding ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Verwerken...
+                      </>
+                    ) : (
+                      'Bevestigen'
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
