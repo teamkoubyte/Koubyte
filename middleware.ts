@@ -4,6 +4,14 @@ import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl
+	const hostname = request.headers.get('host') || ''
+	
+	// Redirect www naar non-www (SEO best practice)
+	if (hostname === 'www.koubyte.be') {
+		const url = new URL(request.url)
+		url.hostname = 'koubyte.be'
+		return NextResponse.redirect(url, 308) // 308 = permanent redirect
+	}
 
 	// Decode NextAuth token (requires NEXTAUTH_SECRET)
 	const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })

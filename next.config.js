@@ -16,6 +16,23 @@ const nextConfig = {
   // Power-ups voor SEO
   poweredByHeader: false,
   
+  // Redirects voor www/non-www domeinen
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.koubyte.be',
+          },
+        ],
+        destination: 'https://koubyte.be/:path*',
+        permanent: true,
+      },
+    ]
+  },
+  
   // Headers voor security en performance
   async headers() {
     return [
