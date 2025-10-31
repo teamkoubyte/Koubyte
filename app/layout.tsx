@@ -96,6 +96,9 @@ export const viewport: Viewport = {
   themeColor: '#2563eb',
 }
 
+// Layout moet dynamisch zijn omdat het getServerSession gebruikt
+export const dynamic = 'force-dynamic'
+
 // Dynamische Structured Data genereren met echte reviews uit database
 async function getStructuredData() {
   try {
