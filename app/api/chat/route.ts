@@ -23,8 +23,63 @@ export async function GET(request: Request) {
       return createErrorResponse(null, 'conversationId is verplicht', 400)
     }
 
-    // Check of gebruiker toegang heeft tot deze conversatie
     const session = await getServerSession(authOptions)
+
+    // SECURITY: Valideer toegang tot conversatie
+    if (session?.user?.role === 'admin') {
+      // Admins kunnen alle conversaties zien
+    } else if (session?.user) {
+      // Ingelogde gebruiker: conversationId moet overeenkomen met user email of userId
+      // Check of deze conversatie bij deze gebruiker hoort
+      const userConversation = await prisma.chatMessage.findFirst({
+        where: {
+          conversationId,
+          OR: [
+            { userId: session.user.id },
+            { conversationId: session.user.email },
+          ],
+        },
+        select: { id: true },
+      })
+
+      if (!userConversation) {
+        // Check of conversationId de email is van de gebruiker
+        if (conversationId !== session.user.email) {
+          return createErrorResponse(null, 'Geen toegang tot deze conversatie', 403)
+        }
+      }
+    } else {
+      // Gast gebruiker: strengere validatie
+      // Check of dit conversationId inderdaad bij een gast conversatie hoort
+      // We kunnen niet valideren op basis van email omdat die niet meegegeven wordt
+      // Maar we kunnen wel checken of dit conversationId al bestaat en bij een gast hoort
+      
+      // Haal eerste message op om te checken of het een gast conversatie is
+      const firstMessage = await prisma.chatMessage.findFirst({
+        where: { conversationId },
+        select: { senderEmail: true, senderName: true, userId: true },
+      })
+
+      // Als de conversatie bestaat maar er is een userId, dan is het geen gast conversatie
+      // En gasten mogen niet in ingelogde gebruiker conversaties kijken
+      if (firstMessage && firstMessage.userId) {
+        return createErrorResponse(null, 'Geen toegang tot deze conversatie', 403)
+      }
+
+      // Als de conversatie bestaat en het is een gast (geen userId), laat het toe
+      // Als de conversatie niet bestaat, laat het toe (nieuwe conversatie)
+      // Maar voorkom dat gasten email-adressen kunnen gebruiken als conversationId
+      if (!conversationId.startsWith('guest-') && conversationId.includes('@')) {
+        // Als het een email lijkt, weiger het voor gasten (tenzij ze die email zelf hebben gebruikt)
+        // Dit voorkomt dat gasten kunnen gokken op email-adressen
+        if (!firstMessage || !firstMessage.senderEmail || conversationId !== firstMessage.senderEmail) {
+          // Alleen toegang als dit conversationId overeenkomt met de senderEmail van de eerste message
+          // Of als het een nieuwe conversatie is (firstMessage is null)
+          // Maar voor nieuwe conversaties moeten gasten "guest-" prefix gebruiken
+          return createErrorResponse(null, 'Ongeldige conversatie ID voor gast gebruikers', 403)
+        }
+      }
+    }
 
     // Haal messages op voor deze conversatie
     const messages = await prisma.chatMessage.findMany({
