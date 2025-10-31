@@ -37,15 +37,13 @@ export async function POST() {
             "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
             "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT "ChatMessage_pkey" PRIMARY KEY ("id")
-          );
+          )
         `)
 
-        // Maak indexes aan
-        await prisma.$executeRawUnsafe(`
-          CREATE INDEX IF NOT EXISTS "ChatMessage_conversationId_idx" ON "ChatMessage"("conversationId");
-          CREATE INDEX IF NOT EXISTS "ChatMessage_userId_idx" ON "ChatMessage"("userId");
-          CREATE INDEX IF NOT EXISTS "ChatMessage_createdAt_idx" ON "ChatMessage"("createdAt");
-        `)
+        // Maak indexes aan (elk apart)
+        await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "ChatMessage_conversationId_idx" ON "ChatMessage"("conversationId")`)
+        await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "ChatMessage_userId_idx" ON "ChatMessage"("userId")`)
+        await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "ChatMessage_createdAt_idx" ON "ChatMessage"("createdAt")`)
 
         // Maak foreign key aan (als deze nog niet bestaat)
         try {
@@ -55,11 +53,11 @@ export async function POST() {
             FOREIGN KEY ("userId") 
             REFERENCES "User"("id") 
             ON DELETE SET NULL 
-            ON UPDATE CASCADE;
+            ON UPDATE CASCADE
           `)
         } catch (fkError: any) {
           // Foreign key bestaat mogelijk al, dat is OK
-          if (!fkError.message?.includes('already exists')) {
+          if (!fkError.message?.includes('already exists') && !fkError.message?.includes('duplicate key')) {
             throw fkError
           }
         }
