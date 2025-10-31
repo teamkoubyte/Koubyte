@@ -77,8 +77,15 @@ export async function POST(request: Request) {
 
       // Verstuur notificatie email naar klant
       try {
+        // Haal order op voor email
+        const order = await prisma.order.findUnique({
+          where: { id: payment.orderId },
+          select: { customerEmail: true },
+        })
         // TODO: Implement refund confirmation email
-        console.log(`Refund email zou verzonden worden naar ${payment.order?.customerEmail}`)
+        if (order) {
+          console.log(`Refund email zou verzonden worden naar ${order.customerEmail}`)
+        }
       } catch (emailError) {
         console.error('Failed to send refund email:', emailError)
         // Email fout mag refund niet blokkeren
