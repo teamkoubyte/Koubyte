@@ -257,7 +257,7 @@ export default function AdminQuotesPage() {
 
               <div className="pt-2 border-t">
                 <p className="text-sm font-semibold text-slate-900 mb-1">Geschatte prijs:</p>
-                <p className="text-lg font-bold text-blue-600">{formatPrice(quote.estimatedPrice)}</p>
+                <p className="text-lg font-bold text-blue-600">{quote.estimatedPrice ? formatPrice(quote.estimatedPrice) : 'N/A'}</p>
               </div>
 
               <p className="text-sm text-slate-600 line-clamp-3">{quote.description}</p>
@@ -322,7 +322,7 @@ export default function AdminQuotesPage() {
                 </div>
                 <div>
                   <Label className="text-sm font-semibold text-slate-600">Geschatte prijs</Label>
-                  <p className="mt-1 text-lg font-bold text-blue-600">{formatPrice(selectedQuote.estimatedPrice)}</p>
+                  <p className="mt-1 text-lg font-bold text-blue-600">{selectedQuote.estimatedPrice ? formatPrice(selectedQuote.estimatedPrice) : 'N/A'}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-semibold text-slate-600">Datum</Label>

@@ -17,10 +17,20 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = contactSchema.parse(body)
 
-    // Sla bericht op in database
-    const contactMessage = await prisma.contactMessage.create({
-      data: validatedData,
-    })
+    // Sla bericht op in database (als tabel bestaat)
+    let contactMessage = null
+    try {
+      contactMessage = await prisma.contactMessage.create({
+        data: validatedData,
+      })
+    } catch (dbError: any) {
+      // Tabel bestaat mogelijk niet - log maar blokkeer niet
+      if (dbError?.code === 'P2021') {
+        console.log('ContactMessage tabel niet gevonden, skip database opslag')
+      } else {
+        throw dbError
+      }
+    }
 
     // Email versturen naar admin
     try {

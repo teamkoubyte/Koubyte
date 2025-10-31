@@ -18,12 +18,21 @@ export async function GET(request: Request) {
 
     const where = status ? { status } : {}
 
-    const messages = await prisma.contactMessage.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-    })
-
-    return NextResponse.json(messages)
+    // Check of ContactMessage tabel bestaat
+    try {
+      const messages = await prisma.contactMessage.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+      })
+      return NextResponse.json(messages)
+    } catch (dbError: any) {
+      // Tabel bestaat mogelijk niet - return lege array
+      if (dbError?.code === 'P2021') {
+        console.log('ContactMessage tabel niet gevonden, return lege array')
+        return NextResponse.json([])
+      }
+      throw dbError
+    }
   } catch (error) {
     return createErrorResponse(error, 'Fout bij ophalen berichten', 500)
   }
@@ -40,12 +49,18 @@ export async function PATCH(request: Request) {
 
     const { id, status } = await request.json()
 
-    const message = await prisma.contactMessage.update({
-      where: { id },
-      data: { status },
-    })
-
-    return NextResponse.json(message)
+    try {
+      const message = await prisma.contactMessage.update({
+        where: { id },
+        data: { status },
+      })
+      return NextResponse.json(message)
+    } catch (dbError: any) {
+      if (dbError?.code === 'P2021') {
+        return createErrorResponse(null, 'ContactMessage tabel niet gevonden. Voer eerst migraties uit.', 503)
+      }
+      throw dbError
+    }
   } catch (error) {
     return createErrorResponse(error, 'Fout bij updaten bericht', 500)
   }
@@ -67,11 +82,17 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'ID is verplicht' }, { status: 400 })
     }
 
-    await prisma.contactMessage.delete({
-      where: { id },
-    })
-
-    return NextResponse.json({ success: true })
+    try {
+      await prisma.contactMessage.delete({
+        where: { id },
+      })
+      return NextResponse.json({ success: true })
+    } catch (dbError: any) {
+      if (dbError?.code === 'P2021') {
+        return createErrorResponse(null, 'ContactMessage tabel niet gevonden. Voer eerst migraties uit.', 503)
+      }
+      throw dbError
+    }
   } catch (error) {
     return createErrorResponse(error, 'Fout bij verwijderen bericht', 500)
   }

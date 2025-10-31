@@ -94,23 +94,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
-    // Haal alle gepubliceerde blogposts op
-    const blogPosts = await prisma.blogPost.findMany({
-      where: { published: true },
-      select: {
-        slug: true,
-        updatedAt: true,
-      },
-      orderBy: { updatedAt: 'desc' },
-    })
+    // Haal alle gepubliceerde blogposts op (als BlogPost tabel bestaat)
+    let blogPages: MetadataRoute.Sitemap = []
+    try {
+      const blogPosts = await prisma.blogPost.findMany({
+        where: { published: true },
+        select: {
+          slug: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+      })
 
-    // Dynamische blog post pagina's
-    const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.updatedAt || new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }))
+      // Dynamische blog post pagina's
+      blogPages = blogPosts.map((post) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: post.updatedAt || new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      }))
+    } catch (blogError: any) {
+      // BlogPost tabel bestaat mogelijk niet - skip blog pages
+      if (blogError?.code === 'P2021') {
+        console.log('BlogPost tabel niet gevonden, blog pagina\'s worden overgeslagen')
+      } else {
+        console.error('Error fetching blog posts for sitemap:', blogError)
+      }
+    }
 
     return [...staticPages, ...servicePages, ...blogPages]
   } catch (error) {
