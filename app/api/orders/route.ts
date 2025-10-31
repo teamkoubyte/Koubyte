@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmationEmail, sendAdminNotificationEmail } from '@/lib/email'
+import { createErrorResponse } from '@/lib/api-error'
 
 // POST - Create new order (supports both logged in users and guests)
 export async function POST(request: Request) {
@@ -208,12 +209,7 @@ export async function POST(request: Request) {
       orderNumber 
     }, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating order:', error)
-    return NextResponse.json({ 
-      error: 'Fout bij plaatsen bestelling',
-      details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij plaatsen bestelling', 500)
   }
 }
 
@@ -238,8 +234,7 @@ export async function GET() {
 
     return NextResponse.json({ orders }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching orders:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen bestellingen' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen bestellingen', 500)
   }
 }
 

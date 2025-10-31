@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Get all reviews (for admin)
 export async function GET() {
@@ -21,8 +22,7 @@ export async function GET() {
 
     return NextResponse.json({ reviews })
   } catch (error) {
-    console.error('Get admin reviews error:', error)
-    return NextResponse.json({ error: 'Er ging iets mis' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen reviews', 500)
   }
 }
 

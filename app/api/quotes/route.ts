@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendAdminNotificationEmail } from '@/lib/email'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 const quoteSchema = z.object({
   name: z.string().min(2, 'Naam is verplicht'),
@@ -46,11 +47,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ quotes }, { status: 200 })
   } catch (error: any) {
-    console.error('Error fetching quotes:', error)
-    return NextResponse.json(
-      { error: 'Fout bij ophalen offertes' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen offertes', 500)
   }
 }
 
@@ -98,17 +95,10 @@ export async function POST(request: Request) {
     )
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Validatie fout', 400)
     }
 
-    console.error('Error creating quote:', error)
-    return NextResponse.json(
-      { error: 'Fout bij aanmaken offerte aanvraag' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij aanmaken offerte aanvraag', 500)
   }
 }
 

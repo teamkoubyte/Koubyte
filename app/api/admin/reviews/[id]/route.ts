@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // PATCH - Approve/Reject review
 export async function PATCH(
@@ -30,10 +31,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, review })
   } catch (error) {
-    console.error('❌ Review update error:', error)
-    return NextResponse.json({ 
-      error: 'Fout bij updaten review: ' + (error instanceof Error ? error.message : 'Onbekende fout')
-    }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij updaten review', 500)
   }
 }
 
@@ -61,10 +59,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true, message: 'Review succesvol verwijderd' })
   } catch (error) {
-    console.error('❌ Review delete error:', error)
-    return NextResponse.json({ 
-      error: 'Fout bij verwijderen review: ' + (error instanceof Error ? error.message : 'Onbekende fout')
-    }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen review', 500)
   }
 }
 

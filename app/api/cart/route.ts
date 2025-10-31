@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal winkelwagentje op
 export async function GET() {
@@ -30,8 +31,7 @@ export async function GET() {
 
     return NextResponse.json({ cartItems }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching cart:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen winkelwagentje' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen winkelwagentje', 500)
   }
 }
 
@@ -111,8 +111,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ cartItem, message: 'Toegevoegd aan winkelwagentje' }, { status: 201 })
   } catch (error) {
-    console.error('Error adding to cart:', error)
-    return NextResponse.json({ error: 'Fout bij toevoegen aan winkelwagentje' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij toevoegen aan winkelwagentje', 500)
   }
 }
 
@@ -169,11 +168,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ message: 'Verwijderd uit winkelwagentje' }, { status: 200 })
   } catch (error) {
-    console.error('Error removing from cart:', error)
-    return NextResponse.json({ 
-      error: 'Fout bij verwijderen', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
-    }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen uit winkelwagentje', 500)
   }
 }
 
@@ -219,8 +214,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ cartItem: updated }, { status: 200 })
   } catch (error) {
-    console.error('Error updating cart:', error)
-    return NextResponse.json({ error: 'Fout bij bijwerken' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij bijwerken winkelwagentje', 500)
   }
 }
 

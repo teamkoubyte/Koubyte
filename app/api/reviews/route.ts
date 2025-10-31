@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 const reviewSchema = z.object({
   name: z.string().min(2),
@@ -31,17 +32,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, review }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Ongeldige gegevens' },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Ongeldige gegevens', 400)
     }
 
-    console.error('Review error:', error)
-    return NextResponse.json(
-      { error: 'Er ging iets mis' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij aanmaken review', 500)
   }
 }
 
@@ -75,11 +69,7 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error('Get reviews error:', error)
-    return NextResponse.json(
-      { error: 'Er ging iets mis' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen reviews', 500)
   }
 }
 

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 const updateReviewSchema = z.object({
   rating: z.number().min(1).max(5).optional(),
@@ -52,14 +53,10 @@ export async function PATCH(
     return NextResponse.json({ review: updated }, { status: 200 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Validatie fout', 400)
     }
 
-    console.error('Error updating review:', error)
-    return NextResponse.json({ error: 'Fout bij updaten review' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij updaten review', 500)
   }
 }
 
@@ -95,8 +92,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Review succesvol verwijderd' }, { status: 200 })
   } catch (error) {
-    console.error('Error deleting review:', error)
-    return NextResponse.json({ error: 'Fout bij verwijderen review' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen review', 500)
   }
 }
 

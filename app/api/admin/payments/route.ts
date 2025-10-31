@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal alle betalingen op (admin only)
 export async function GET(request: Request) {
@@ -63,8 +64,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ payments, stats }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching payments:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen betalingen' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen betalingen', 500)
   }
 }
 

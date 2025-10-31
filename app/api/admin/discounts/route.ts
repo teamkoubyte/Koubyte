@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal alle kortingscodes op (admin only)
 export async function GET(request: Request) {
@@ -28,8 +29,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ codes }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching discount codes:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen kortingscodes' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen kortingscodes', 500)
   }
 }
 
@@ -77,11 +77,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ code: discountCode }, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating discount code:', error)
-    if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Deze kortingscode bestaat al' }, { status: 400 })
-    }
-    return NextResponse.json({ error: 'Fout bij aanmaken kortingscode' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij aanmaken kortingscode', 500)
   }
 }
 
@@ -132,14 +128,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ code: updated }, { status: 200 })
   } catch (error: any) {
-    console.error('Error updating discount code:', error)
-    if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Deze kortingscode bestaat al' }, { status: 400 })
-    }
-    if (error.code === 'P2025') {
-      return NextResponse.json({ error: 'Kortingscode niet gevonden' }, { status: 404 })
-    }
-    return NextResponse.json({ error: 'Fout bij bijwerken kortingscode' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij bijwerken kortingscode', 500)
   }
 }
 
@@ -164,11 +153,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ message: 'Kortingscode succesvol verwijderd' }, { status: 200 })
   } catch (error: any) {
-    console.error('Error deleting discount code:', error)
-    if (error.code === 'P2025') {
-      return NextResponse.json({ error: 'Kortingscode niet gevonden' }, { status: 404 })
-    }
-    return NextResponse.json({ error: 'Fout bij verwijderen kortingscode' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen kortingscode', 500)
   }
 }
 

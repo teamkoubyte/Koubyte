@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendReviewRequestEmail } from '@/lib/email'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Fetch all orders (admin only)
 export async function GET() {
@@ -36,8 +37,7 @@ export async function GET() {
 
     return NextResponse.json({ orders, stats }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching orders:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen bestellingen' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen bestellingen', 500)
   }
 }
 
@@ -105,8 +105,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ order }, { status: 200 })
   } catch (error) {
-    console.error('Error updating order:', error)
-    return NextResponse.json({ error: 'Fout bij bijwerken bestelling' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij bijwerken bestelling', 500)
   }
 }
 
@@ -133,8 +132,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ message: 'Bestelling succesvol verwijderd' }, { status: 200 })
   } catch (error) {
-    console.error('Error deleting order:', error)
-    return NextResponse.json({ error: 'Fout bij verwijderen bestelling' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen bestelling', 500)
   }
 }
 

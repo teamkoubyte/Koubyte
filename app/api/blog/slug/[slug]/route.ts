@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 interface RouteParams {
   params: Promise<{ slug: string }>
@@ -28,11 +29,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     return NextResponse.json({ post }, { status: 200 })
   } catch (error: any) {
-    console.error('Error fetching blog post by slug:', error)
-    return NextResponse.json(
-      { error: 'Fout bij ophalen blogpost' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen blogpost', 500)
   }
 }
 

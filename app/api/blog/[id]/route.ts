@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -43,11 +44,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     return NextResponse.json({ post }, { status: 200 })
   } catch (error: any) {
-    console.error('Error fetching blog post:', error)
-    return NextResponse.json(
-      { error: 'Fout bij ophalen blogpost' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen blogpost', 500)
   }
 }
 
@@ -105,17 +102,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ post }, { status: 200 })
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Validatie fout', 400)
     }
 
-    console.error('Error updating blog post:', error)
-    return NextResponse.json(
-      { error: 'Fout bij bijwerken blogpost' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij bijwerken blogpost', 500)
   }
 }
 
@@ -143,11 +133,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     return NextResponse.json({ message: 'Blogpost succesvol verwijderd' }, { status: 200 })
   } catch (error: any) {
-    console.error('Error deleting blog post:', error)
-    return NextResponse.json(
-      { error: 'Fout bij verwijderen blogpost' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij verwijderen blogpost', 500)
   }
 }
 

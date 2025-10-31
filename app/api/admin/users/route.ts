@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal alle gebruikers op
 export async function GET(request: Request) {
@@ -31,8 +32,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(users)
   } catch (error) {
-    console.error('Error fetching users:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen gebruikers' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen gebruikers', 500)
   }
 }
 
@@ -72,8 +72,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(user)
   } catch (error) {
-    console.error('Error updating user:', error)
-    return NextResponse.json({ error: 'Fout bij updaten gebruiker' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij updaten gebruiker', 500)
   }
 }
 
@@ -124,10 +123,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true, message: 'Gebruiker succesvol verwijderd' })
   } catch (error: any) {
-    if (error?.code === 'P2003') {
-      return NextResponse.json({ error: 'Kan gebruiker niet verwijderen door gekoppelde gegevens' }, { status: 400 })
-    }
-    return NextResponse.json({ error: 'Fout bij verwijderen: ' + (error?.message || 'Onbekende fout') }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen gebruiker', 500)
   }
 }
 

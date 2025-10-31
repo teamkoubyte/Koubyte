@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Get order by order number (for review page)
 export async function GET(request: Request) {
@@ -35,11 +36,7 @@ export async function GET(request: Request) {
       },
     }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching order:', error)
-    return NextResponse.json(
-      { error: 'Fout bij ophalen order' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen order', 500)
   }
 }
 

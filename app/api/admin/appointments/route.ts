@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal alle afspraken op
 export async function GET(request: Request) {
@@ -33,8 +34,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(appointments)
   } catch (error) {
-    console.error('Error fetching appointments:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen afspraken' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen afspraken', 500)
   }
 }
 
@@ -65,8 +65,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(appointment)
   } catch (error) {
-    console.error('Error updating appointment:', error)
-    return NextResponse.json({ error: 'Fout bij updaten afspraak' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij updaten afspraak', 500)
   }
 }
 
@@ -86,19 +85,13 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'ID is verplicht' }, { status: 400 })
     }
 
-    // Enable foreign keys
-    await prisma.$executeRawUnsafe('PRAGMA foreign_keys = ON;')
-    
     await prisma.appointment.delete({
       where: { id },
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting appointment:', error)
-    return NextResponse.json({ 
-      error: 'Fout bij verwijderen afspraak: ' + (error instanceof Error ? error.message : 'Onbekende fout')
-    }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen afspraak', 500)
   }
 }
 

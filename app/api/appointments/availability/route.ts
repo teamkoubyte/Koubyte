@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET: Check beschikbaarheid voor een specifieke datum
 export async function GET(request: Request) {
@@ -47,11 +48,7 @@ export async function GET(request: Request) {
       bookedCount: bookedTimes.length,
     }, { status: 200 })
   } catch (error: any) {
-    console.error('Error checking availability:', error)
-    return NextResponse.json(
-      { error: 'Fout bij controleren beschikbaarheid' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij controleren beschikbaarheid', 500)
   }
 }
 

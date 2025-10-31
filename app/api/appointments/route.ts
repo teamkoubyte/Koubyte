@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendAppointmentEmail, sendAdminNotificationEmail } from '@/lib/email'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 const appointmentSchema = z.object({
   name: z.string().min(2),
@@ -95,17 +96,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, appointment }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Ongeldige gegevens' },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Ongeldige gegevens', 400)
     }
 
-    console.error('Appointment error:', error)
-    return NextResponse.json(
-      { error: 'Er ging iets mis' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij aanmaken afspraak', 500)
   }
 }
 
@@ -132,10 +126,6 @@ export async function GET() {
 
     return NextResponse.json({ appointments }, { status: 200 })
   } catch (error) {
-    console.error('Get appointments error:', error)
-    return NextResponse.json(
-      { error: 'Er ging iets mis' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen afspraken', 500)
   }
 }

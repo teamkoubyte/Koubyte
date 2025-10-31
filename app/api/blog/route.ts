@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 const blogPostSchema = z.object({
   title: z.string().min(1, 'Titel is verplicht'),
@@ -51,11 +52,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ posts }, { status: 200 })
   } catch (error: any) {
-    console.error('Error fetching blog posts:', error)
-    return NextResponse.json(
-      { error: 'Fout bij ophalen blogposts' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij ophalen blogposts', 500)
   }
 }
 
@@ -92,17 +89,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ post }, { status: 201 })
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Validatie fout', 400)
     }
 
-    console.error('Error creating blog post:', error)
-    return NextResponse.json(
-      { error: 'Fout bij aanmaken blogpost' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij aanmaken blogpost', 500)
   }
 }
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal alle reviews op van ingelogde gebruiker
 export async function GET() {
@@ -22,8 +23,7 @@ export async function GET() {
 
     return NextResponse.json({ reviews }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching user reviews:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen reviews' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen reviews', 500)
   }
 }
 

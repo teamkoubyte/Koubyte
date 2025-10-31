@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sendAdminNotificationEmail } from '@/lib/email'
+import { createErrorResponse } from '@/lib/api-error'
 
 // POST - Refund een betaling (admin only)
 export async function POST(request: Request) {
@@ -85,10 +86,7 @@ export async function POST(request: Request) {
       payment: updatedPayment 
     }, { status: 200 })
   } catch (error: any) {
-    console.error('Error processing refund:', error)
-    return NextResponse.json({ 
-      error: 'Fout bij verwerken terugbetaling: ' + (error.message || 'Onbekende fout')
-    }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwerken terugbetaling', 500)
   }
 }
 

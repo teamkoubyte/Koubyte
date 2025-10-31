@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Alle services ophalen
 export async function GET() {
@@ -16,8 +17,7 @@ export async function GET() {
 
     return NextResponse.json({ services }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching services:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen diensten' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen diensten', 500)
   }
 }
 
@@ -59,8 +59,7 @@ export async function POST(request: Request) {
       message: 'Service succesvol aangemaakt' 
     }, { status: 201 })
   } catch (error) {
-    console.error('Error creating service:', error)
-    return NextResponse.json({ error: 'Fout bij aanmaken service' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij aanmaken service', 500)
   }
 }
 

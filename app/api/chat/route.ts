@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 // Schema voor chat message validatie
 const chatMessageSchema = z.object({
@@ -57,8 +58,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ messages }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching chat messages:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen chat messages' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen chat messages', 500)
   }
 }
 
@@ -122,11 +122,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: chatMessage }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
+      return createErrorResponse(error, 'Validatie fout', 400)
     }
 
-    console.error('Error creating chat message:', error)
-    return NextResponse.json({ error: 'Fout bij versturen chat message' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij versturen chat message', 500)
   }
 }
 
