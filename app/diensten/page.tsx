@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Check, ShoppingCart, Loader2, Star, Clock } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Check, ShoppingCart, Loader2, Star, Clock, Search, Filter, X, ArrowUpDown } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -30,6 +32,13 @@ export default function DienstenPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
+  
+  // Advanced filters
+  const [searchQuery, setSearchQuery] = useState('')
+  const [minPrice, setMinPrice] = useState<string>('')
+  const [maxPrice, setMaxPrice] = useState<string>('')
+  const [sortBy, setSortBy] = useState<string>('featured') // featured, price-asc, price-desc, name-asc, name-desc
+  const [showFilters, setShowFilters] = useState(false)
 
   const categories = [
     { value: 'all', label: 'Alle Diensten' },
@@ -98,9 +107,71 @@ export default function DienstenPage() {
     }
   }
 
-  const filteredServices = selectedCategory === 'all' 
-    ? services 
-    : services.filter(s => s.category === selectedCategory)
+  // Calculate price range from services
+  const priceRange = useMemo(() => {
+    if (services.length === 0) return { min: 0, max: 0 }
+    const prices = services.map(s => s.price)
+    return {
+      min: Math.floor(Math.min(...prices)),
+      max: Math.ceil(Math.max(...prices)),
+    }
+  }, [services])
+
+  // Advanced filtering and sorting
+  const filteredAndSortedServices = useMemo(() => {
+    let filtered = [...services]
+
+    // Category filter
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(s => s.category === selectedCategory)
+    }
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim()
+      filtered = filtered.filter(s => 
+        s.name.toLowerCase().includes(query) ||
+        s.description.toLowerCase().includes(query) ||
+        s.category.toLowerCase().includes(query)
+      )
+    }
+
+    // Price filter
+    if (minPrice) {
+      const min = parseFloat(minPrice)
+      if (!isNaN(min)) {
+        filtered = filtered.filter(s => s.price >= min)
+      }
+    }
+    if (maxPrice) {
+      const max = parseFloat(maxPrice)
+      if (!isNaN(max)) {
+        filtered = filtered.filter(s => s.price <= max)
+      }
+    }
+
+    // Sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-asc':
+          return a.price - b.price
+        case 'price-desc':
+          return b.price - a.price
+        case 'name-asc':
+          return a.name.localeCompare(b.name, 'nl')
+        case 'name-desc':
+          return b.name.localeCompare(a.name, 'nl')
+        case 'featured':
+        default:
+          // Featured first, then by price ascending
+          if (a.popular && !b.popular) return -1
+          if (!a.popular && b.popular) return 1
+          return a.price - b.price
+      }
+    })
+
+    return filtered
+  }, [services, selectedCategory, searchQuery, minPrice, maxPrice, sortBy])
 
   if (loading) {
     return (
@@ -137,32 +208,161 @@ export default function DienstenPage() {
         </div>
       )}
 
-      {/* Category Filter */}
+      {/* Advanced Filters Section */}
       <section className="py-6 sm:py-8 px-3 sm:px-4 bg-white border-b sticky top-0 z-40 shadow-sm overflow-x-hidden w-full">
         <div className="container mx-auto max-w-6xl overflow-x-hidden w-full">
-          <div className="flex gap-2 sm:gap-2.5 overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {categories.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setSelectedCategory(cat.value)}
-                className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold whitespace-nowrap transition-all text-sm sm:text-base ${
-                  selectedCategory === cat.value
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Input
+                type="text"
+                placeholder="Zoek diensten..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10 h-12 text-base"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category Filter - Horizontal Scroll */}
+          <div className="mb-4">
+            <div className="flex gap-2 sm:gap-2.5 overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {categories.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setSelectedCategory(cat.value)}
+                  className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold whitespace-nowrap transition-all text-sm sm:text-base ${
+                    selectedCategory === cat.value
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Advanced Filters Toggle & Sort */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all text-sm font-medium"
+            >
+              <Filter className="w-4 h-4" />
+              {showFilters ? 'Verberg filters' : 'Toon filters'}
+              {(minPrice || maxPrice) && (
+                <span className="bg-blue-600 text-white rounded-full px-2 py-0.5 text-xs font-bold">
+                  1
+                </span>
+              )}
+            </button>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <ArrowUpDown className="w-4 h-4" />
+                <span className="hidden sm:inline">Sorteer:</span>
+              </div>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full sm:w-[200px] h-10 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="featured">Aanbevolen</SelectItem>
+                  <SelectItem value="price-asc">Prijs: Laag → Hoog</SelectItem>
+                  <SelectItem value="price-desc">Prijs: Hoog → Laag</SelectItem>
+                  <SelectItem value="name-asc">Naam: A → Z</SelectItem>
+                  <SelectItem value="name-desc">Naam: Z → A</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Advanced Filters Panel */}
+          {showFilters && (
+            <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200 animate-fadeInDown">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Min Price */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Min. prijs (€)
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder={`Van €${priceRange.min}`}
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    min={priceRange.min}
+                    max={priceRange.max}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Max Price */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Max. prijs (€)
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder={`Tot €${priceRange.max}`}
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    min={minPrice ? parseFloat(minPrice) : priceRange.min}
+                    max={priceRange.max}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Reset Filters */}
+              {(minPrice || maxPrice) && (
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setMinPrice('')
+                      setMaxPrice('')
+                    }}
+                    className="text-sm"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Reset prijs filters
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Results Count */}
+          <div className="mt-4 text-sm text-slate-600">
+            {filteredAndSortedServices.length === 0 ? (
+              <span>Geen diensten gevonden</span>
+            ) : filteredAndSortedServices.length === services.length ? (
+              <span>{filteredAndSortedServices.length} dienst{filteredAndSortedServices.length !== 1 ? 'en' : ''} beschikbaar</span>
+            ) : (
+              <span>
+                {filteredAndSortedServices.length} van {services.length} dienst{filteredAndSortedServices.length !== 1 ? 'en' : ''} getoond
+              </span>
+            )}
           </div>
         </div>
       </section>
 
       {/* Services Grid */}
-      <section className="py-16 px-4 bg-slate-50">
-        <div className="container mx-auto max-w-6xl">
+      <section className="py-16 px-3 sm:px-4 bg-slate-50 overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-6xl w-full overflow-x-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredServices.map((service) => {
+            {filteredAndSortedServices.map((service) => {
               const features = service.features ? JSON.parse(service.features) : []
               
               return (
@@ -241,9 +441,25 @@ export default function DienstenPage() {
             })}
           </div>
 
-          {filteredServices.length === 0 && (
+          {filteredAndSortedServices.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-xl text-slate-600">Geen diensten gevonden in deze categorie.</p>
+              <Search className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+              <p className="text-xl font-semibold text-slate-900 mb-2">Geen diensten gevonden</p>
+              <p className="text-slate-600 mb-4">
+                Probeer andere filters of zoektermen te gebruiken
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedCategory('all')
+                  setSearchQuery('')
+                  setMinPrice('')
+                  setMaxPrice('')
+                  setSortBy('featured')
+                }}
+              >
+                Reset alle filters
+              </Button>
             </div>
           )}
         </div>
