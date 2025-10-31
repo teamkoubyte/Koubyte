@@ -388,12 +388,12 @@ export default function ChatWidget() {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Typ je bericht..."
-                  disabled={sending || (!session && !guestDataValid && showGuestForm)}
+                  disabled={sending || (!session && (!guestName.trim() || !guestEmail.trim()))}
                   className="flex-1"
                 />
                 <Button
                   onClick={handleSendMessage}
-                  disabled={sending || !newMessage.trim() || (!session && !guestDataValid && showGuestForm)}
+                  disabled={sending || !newMessage.trim() || (!session && (!guestName.trim() || !guestEmail.trim()))}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   {sending ? (
