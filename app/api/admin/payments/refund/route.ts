@@ -74,7 +74,6 @@ export async function POST(request: Request) {
             customerName: true,
             orderNumber: true,
             paymentMethod: true,
-            total: true,
           },
         })
         
