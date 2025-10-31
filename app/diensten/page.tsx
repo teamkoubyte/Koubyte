@@ -233,25 +233,6 @@ export default function DienstenPage() {
             </div>
           </div>
 
-          {/* Category Filter - Horizontal Scroll */}
-          <div className="mb-4">
-            <div className="flex gap-2 sm:gap-2.5 overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {categories.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold whitespace-nowrap transition-all text-sm sm:text-base ${
-                    selectedCategory === cat.value
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Advanced Filters Toggle & Sort */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <button
@@ -260,9 +241,9 @@ export default function DienstenPage() {
             >
               <Filter className="w-4 h-4" />
               {showFilters ? 'Verberg filters' : 'Toon filters'}
-              {(minPrice || maxPrice) && (
+              {((selectedCategory !== 'all') || minPrice || maxPrice) && (
                 <span className="bg-blue-600 text-white rounded-full px-2 py-0.5 text-xs font-bold">
-                  1
+                  {[selectedCategory !== 'all' ? 1 : 0, minPrice ? 1 : 0, maxPrice ? 1 : 0].reduce((a, b) => a + b, 0)}
                 </span>
               )}
             </button>
@@ -290,7 +271,30 @@ export default function DienstenPage() {
           {/* Advanced Filters Panel */}
           {showFilters && (
             <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200 animate-fadeInDown">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Category Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-700 mb-3">
+                  Soort dienst
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.value}
+                      onClick={() => setSelectedCategory(cat.value)}
+                      className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium whitespace-nowrap transition-all text-sm sm:text-base ${
+                        selectedCategory === cat.value
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Filters */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 {/* Min Price */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -325,18 +329,19 @@ export default function DienstenPage() {
               </div>
 
               {/* Reset Filters */}
-              {(minPrice || maxPrice) && (
+              {((selectedCategory !== 'all') || minPrice || maxPrice) && (
                 <div className="mt-4 flex justify-end">
                   <Button
                     variant="outline"
                     onClick={() => {
+                      setSelectedCategory('all')
                       setMinPrice('')
                       setMaxPrice('')
                     }}
                     className="text-sm"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Reset prijs filters
+                    Reset alle filters
                   </Button>
                 </div>
               )}
@@ -456,6 +461,7 @@ export default function DienstenPage() {
                   setMinPrice('')
                   setMaxPrice('')
                   setSortBy('featured')
+                  setShowFilters(true)
                 }}
               >
                 Reset alle filters
