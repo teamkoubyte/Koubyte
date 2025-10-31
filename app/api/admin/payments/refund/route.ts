@@ -24,12 +24,6 @@ export async function POST(request: Request) {
       where: { id: paymentId },
       include: {
         order: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
       },
     })
 
@@ -57,12 +51,6 @@ export async function POST(request: Request) {
       },
       include: {
         order: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
       },
     })
 
