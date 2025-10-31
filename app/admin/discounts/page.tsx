@@ -25,6 +25,7 @@ interface DiscountCode {
   createdAt: string
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminDiscountsPage() {
   const [codes, setCodes] = useState<DiscountCode[]>([])
   const [loading, setLoading] = useState(true)

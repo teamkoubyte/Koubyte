@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Veelgestelde Vragen - Koubyte FAQ',
   description: 'Antwoorden op veelgestelde vragen over Koubyte IT-diensten. Prijzen, diensten, afspraak maken, support en meer. Alles wat je moet weten over onze IT-hulp.',

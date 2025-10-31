@@ -29,6 +29,7 @@ interface Payment {
   }
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)

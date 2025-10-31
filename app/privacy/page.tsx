@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Privacybeleid',
   description: 'Privacybeleid van Koubyte - Hoe we omgaan met uw persoonsgegevens volgens de AVG/GDPR wetgeving.',

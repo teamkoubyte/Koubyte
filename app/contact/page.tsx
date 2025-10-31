@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Mail, Phone, CheckCircle, MessageSquare, Send, Clock, MapPin, AlertCircle, Loader2, User } from 'lucide-react'
 import { openWhatsApp } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
 export default function ContactPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)

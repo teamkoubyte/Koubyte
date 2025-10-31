@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import Link from 'next/link'
 import { Eye, EyeOff, Lock, Mail, User, AlertCircle, Loader2, CheckCircle } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export default function RegisterPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({

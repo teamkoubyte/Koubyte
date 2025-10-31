@@ -29,6 +29,7 @@ type OrderData = {
   items: OrderItem[]
 }
 
+export const dynamic = 'force-dynamic'
 export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams()
   const router = useRouter()

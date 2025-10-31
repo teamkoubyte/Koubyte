@@ -41,6 +41,7 @@ const categories = [
   'Beveiliging',
 ]
 
+export const dynamic = 'force-dynamic'
 export default function AdminServicesPage() {
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)

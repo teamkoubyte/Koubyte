@@ -6,6 +6,9 @@ import ReviewsSection from '@/components/ReviewsSection'
 import RealStats from '@/components/RealStats'
 import type { Metadata } from 'next'
 
+// Deze pagina gebruikt sessie checks, dus moet dynamisch zijn
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Home',
   description: 'Koubyte biedt professionele IT-diensten voor particulieren en bedrijven. Van hardware reparatie tot complete netwerkinstallaties. Snel, betrouwbaar en transparant.',

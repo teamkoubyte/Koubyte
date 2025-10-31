@@ -4,6 +4,7 @@ import { Check, ArrowRight, FileText, ShoppingCart, Mail, Phone } from 'lucide-r
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Prijzen',
   description: 'Transparante prijzen voor al onze IT-diensten. Vaste prijzen per dienst, geen verborgen kosten. Voor custom oplossingen kun je een offerte aanvragen.',

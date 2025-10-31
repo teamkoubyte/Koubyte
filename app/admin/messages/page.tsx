@@ -16,6 +16,7 @@ interface Message {
   createdAt: string
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminMessagesPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)

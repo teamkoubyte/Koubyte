@@ -4,6 +4,7 @@ import { Calendar, Users, MessageSquare, Star, Package, TrendingUp, DollarSign, 
 import { prisma } from '@/lib/prisma'
 import ErrorDisplay from '@/components/ErrorDisplay'
 
+export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
   try {
     // Haal statistieken op
@@ -34,7 +35,14 @@ export default async function AdminPage() {
       }).catch(() => ({ _sum: { finalAmount: null } })),
       prisma.quote.count({ where: { status: 'pending' } }),
       prisma.quote.count(),
-      prisma.contactMessage.count({ where: { status: 'new' } }).catch(() => 0),
+      prisma.contactMessage.count({ where: { status: 'new' } }).catch((err: any) => {
+        // Tabel bestaat mogelijk niet - return 0
+        if (err?.code === 'P2021') {
+          console.log('ContactMessage tabel niet gevonden, return 0')
+          return 0
+        }
+        throw err
+      }),
       prisma.appointment.count({
         where: {
           date: new Date().toISOString().split('T')[0],
@@ -76,7 +84,14 @@ export default async function AdminPage() {
       prisma.contactMessage.findMany({
         take: 5,
         orderBy: { createdAt: 'desc' },
-      }).catch(() => []),
+      }).catch((err: any) => {
+        // Tabel bestaat mogelijk niet - return lege array
+        if (err?.code === 'P2021') {
+          console.log('ContactMessage tabel niet gevonden, return lege array')
+          return []
+        }
+        throw err
+      }),
     ])
 
     return (

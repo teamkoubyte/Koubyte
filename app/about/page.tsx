@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Check, Shield, Users, Award, Wrench } from 'lucide-react'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Over Ons - Koubyte IT-diensten',
   description: 'Leer meer over Koubyte, jouw persoonlijke IT-partner in België. Toegankelijke IT-hulp zonder gedoe, voor particulieren en kleine bedrijven. Eerlijke prijzen, snelle service.',

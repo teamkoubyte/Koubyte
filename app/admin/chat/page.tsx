@@ -33,6 +33,7 @@ interface Conversation {
   unreadCount: number
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null)

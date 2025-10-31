@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Mail, Loader2, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')

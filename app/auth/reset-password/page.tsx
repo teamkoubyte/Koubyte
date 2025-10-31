@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Lock, Loader2, CheckCircle, ArrowLeft, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export default function ResetPasswordPage() {
   const router = useRouter()
   const searchParams = useSearchParams()

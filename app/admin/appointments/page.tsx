@@ -21,6 +21,7 @@ interface Appointment {
   }
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminAppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)

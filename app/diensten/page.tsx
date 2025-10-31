@@ -23,6 +23,7 @@ interface Service {
   image: string | null
 }
 
+export const dynamic = 'force-dynamic'
 export default function DienstenPage() {
   const { data: session } = useSession()
   const router = useRouter()

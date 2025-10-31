@@ -31,21 +31,61 @@ export async function GET(request: Request) {
       where.status = status
     }
 
-    const quotes = await prisma.quote.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    // Check of estimatedPrice kolom bestaat
+    try {
+      const quotes = await prisma.quote.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
         },
-      },
-    })
+      })
 
-    return NextResponse.json({ quotes }, { status: 200 })
+      return NextResponse.json({ quotes }, { status: 200 })
+    } catch (dbError: any) {
+      // Kolom bestaat mogelijk niet - probeer zonder select
+      if (dbError?.code === 'P2021' || dbError?.message?.includes('estimatedPrice')) {
+        console.log('estimatedPrice kolom niet gevonden, haal quotes op zonder deze kolom')
+        // Probeer opnieuw zonder estimatedPrice select (als deze niet bestaat in schema)
+        const quotes = await prisma.quote.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            userId: true,
+            name: true,
+            email: true,
+            phone: true,
+            service: true,
+            description: true,
+            status: true,
+            adminNotes: true,
+            createdAt: true,
+            updatedAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        })
+        // Voeg null estimatedPrice toe aan elk quote object
+        const quotesWithNullPrice = quotes.map(quote => ({
+          ...quote,
+          estimatedPrice: null,
+        }))
+        return NextResponse.json({ quotes: quotesWithNullPrice }, { status: 200 })
+      }
+      throw dbError
+    }
   } catch (error: any) {
     return createErrorResponse(error, 'Fout bij ophalen offertes', 500)
   }

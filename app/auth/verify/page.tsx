@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Mail, AlertCircle, Loader2, CheckCircle, ShieldCheck } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export default function VerifyPage() {
   const router = useRouter()
   const searchParams = useSearchParams()

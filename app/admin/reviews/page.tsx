@@ -15,6 +15,7 @@ interface Review {
   createdAt: string
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)

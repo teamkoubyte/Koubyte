@@ -6,6 +6,7 @@ import { BlogFilters } from '@/components/BlogFilters'
 import { Calendar, Eye, ArrowRight, FileText } from 'lucide-react'
 import { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Blog - Koubyte IT-diensten',
   description: 'Lees onze nieuwste artikelen over IT-ondersteuning, hardware reparatie, software installatie en meer.',

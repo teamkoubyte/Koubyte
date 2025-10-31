@@ -38,6 +38,7 @@ interface Quote {
   } | null
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminQuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [loading, setLoading] = useState(true)
@@ -64,7 +65,12 @@ export default function AdminQuotesPage() {
       const response = await fetch(`/api/quotes?${params.toString()}`)
       if (response.ok) {
         const data = await response.json()
-        setQuotes(data.quotes)
+        // Zorg ervoor dat estimatedPrice altijd aanwezig is (kan null zijn)
+        const quotes = (data.quotes || []).map((quote: Quote) => ({
+          ...quote,
+          estimatedPrice: quote.estimatedPrice ?? null,
+        }))
+        setQuotes(quotes)
       }
     } catch (error) {
       console.error('Error fetching quotes:', error)

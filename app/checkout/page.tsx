@@ -61,6 +61,7 @@ const paymentMethods = [
   { id: 'banktransfer' as PaymentMethod, name: 'Vooraf overschrijven', icon: Building2, logo: null, description: 'Betaal vooraf via bankoverschrijving', popular: false },
 ]
 
+export const dynamic = 'force-dynamic'
 export default function CheckoutPage() {
   const { data: session } = useSession()
   const router = useRouter()

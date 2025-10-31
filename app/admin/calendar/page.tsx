@@ -22,6 +22,7 @@ interface Appointment {
   }
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminCalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [appointments, setAppointments] = useState<Appointment[]>([])

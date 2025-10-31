@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2, CheckCircle } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export default function LoginPage() {
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')

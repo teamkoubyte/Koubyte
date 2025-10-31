@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
@@ -38,8 +38,6 @@ export const metadata: Metadata = {
   },
   // PWA Manifest
   manifest: '/manifest.json',
-  // Theme color for mobile browsers
-  themeColor: '#2563eb',
   // Apple Web App
   appleWebApp: {
     capable: true,
@@ -91,6 +89,11 @@ export const metadata: Metadata = {
     //   'msvalidate.01': 'jouw-bing-verificatie-code',
     // },
   },
+}
+
+// Viewport configuration (themeColor moet hier staan, niet in metadata)
+export const viewport: Viewport = {
+  themeColor: '#2563eb',
 }
 
 // Dynamische Structured Data genereren met echte reviews uit database

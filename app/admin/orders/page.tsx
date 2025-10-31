@@ -27,6 +27,7 @@ interface Order {
   }>
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)

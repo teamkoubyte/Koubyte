@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Star, CheckCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
 export default function EditReviewPage() {
   const { data: session } = useSession()
   const router = useRouter()

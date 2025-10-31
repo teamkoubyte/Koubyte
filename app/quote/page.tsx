@@ -20,6 +20,7 @@ interface Service {
   category: string
 }
 
+export const dynamic = 'force-dynamic'
 export default function QuotePage() {
   const { data: session } = useSession()
   const router = useRouter()

@@ -43,6 +43,7 @@ const categories = [
   'tips',
 ]
 
+export const dynamic = 'force-dynamic'
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)

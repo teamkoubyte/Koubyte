@@ -19,6 +19,7 @@ interface UserData {
   }
 }
 
+export const dynamic = 'force-dynamic'
 export default function AdminUsersPage() {
   const { data: session } = useSession()
   const [users, setUsers] = useState<UserData[]>([])
