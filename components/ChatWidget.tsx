@@ -110,10 +110,25 @@ export default function ChatWidget() {
     if (!conversationId || !isOpen) return
 
     try {
-      const response = await fetch(`/api/chat?conversationId=${conversationId}`)
+      // Voor gasten: voeg senderEmail toe aan request voor validatie
+      const url = session 
+        ? `/api/chat?conversationId=${conversationId}`
+        : `/api/chat?conversationId=${encodeURIComponent(conversationId)}${guestEmail ? `&senderEmail=${encodeURIComponent(guestEmail.trim())}` : ''}`
+      
+      const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
         setMessages(data.messages || [])
+      } else if (response.status === 403) {
+        // 403 = Forbidden = security issue
+        const errorData = await response.json().catch(() => ({ error: 'Geen toegang tot deze conversatie' }))
+        setToast({ message: errorData.error || 'Geen toegang tot deze conversatie', type: 'error' })
+        // Reset conversationId om nieuwe conversatie te starten
+        if (!session) {
+          const newId = `guest-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+          localStorage.setItem('chatConversationId', newId)
+          setConversationId(newId)
+        }
       } else if (response.status !== 404) {
         // Only show error if it's not a 404 (conversation doesn't exist yet)
         const errorData = await response.json().catch(() => ({ error: 'Fout bij ophalen berichten' }))
@@ -127,7 +142,7 @@ export default function ChatWidget() {
         console.error('Error fetching messages:', error)
       }
     }
-  }, [conversationId, isOpen])
+  }, [conversationId, isOpen, session, guestEmail])
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

@@ -49,33 +49,32 @@ export async function GET(request: Request) {
         }
       }
     } else {
-      // Gast gebruiker: strengere validatie
-      // Check of dit conversationId inderdaad bij een gast conversatie hoort
-      // We kunnen niet valideren op basis van email omdat die niet meegegeven wordt
-      // Maar we kunnen wel checken of dit conversationId al bestaat en bij een gast hoort
+      // Gast gebruiker: STRENGERE validatie nodig
+      // Check senderEmail uit query params (optioneel, maar verplicht voor bestaande conversaties)
+      const senderEmail = searchParams.get('senderEmail')
       
       // Haal eerste message op om te checken of het een gast conversatie is
       const firstMessage = await prisma.chatMessage.findFirst({
         where: { conversationId },
         select: { senderEmail: true, senderName: true, userId: true },
+        orderBy: { createdAt: 'asc' },
       })
 
       // Als de conversatie bestaat maar er is een userId, dan is het geen gast conversatie
-      // En gasten mogen niet in ingelogde gebruiker conversaties kijken
       if (firstMessage && firstMessage.userId) {
         return createErrorResponse(null, 'Geen toegang tot deze conversatie', 403)
       }
 
-      // Als de conversatie bestaat en het is een gast (geen userId), laat het toe
-      // Als de conversatie niet bestaat, laat het toe (nieuwe conversatie)
-      // Maar voorkom dat gasten email-adressen kunnen gebruiken als conversationId
-      if (!conversationId.startsWith('guest-') && conversationId.includes('@')) {
-        // Als het een email lijkt, weiger het voor gasten (tenzij ze die email zelf hebben gebruikt)
-        // Dit voorkomt dat gasten kunnen gokken op email-adressen
-        if (!firstMessage || !firstMessage.senderEmail || conversationId !== firstMessage.senderEmail) {
-          // Alleen toegang als dit conversationId overeenkomt met de senderEmail van de eerste message
-          // Of als het een nieuwe conversatie is (firstMessage is null)
-          // Maar voor nieuwe conversaties moeten gasten "guest-" prefix gebruiken
+      // Als de conversatie al bestaat, valideer dat senderEmail overeenkomt
+      if (firstMessage) {
+        // Conversatie bestaat: senderEmail MOET overeenkomen
+        if (!senderEmail || senderEmail !== firstMessage.senderEmail) {
+          return createErrorResponse(null, 'Geen toegang tot deze conversatie', 403)
+        }
+      } else {
+        // Nieuwe conversatie: conversationId MOET beginnen met "guest-"
+        // Dit voorkomt dat gasten email-adressen kunnen gebruiken
+        if (!conversationId.startsWith('guest-')) {
           return createErrorResponse(null, 'Ongeldige conversatie ID voor gast gebruikers', 403)
         }
       }
