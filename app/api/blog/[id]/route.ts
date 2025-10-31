@@ -86,9 +86,20 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       }
     }
 
+    // Build update data - only include fields that are provided
+    const updateData: any = {}
+    if (validatedData.title !== undefined) updateData.title = validatedData.title
+    if (validatedData.slug !== undefined) updateData.slug = validatedData.slug
+    if (validatedData.excerpt !== undefined) updateData.excerpt = validatedData.excerpt
+    if (validatedData.content !== undefined) updateData.content = validatedData.content
+    if (validatedData.category !== undefined) updateData.category = validatedData.category
+    if (validatedData.tags !== undefined) updateData.tags = validatedData.tags || ''
+    if (validatedData.image !== undefined) updateData.image = validatedData.image
+    if (validatedData.published !== undefined) updateData.published = validatedData.published
+
     const post = await prisma.blogPost.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
     })
 
     return NextResponse.json({ post }, { status: 200 })
