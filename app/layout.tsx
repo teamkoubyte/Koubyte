@@ -210,15 +210,31 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   let session = null
+  let pathname = ''
+  
   try {
-    session = await getServerSession(authOptions)
-  } catch (error) {
-    console.error('Error getting session:', error)
+    // Probeer eerst headers op te halen zonder error te gooien als het niet lukt
+    const headersList = await headers()
+    pathname = headersList.get('x-pathname') || headersList.get('x-invoke-path') || ''
+    
+    // Alleen session ophalen als we niet op een static route zitten
+    try {
+      session = await getServerSession(authOptions)
+    } catch (sessionError) {
+      // Sessie ophalen faalt mogelijk tijdens static generation - niet kritiek
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error getting session:', sessionError)
+      }
+    }
+  } catch (headersError) {
+    // Headers() faalt mogelijk tijdens static generation - niet kritiek
+    // Gebruik lege string als fallback
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error getting headers:', headersError)
+    }
   }
 
   // Check of we op een admin route zitten OF user is admin
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || ''
   const isAdminRoute = pathname.startsWith('/admin')
   const isAdminUser = session?.user?.role === 'admin'
 
