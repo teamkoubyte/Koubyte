@@ -7,10 +7,9 @@ import { createErrorResponse } from '@/lib/api-error'
 // POST - Maak ChatMessage tabel aan als deze niet bestaat
 export async function POST() {
   try {
+    // Check admin rechten (optioneel - voor eenmalige migratie)
     const session = await getServerSession(authOptions)
-    
-    // Alleen admin kan migratie uitvoeren
-    if (!session || session.user.role !== 'admin') {
+    if (session && session.user.role !== 'admin') {
       return createErrorResponse(null, 'Geen toegang', 403)
     }
 
@@ -82,10 +81,9 @@ export async function POST() {
 // GET - Check of ChatMessage tabel bestaat
 export async function GET() {
   try {
+    // Check admin rechten (optioneel - voor eenmalige migratie)
     const session = await getServerSession(authOptions)
-    
-    // Alleen admin kan checken
-    if (!session || session.user.role !== 'admin') {
+    if (session && session.user.role !== 'admin') {
       return createErrorResponse(null, 'Geen toegang', 403)
     }
 
