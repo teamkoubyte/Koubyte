@@ -35,6 +35,7 @@ model User {
   verificationTokens VerificationToken[]
   resetPasswordTokens ResetPasswordToken[]
   chatMessages       ChatMessage[]
+  notifications       Notification[]
 }
 
 // NextAuth Account model
@@ -349,4 +350,29 @@ model Payment {
 
   @@index([userId])
   @@index([status])
+}
+
+// Notificaties model
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Notificatie details
+  type      String   // order, appointment, payment, review, quote, message
+  title     String
+  message   String
+  link      String?  // URL naar gerelateerde pagina
+  read      Boolean  @default(false)
+  
+  // Metadata (optioneel JSON data)
+  metadata  String?  // JSON string voor extra data
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@index([type])
 }

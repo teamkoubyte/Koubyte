@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, Package, Euro, Calendar, User, Phone, Mail, AlertCircle, Trash2, X } from 'lucide-react'
+import { Loader2, Package, Euro, Calendar, User, Phone, Mail, AlertCircle, Trash2, X, Download } from 'lucide-react'
 import { format } from 'date-fns'
 import { nlBE } from 'date-fns/locale'
 
@@ -393,14 +393,26 @@ export default function AdminOrdersPage() {
                     </Select>
                   </div>
 
-                  <div className="w-full sm:w-auto">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    {order.paymentStatus === 'paid' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
+                      >
+                        <Download className="w-4 h-4" />
+                        <span className="hidden sm:inline">Factuur</span>
+                        <span className="sm:hidden">Factuur</span>
+                      </Button>
+                    )}
                     <Button
                       onClick={() => handleDeleteClick(order.id, order.orderNumber)}
                       variant="destructive"
-                      className="w-full sm:w-auto flex items-center gap-2 text-sm sm:text-base py-2 sm:py-2"
+                      className="flex items-center gap-2 text-sm sm:text-base py-2 sm:py-2"
                     >
                       <Trash2 className="w-4 h-4" />
-                      <span className="hidden sm:inline">Verwijder Bestelling</span>
+                      <span className="hidden sm:inline">Verwijder</span>
                       <span className="sm:hidden">Verwijder</span>
                     </Button>
                   </div>

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Clock, Wrench, AlertCircle, CheckCircle, Package, DollarSign } from 'lucide-react'
+import { Calendar, Clock, Wrench, AlertCircle, CheckCircle, Package, DollarSign, Download } from 'lucide-react'
 import Link from 'next/link'
 // formatDate utility verwijderd - we gebruiken inline formatting
 
@@ -370,6 +370,17 @@ export default function DashboardPage() {
                         {order.paymentStatus === 'unpaid' && 'Niet betaald'}
                         {order.paymentStatus === 'refunded' && 'Terugbetaald'}
                       </span>
+                      {order.paymentStatus === 'paid' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-2 w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Download Factuur
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>

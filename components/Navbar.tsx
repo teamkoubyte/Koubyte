@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { signOut } from 'next-auth/react'
 import ShoppingCartWidget from './ShoppingCart'
+import NotificationCenter from './NotificationCenter'
 
 interface NavbarProps {
   session: any
@@ -74,10 +75,15 @@ export default function Navbar({ session }: NavbarProps) {
 
             <div className="ml-4 flex items-center gap-3">
               {/* Shopping Cart Widget - alleen voor ingelogde gebruikers en HIDDEN op mobiel */}
-              {session && (
+              {session && session.user.role !== 'admin' && (
                 <div className="hidden xl:block">
                   <ShoppingCartWidget />
                 </div>
+              )}
+              
+              {/* Notification Center - alleen voor ingelogde gebruikers (geen admin) */}
+              {session && session.user.role !== 'admin' && (
+                <NotificationCenter />
               )}
               
               {session ? (
