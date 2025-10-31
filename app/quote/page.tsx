@@ -288,16 +288,44 @@ export default function QuotePage() {
             <Card className="shadow-xl sticky top-24">
               <CardHeader>
                 <CardTitle>Geschatte Prijs</CardTitle>
-                <CardDescription>Op basis van geselecteerde diensten</CardDescription>
+                <CardDescription>
+                  {selectedServices.size > 0 
+                    ? `${selectedServices.size} ${selectedServices.size === 1 ? 'dienst geselecteerd' : 'diensten geselecteerd'}` 
+                    : 'Selecteer diensten'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-center py-6 border-2 border-blue-200 rounded-lg bg-blue-50">
-                    <p className="text-sm text-slate-600 mb-2">Geschat totaal</p>
-                    <p className="text-4xl font-bold text-blue-600">
-                      {estimatedPrice > 0 ? formatPrice(estimatedPrice) : '€0,00'}
-                    </p>
-                  </div>
+                  {selectedServices.size > 0 ? (
+                    <>
+                      <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        {Array.from(selectedServices).map((serviceId) => {
+                          const service = services.find(s => s.id === serviceId)
+                          if (!service) return null
+                          return (
+                            <div key={serviceId} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                              <span className="text-sm text-slate-700 truncate flex-1 mr-2">{service.name}</span>
+                              <span className="text-sm font-semibold text-blue-600 whitespace-nowrap">
+                                {formatPrice(service.price)}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                      <div className="border-t border-slate-200 pt-4">
+                        <div className="text-center py-4 border-2 border-blue-200 rounded-lg bg-blue-50">
+                          <p className="text-sm text-slate-600 mb-2">Geschat totaal</p>
+                          <p className="text-4xl font-bold text-blue-600">
+                            {formatPrice(estimatedPrice)}
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-lg">
+                      <p className="text-sm text-slate-500">Selecteer diensten om prijs te zien</p>
+                    </div>
+                  )}
                   <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-600">
                     <p>* Dit is een geschatte prijs. De definitieve prijs kan afwijken op basis van specifieke eisen en omstandigheden.</p>
                   </div>

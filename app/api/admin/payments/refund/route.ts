@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { sendAdminNotificationEmail } from '@/lib/email'
+import { sendAdminNotificationEmail, sendRefundConfirmationEmail } from '@/lib/email'
 import { createErrorResponse } from '@/lib/api-error'
 
 // POST - Refund een betaling (admin only)
@@ -64,16 +64,28 @@ export async function POST(request: Request) {
         },
       })
 
-      // Verstuur notificatie email naar klant
+      // Verstuur refund confirmation email naar klant
       try {
         // Haal order op voor email
         const order = await prisma.order.findUnique({
           where: { id: payment.orderId },
-          select: { customerEmail: true },
+          select: { 
+            customerEmail: true,
+            customerName: true,
+            orderNumber: true,
+            paymentMethod: true,
+            total: true,
+          },
         })
-        // TODO: Implement refund confirmation email
-        if (order) {
-          console.log(`Refund email zou verzonden worden naar ${order.customerEmail}`)
+        
+        if (order && order.customerEmail) {
+          await sendRefundConfirmationEmail(order.customerEmail, {
+            name: order.customerName || 'Klant',
+            orderNumber: order.orderNumber || payment.orderId || 'Onbekend',
+            refundAmount: payment.amount,
+            refundReason: reason || undefined,
+            paymentMethod: order.paymentMethod || payment.method || 'Onbekend',
+          })
         }
       } catch (emailError) {
         console.error('Failed to send refund email:', emailError)

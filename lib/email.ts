@@ -996,6 +996,177 @@ export async function sendAdminNotificationEmail(type: 'order' | 'appointment' |
   }
 }
 
+// Verstuur refund confirmation email naar klant
+export async function sendRefundConfirmationEmail(email: string, data: {
+  name: string
+  orderNumber: string
+  refundAmount: number
+  refundReason?: string
+  paymentMethod: string
+}) {
+  try {
+    // In development zonder email config, log naar console
+    if (isDevelopmentWithoutEmail) {
+      console.log('\n========================================')
+      console.log('📧 REFUND CONFIRMATION EMAIL (Development Mode)')
+      console.log('========================================')
+      console.log(`Naar: ${email}`)
+      console.log(`Naam: ${data.name}`)
+      console.log(`Ordernummer: ${data.orderNumber}`)
+      console.log(`Terugbetaald bedrag: €${data.refundAmount.toFixed(2)}`)
+      if (data.refundReason) console.log(`Reden: ${data.refundReason}`)
+      console.log(`Betaalmethode: ${data.paymentMethod}`)
+      console.log('========================================\n')
+      return
+    }
+
+    if (!transporter) {
+      console.log('Email transporter not configured, skipping email')
+      return
+    }
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || 'info@koubyte.be',
+      to: email,
+      subject: `Terugbetaling bevestigd - ${data.orderNumber} - Koubyte`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .header {
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              color: white;
+              padding: 30px;
+              text-align: center;
+              border-radius: 10px 10px 0 0;
+            }
+            .content {
+              background: #f8fafc;
+              padding: 30px;
+              border-radius: 0 0 10px 10px;
+            }
+            .refund-box {
+              background: white;
+              border: 2px solid #10b981;
+              border-radius: 10px;
+              padding: 20px;
+              margin: 20px 0;
+              text-align: center;
+            }
+            .refund-amount {
+              font-size: 32px;
+              font-weight: bold;
+              color: #10b981;
+              margin: 15px 0;
+            }
+            .info-box {
+              background: white;
+              border-left: 4px solid #10b981;
+              padding: 20px;
+              margin: 20px 0;
+              border-radius: 5px;
+            }
+            .info-row {
+              display: flex;
+              justify-content: space-between;
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .info-row:last-child {
+              border-bottom: none;
+            }
+            .info-label {
+              font-weight: bold;
+              color: #64748b;
+            }
+            .info-value {
+              color: #1e40af;
+              font-weight: 600;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              color: #64748b;
+              font-size: 14px;
+            }
+            .warning {
+              background: #fef3c7;
+              border-left: 4px solid #f59e0b;
+              padding: 15px;
+              margin: 20px 0;
+              border-radius: 5px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1 style="margin: 0;">Terugbetaling Bevestigd</h1>
+          </div>
+          <div class="content">
+            <h2>Beste ${data.name},</h2>
+            <p>Je terugbetaling voor bestelling <strong>${data.orderNumber}</strong> is succesvol verwerkt.</p>
+            
+            <div class="refund-box">
+              <p style="margin: 0; color: #64748b; font-size: 14px;">Terugbetaald bedrag</p>
+              <div class="refund-amount">€${data.refundAmount.toFixed(2)}</div>
+              <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Terugbetaald via ${data.paymentMethod}</p>
+            </div>
+
+            <div class="info-box">
+              <div class="info-row">
+                <span class="info-label">Bestelnummer:</span>
+                <span class="info-value">${data.orderNumber}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Terugbetaald bedrag:</span>
+                <span class="info-value">€${data.refundAmount.toFixed(2)}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Betaalmethode:</span>
+                <span class="info-value">${data.paymentMethod}</span>
+              </div>
+              ${data.refundReason ? `
+              <div class="info-row">
+                <span class="info-label">Reden:</span>
+                <span class="info-value">${data.refundReason}</span>
+              </div>
+              ` : ''}
+            </div>
+
+            <div class="warning">
+              <strong>ℹ️ Verwerkingstijd:</strong> Het kan <strong>5-10 werkdagen</strong> duren voordat het bedrag op je rekening zichtbaar is, afhankelijk van je bank of betaalprovider.
+            </div>
+
+            <p>Als je vragen hebt over deze terugbetaling, kun je altijd contact met ons opnemen.</p>
+
+            <p style="margin-top: 30px;">
+              Met vriendelijke groet,<br>
+              <strong>Team Koubyte</strong>
+            </p>
+          </div>
+          <div class="footer">
+            <p>Koubyte IT-diensten | Professionele IT-oplossingen</p>
+            <p style="font-size: 12px;">Email: info@koubyte.be | Website: https://koubyte.be</p>
+          </div>
+        </body>
+        </html>
+      `,
+    })
+  } catch (error) {
+    console.error('Error sending refund confirmation email:', error)
+    throw error
+  }
+}
+
 // Verstuur review request email naar klant na voltooide order
 export async function sendReviewRequestEmail(email: string, data: {
   name: string
