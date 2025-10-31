@@ -19,8 +19,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const conversationId = searchParams.get('conversationId')
 
-    if (!conversationId) {
-      return NextResponse.json({ error: 'conversationId is verplicht' }, { status: 400 })
+    if (!conversationId || conversationId.trim() === '') {
+      return createErrorResponse(null, 'conversationId is verplicht', 400)
     }
 
     // Check of gebruiker toegang heeft tot deze conversatie
@@ -90,9 +90,17 @@ export async function POST(request: Request) {
       senderEmail = session.user.email
       senderType = 'client'
     } else {
-      // Gast gebruiker
-      senderName = validatedData.senderName || 'Gast'
-      senderEmail = validatedData.senderEmail || undefined
+      // Gast gebruiker - valideer dat naam en email zijn meegegeven
+      if (!validatedData.senderName || !validatedData.senderEmail) {
+        return createErrorResponse(null, 'Naam en email zijn verplicht voor gast gebruikers', 400)
+      }
+      // Valideer email formaat
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(validatedData.senderEmail)) {
+        return createErrorResponse(null, 'Ongeldig email formaat', 400)
+      }
+      senderName = validatedData.senderName.trim()
+      senderEmail = validatedData.senderEmail.trim()
       senderType = 'client'
     }
 
