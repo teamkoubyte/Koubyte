@@ -29,12 +29,13 @@ function getCategoryLabel(value: string) {
 }
 
 interface BlogPageProps {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const category = typeof searchParams.category === 'string' ? searchParams.category : 'all'
-  const search = typeof searchParams.search === 'string' ? searchParams.search : ''
+  const params = await searchParams
+  const category = typeof params.category === 'string' ? params.category : 'all'
+  const search = typeof params.search === 'string' ? params.search : ''
 
   const where: any = { published: true }
   
