@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
-import { MessageSquare, X, Send, Minimize2, Loader2 } from 'lucide-react'
+import { MessageSquare, X, Send, Minimize2, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -34,7 +34,9 @@ export default function ChatWidget() {
   const [guestName, setGuestName] = useState('')
   const [guestEmail, setGuestEmail] = useState('')
   const [showGuestForm, setShowGuestForm] = useState(true)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   // Genereer of haal conversationId op
   useEffect(() => {
@@ -59,14 +61,36 @@ export default function ChatWidget() {
       const response = await fetch(`/api/chat?conversationId=${conversationId}`)
       if (response.ok) {
         const data = await response.json()
-        setMessages(data.messages || [])
+        setMessages((prevMessages) => {
+          const newMessages = data.messages || []
+          // Auto-scroll als er nieuwe messages zijn
+          if (newMessages.length > prevMessages.length) {
+            setTimeout(() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }, 100)
+          }
+          return newMessages
+        })
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Fout bij ophalen berichten' }))
+        setToast({ message: errorData.error || 'Fout bij ophalen berichten', type: 'error' })
       }
     } catch (error) {
       console.error('Error fetching messages:', error)
+      setToast({ message: 'Fout bij ophalen berichten', type: 'error' })
     } finally {
       setLoading(false)
     }
   }, [conversationId])
+
+  // Auto-scroll naar beneden bij nieuwe messages
+  useEffect(() => {
+    if (messages.length > 0 && !loading) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
+  }, [messages.length, loading])
 
   // Haal messages op bij openen
   useEffect(() => {
@@ -80,13 +104,27 @@ export default function ChatWidget() {
     }
   }, [isOpen, conversationId, fetchMessages])
 
+  // Toast auto-dismiss
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [toast])
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId || sending) return
 
     // Als gast en nog geen naam/email ingevuld
     if (!session && showGuestForm) {
       if (!guestName.trim() || !guestEmail.trim()) {
-        alert('Vul je naam en email in om te chatten')
+        setToast({ message: 'Vul je naam en email in om te chatten', type: 'error' })
+        return
+      }
+      // Valideer email formaat
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(guestEmail.trim())) {
+        setToast({ message: 'Voer een geldig email adres in', type: 'error' })
         return
       }
       setShowGuestForm(false)
@@ -110,13 +148,18 @@ export default function ChatWidget() {
 
       if (response.ok) {
         await fetchMessages() // Refresh messages
+        // Auto-scroll na versturen
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
       } else {
-        alert('Fout bij versturen bericht. Probeer opnieuw.')
+        const errorData = await response.json().catch(() => ({ error: 'Fout bij versturen bericht' }))
+        setToast({ message: errorData.error || 'Fout bij versturen bericht. Probeer opnieuw.', type: 'error' })
         setNewMessage(messageText) // Herstel message
       }
     } catch (error) {
       console.error('Error sending message:', error)
-      alert('Fout bij versturen bericht. Probeer opnieuw.')
+      setToast({ message: 'Fout bij versturen bericht. Probeer opnieuw.', type: 'error' })
       setNewMessage(messageText) // Herstel message
     } finally {
       setSending(false)
@@ -132,20 +175,57 @@ export default function ChatWidget() {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
-        >
-          <MessageSquare className="w-6 h-6 text-white" />
-        </Button>
-      </div>
+      <>
+        {toast && (
+          <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+            toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : 'bg-red-50 border-red-500 text-red-900'
+          }`}>
+            <div className="flex items-start gap-3">
+              {toast.type === 'success' ? (
+                <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              )}
+              <span className="font-semibold flex-1 text-sm">{toast.message}</span>
+              <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
+          >
+            <MessageSquare className="w-6 h-6 text-white" />
+          </Button>
+        </div>
+      </>
     )
   }
 
   return (
-    <div className={`fixed bottom-6 right-6 z-50 ${isMinimized ? 'w-80' : 'w-96'} transition-all`}>
-      <div className="bg-white border-2 border-blue-200 rounded-lg shadow-2xl flex flex-col h-[600px] max-h-[90vh]">
+    <>
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
+          toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : 'bg-red-50 border-red-500 text-red-900'
+        }`}>
+          <div className="flex items-start gap-3">
+            {toast.type === 'success' ? (
+              <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            ) : (
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            )}
+            <span className="font-semibold flex-1 text-sm">{toast.message}</span>
+            <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+      <div className={`fixed bottom-6 right-6 z-50 ${isMinimized ? 'w-80' : 'w-96'} transition-all`}>
+        <div className="bg-white border-2 border-blue-200 rounded-lg shadow-2xl flex flex-col h-[600px] max-h-[90vh]">
         {/* Header */}
         <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -175,7 +255,7 @@ export default function ChatWidget() {
         {!isMinimized && (
           <>
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
               {loading && messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
@@ -276,6 +356,7 @@ export default function ChatWidget() {
         )}
       </div>
     </div>
+    </>
   )
 }
 
