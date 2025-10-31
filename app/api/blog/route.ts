@@ -83,7 +83,10 @@ export async function POST(request: Request) {
     }
 
     const post = await prisma.blogPost.create({
-      data: validatedData,
+      data: {
+        ...validatedData,
+        tags: validatedData.tags || '',
+      },
     })
 
     return NextResponse.json({ post }, { status: 201 })
