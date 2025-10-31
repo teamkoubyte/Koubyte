@@ -78,7 +78,7 @@ export default async function AdminPage() {
       }).catch(() => []),
     ])
 
-  return (
+    return (
     <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
       <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4 sm:mb-6 lg:mb-8">Admin Dashboard</h1>
       
@@ -558,6 +558,27 @@ export default async function AdminPage() {
         </Link>
       </div>
     </div>
-  )
+    )
+  } catch (error: any) {
+    console.error('Error loading admin page:', error)
+    // Return error page
+    return (
+      <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
+        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
+          <h1 className="text-2xl font-bold text-red-900 mb-4">Fout bij laden admin dashboard</h1>
+          <p className="text-red-700 mb-2">Er is een fout opgetreden bij het ophalen van de data.</p>
+          <p className="text-sm text-red-600">
+            {error?.message || 'Onbekende fout'}
+          </p>
+          <details className="mt-4">
+            <summary className="cursor-pointer text-sm text-red-600">Technische details</summary>
+            <pre className="mt-2 text-xs bg-red-100 p-3 rounded overflow-auto">
+              {JSON.stringify(error, null, 2)}
+            </pre>
+          </details>
+        </div>
+      </div>
+    )
+  }
 }
 
