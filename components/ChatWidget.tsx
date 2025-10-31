@@ -34,6 +34,7 @@ export default function ChatWidget() {
   const [guestName, setGuestName] = useState('')
   const [guestEmail, setGuestEmail] = useState('')
   const [showGuestForm, setShowGuestForm] = useState(true)
+  const [guestDataValid, setGuestDataValid] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -52,6 +53,23 @@ export default function ChatWidget() {
       }
     }
   }, [session, conversationId])
+
+  // Check of gast gegevens al zijn opgeslagen
+  useEffect(() => {
+    if (!session) {
+      const storedName = localStorage.getItem('chatGuestName')
+      const storedEmail = localStorage.getItem('chatGuestEmail')
+      if (storedName && storedEmail) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (emailRegex.test(storedEmail)) {
+          setGuestName(storedName)
+          setGuestEmail(storedEmail)
+          setShowGuestForm(false)
+          setGuestDataValid(true)
+        }
+      }
+    }
+  }, [session])
 
   const fetchMessages = useCallback(async () => {
     if (!conversationId) return
@@ -112,11 +130,41 @@ export default function ChatWidget() {
     }
   }, [toast])
 
+  // Valideer gast gegevens wanneer deze worden ingevuld
+  const validateGuestData = () => {
+    if (!session && guestName.trim() && guestEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (emailRegex.test(guestEmail.trim())) {
+        // Sla gegevens op in localStorage
+        localStorage.setItem('chatGuestName', guestName.trim())
+        localStorage.setItem('chatGuestEmail', guestEmail.trim())
+        setShowGuestForm(false)
+        setGuestDataValid(true)
+        return true
+      }
+    }
+    return false
+  }
+
+  // Check gast gegevens wanneer naam of email verandert
+  useEffect(() => {
+    if (!session && !showGuestForm && guestName.trim() && guestEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (emailRegex.test(guestEmail.trim())) {
+        setGuestDataValid(true)
+        localStorage.setItem('chatGuestName', guestName.trim())
+        localStorage.setItem('chatGuestEmail', guestEmail.trim())
+      } else {
+        setGuestDataValid(false)
+      }
+    }
+  }, [guestName, guestEmail, session, showGuestForm])
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId || sending) return
 
-    // Als gast en nog geen naam/email ingevuld
-    if (!session && showGuestForm) {
+    // Als gast en nog geen naam/email ingevuld of gevalideerd
+    if (!session) {
       if (!guestName.trim() || !guestEmail.trim()) {
         setToast({ message: 'Vul je naam en email in om te chatten', type: 'error' })
         return
@@ -127,7 +175,10 @@ export default function ChatWidget() {
         setToast({ message: 'Voer een geldig email adres in', type: 'error' })
         return
       }
-      setShowGuestForm(false)
+      // Valideer en sla op
+      if (!guestDataValid) {
+        validateGuestData()
+      }
     }
 
     const messageText = newMessage.trim()
@@ -333,12 +384,12 @@ export default function ChatWidget() {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Typ je bericht..."
-                  disabled={sending || (!session && showGuestForm)}
+                  disabled={sending || (!session && !guestDataValid && showGuestForm)}
                   className="flex-1"
                 />
                 <Button
                   onClick={handleSendMessage}
-                  disabled={sending || !newMessage.trim() || (!session && showGuestForm)}
+                  disabled={sending || !newMessage.trim() || (!session && !guestDataValid && showGuestForm)}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   {sending ? (
