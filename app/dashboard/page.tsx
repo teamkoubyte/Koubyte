@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Clock, Wrench, AlertCircle, CheckCircle, Package, DollarSign, Download } from 'lucide-react'
+import { Calendar, Clock, Wrench, AlertCircle, CheckCircle, Package, DollarSign, Download, Star, Edit2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 // formatDate utility verwijderd - we gebruiken inline formatting
 
@@ -47,15 +47,27 @@ interface Payment {
   }
 }
 
+interface Review {
+  id: string
+  rating: number
+  comment: string
+  service: string | null
+  approved: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [payments, setPayments] = useState<Payment[]>([])
+  const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [paymentsLoading, setPaymentsLoading] = useState(true)
+  const [reviewsLoading, setReviewsLoading] = useState(true)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -67,6 +79,7 @@ export default function DashboardPage() {
       fetchAppointments()
       fetchOrders()
       fetchPayments()
+      fetchReviews()
     }
   }, [status, session, router])
 
@@ -109,6 +122,20 @@ export default function DashboardPage() {
       console.error('Failed to fetch payments:', error)
     } finally {
       setPaymentsLoading(false)
+    }
+  }
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch('/api/reviews/user')
+      if (response.ok) {
+        const data = await response.json()
+        setReviews(data.reviews || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error)
+    } finally {
+      setReviewsLoading(false)
     }
   }
 
@@ -263,6 +290,91 @@ export default function DashboardPage() {
                         {appointment.status === 'pending' && 'In behandeling'}
                         {appointment.status === 'cancelled' && 'Geannuleerd'}
                       </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Mijn Reviews */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <h2 className="text-2xl font-bold">Mijn Reviews</h2>
+          <Link href="/review">
+            <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+              Nieuwe review
+            </Button>
+          </Link>
+        </div>
+
+        {reviewsLoading ? (
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-slate-600">Reviews laden...</p>
+            </CardContent>
+          </Card>
+        ) : reviews.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <Star className="h-12 w-12 mx-auto mb-4 text-slate-400" />
+              <p className="text-slate-600 mb-4">Je hebt nog geen reviews geschreven.</p>
+              <Link href="/review">
+                <Button>Schrijf je eerste review</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <Card key={review.id}>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-start gap-4 mb-2">
+                        <Star className="h-5 w-5 text-yellow-500 mt-0.5 fill-yellow-500" />
+                        <div>
+                          <h3 className="font-semibold flex items-center gap-2">
+                            {review.service || 'Dienst'}
+                            <span className="text-sm font-normal text-slate-500">
+                              ({review.rating}/5)
+                            </span>
+                          </h3>
+                          <p className="text-sm text-slate-600 mt-1 line-clamp-2">{review.comment}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-slate-600 ml-9">
+                        <span>
+                          {new Date(review.createdAt).toLocaleDateString('nl-BE', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            review.approved
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          {review.approved ? 'Goedgekeurd' : 'In afwachting'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="md:text-right flex flex-col gap-2">
+                      <Link href={`/review/edit/${review.id}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full md:w-auto text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        >
+                          <Edit2 className="w-4 h-4 mr-2" />
+                          Bewerken
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </CardContent>
