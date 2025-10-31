@@ -36,6 +36,7 @@ model User {
   resetPasswordTokens ResetPasswordToken[]
   chatMessages       ChatMessage[]
   notifications       Notification[]
+  payments           Payment[]
 }
 
 // NextAuth Account model
@@ -335,6 +336,7 @@ model DiscountCode {
 model Payment {
   id              String   @id @default(cuid())
   userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   appointmentId   String?
   orderId         String?  @unique
   order           Order?
