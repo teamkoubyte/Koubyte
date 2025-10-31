@@ -17,6 +17,9 @@ import { prisma } from '@/lib/prisma'
 const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
 })
 
 // Uitgebreide SEO Metadata
