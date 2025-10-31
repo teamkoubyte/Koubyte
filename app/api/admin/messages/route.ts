@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createErrorResponse } from '@/lib/api-error'
 
 // GET - Haal alle berichten op
 export async function GET(request: Request) {
@@ -24,8 +25,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(messages)
   } catch (error) {
-    console.error('Error fetching messages:', error)
-    return NextResponse.json({ error: 'Fout bij ophalen berichten' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij ophalen berichten', 500)
   }
 }
 
@@ -47,8 +47,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(message)
   } catch (error) {
-    console.error('Error updating message:', error)
-    return NextResponse.json({ error: 'Fout bij updaten bericht' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij updaten bericht', 500)
   }
 }
 
@@ -74,8 +73,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting message:', error)
-    return NextResponse.json({ error: 'Fout bij verwijderen bericht' }, { status: 500 })
+    return createErrorResponse(error, 'Fout bij verwijderen bericht', 500)
   }
 }
 

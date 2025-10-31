@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendContactEmail, sendAdminNotificationEmail } from '@/lib/email'
 import { z } from 'zod'
+import { createErrorResponse } from '@/lib/api-error'
 
 const contactSchema = z.object({
   name: z.string().min(2),
@@ -40,16 +41,9 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Ongeldige gegevens' },
-        { status: 400 }
-      )
+      return createErrorResponse(error, 'Ongeldige gegevens', 400)
     }
 
-    console.error('Contact error:', error)
-    return NextResponse.json(
-      { error: 'Er ging iets mis' },
-      { status: 500 }
-    )
+    return createErrorResponse(error, 'Fout bij versturen contact bericht', 500)
   }
 }

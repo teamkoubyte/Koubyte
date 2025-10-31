@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { Calendar, Users, MessageSquare, Star, Package, TrendingUp, DollarSign, FileText, CreditCard } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
+import ErrorDisplay from '@/components/ErrorDisplay'
 
 export default async function AdminPage() {
   try {
@@ -33,7 +34,7 @@ export default async function AdminPage() {
       }).catch(() => ({ _sum: { finalAmount: null } })),
       prisma.quote.count({ where: { status: 'pending' } }),
       prisma.quote.count(),
-      prisma.contactMessage.count({ where: { status: 'new' } }),
+      prisma.contactMessage.count({ where: { status: 'new' } }).catch(() => 0),
       prisma.appointment.count({
         where: {
           date: new Date().toISOString().split('T')[0],
@@ -561,23 +562,12 @@ export default async function AdminPage() {
     )
   } catch (error: any) {
     console.error('Error loading admin page:', error)
-    // Return error page
     return (
-      <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
-        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-red-900 mb-4">Fout bij laden admin dashboard</h1>
-          <p className="text-red-700 mb-2">Er is een fout opgetreden bij het ophalen van de data.</p>
-          <p className="text-sm text-red-600">
-            {error?.message || 'Onbekende fout'}
-          </p>
-          <details className="mt-4">
-            <summary className="cursor-pointer text-sm text-red-600">Technische details</summary>
-            <pre className="mt-2 text-xs bg-red-100 p-3 rounded overflow-auto">
-              {JSON.stringify(error, null, 2)}
-            </pre>
-          </details>
-        </div>
-      </div>
+      <ErrorDisplay
+        error={error}
+        title="Fout bij laden admin dashboard"
+        message="Er is een fout opgetreden bij het ophalen van de data."
+      />
     )
   }
 }
