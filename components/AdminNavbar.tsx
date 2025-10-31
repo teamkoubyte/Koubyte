@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package, Wrench, FileText, Calculator, CreditCard } from 'lucide-react'
+import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package, Wrench, FileText, Calculator, CreditCard, Tag } from 'lucide-react'
 import { useState } from 'react'
 
 interface AdminNavbarProps {

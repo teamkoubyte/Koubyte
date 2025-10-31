@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { MessageSquare, X, Send, Minimize2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -51,26 +51,7 @@ export default function ChatWidget() {
     }
   }, [session, conversationId])
 
-  // Haal messages op bij openen
-  useEffect(() => {
-    if (isOpen && conversationId) {
-      fetchMessages()
-      // Poll voor nieuwe messages elke 3 seconden
-      const interval = setInterval(() => {
-        fetchMessages()
-      }, 3000)
-      return () => clearInterval(interval)
-    }
-  }, [isOpen, conversationId])
-
-  // Scroll naar beneden bij nieuwe messages
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [messages])
-
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     if (!conversationId) return
 
     try {
@@ -85,7 +66,19 @@ export default function ChatWidget() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [conversationId])
+
+  // Haal messages op bij openen
+  useEffect(() => {
+    if (isOpen && conversationId) {
+      fetchMessages()
+      // Poll voor nieuwe messages elke 3 seconden
+      const interval = setInterval(() => {
+        fetchMessages()
+      }, 3000)
+      return () => clearInterval(interval)
+    }
+  }, [isOpen, conversationId, fetchMessages])
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId || sending) return

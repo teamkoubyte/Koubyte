@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -54,11 +54,7 @@ export default function AdminQuotesPage() {
     setTimeout(() => setToast(null), 4000)
   }
 
-  useEffect(() => {
-    fetchQuotes()
-  }, [filter])
-
-  const fetchQuotes = async () => {
+  const fetchQuotes = useCallback(async () => {
     try {
       const params = new URLSearchParams()
       if (filter !== 'all') {
@@ -76,7 +72,11 @@ export default function AdminQuotesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filter])
+
+  useEffect(() => {
+    fetchQuotes()
+  }, [fetchQuotes])
 
   const openModal = (quote: Quote) => {
     setSelectedQuote(quote)

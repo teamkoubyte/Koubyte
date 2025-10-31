@@ -144,6 +144,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <article className="lg:col-span-3">
             {post.image && (
               <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={post.image} 
                   alt={post.title}

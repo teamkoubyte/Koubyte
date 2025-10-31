@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -44,11 +44,7 @@ export default function AdminPaymentsPage() {
     completedAmount: 0,
   })
 
-  useEffect(() => {
-    fetchPayments()
-  }, [statusFilter, providerFilter])
-
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams()
@@ -66,7 +62,11 @@ export default function AdminPaymentsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter, providerFilter])
+
+  useEffect(() => {
+    fetchPayments()
+  }, [fetchPayments])
 
   const handleRefresh = () => {
     fetchPayments()

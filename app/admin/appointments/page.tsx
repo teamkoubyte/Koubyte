@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar, Clock, User, Mail, Phone, Trash2, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react'
@@ -27,17 +27,13 @@ export default function AdminAppointmentsPage() {
   const [filter, setFilter] = useState<string>('all')
   const [updating, setUpdating] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchAppointments()
-  }, [filter])
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     try {
       setLoading(true)
       const url = filter === 'all' 
         ? '/api/admin/appointments' 
         : `/api/admin/appointments?status=${filter}`
-      
+    
       const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
@@ -48,7 +44,11 @@ export default function AdminAppointmentsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filter])
+
+  useEffect(() => {
+    fetchAppointments()
+  }, [fetchAppointments])
 
   const updateStatus = async (id: string, status: string) => {
     try {
@@ -60,7 +60,7 @@ export default function AdminAppointmentsPage() {
       })
 
       if (response.ok) {
-        fetchAppointments()
+        await fetchAppointments()
       }
     } catch (error) {
       console.error('Error updating appointment:', error)

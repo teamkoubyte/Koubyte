@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -50,16 +50,7 @@ export default function BookPage() {
     '13:00', '14:00', '15:00', '16:00', '17:00',
   ]
 
-  // Check beschikbaarheid wanneer datum wordt geselecteerd
-  useEffect(() => {
-    if (formData.date) {
-      checkAvailability(formData.date)
-    } else {
-      setAvailableSlots(allTimeSlots)
-    }
-  }, [formData.date])
-
-  const checkAvailability = async (date: string) => {
+  const checkAvailability = useCallback(async (date: string) => {
     setCheckingAvailability(true)
     try {
       const response = await fetch(`/api/appointments/availability?date=${date}`)
@@ -76,7 +67,16 @@ export default function BookPage() {
     } finally {
       setCheckingAvailability(false)
     }
-  }
+  }, [])
+
+  // Check beschikbaarheid wanneer datum wordt geselecteerd
+  useEffect(() => {
+    if (formData.date) {
+      checkAvailability(formData.date)
+    } else {
+      setAvailableSlots(allTimeSlots)
+    }
+  }, [formData.date, checkAvailability])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

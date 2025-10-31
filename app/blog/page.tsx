@@ -102,6 +102,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               <Card key={post.id} className="group hover:shadow-xl transition-all duration-300 flex flex-col">
                 {post.image && (
                   <div className="relative h-48 overflow-hidden rounded-t-lg">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={post.image} 
                       alt={post.title}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Mail, User, Phone, Trash2, CheckCircle, Archive, Loader2, MessageSquare } from 'lucide-react'
@@ -23,11 +23,7 @@ export default function AdminMessagesPage() {
   const [updating, setUpdating] = useState<string | null>(null)
   const [expandedMessage, setExpandedMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchMessages()
-  }, [filter])
-
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       setLoading(true)
       const url = filter === 'all' 
@@ -44,7 +40,11 @@ export default function AdminMessagesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filter])
+
+  useEffect(() => {
+    fetchMessages()
+  }, [fetchMessages])
 
   const updateStatus = async (id: string, status: string) => {
     try {
