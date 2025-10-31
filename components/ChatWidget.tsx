@@ -146,19 +146,23 @@ export default function ChatWidget() {
     return false
   }
 
-  // Check gast gegevens wanneer naam of email verandert
+  // Check en valideer gast gegevens wanneer naam of email verandert
   useEffect(() => {
-    if (!session && !showGuestForm && guestName.trim() && guestEmail.trim()) {
+    if (!session && guestName.trim() && guestEmail.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (emailRegex.test(guestEmail.trim())) {
+        // Gegevens zijn geldig - sla op en verberg formulier
         setGuestDataValid(true)
+        setShowGuestForm(false)
         localStorage.setItem('chatGuestName', guestName.trim())
         localStorage.setItem('chatGuestEmail', guestEmail.trim())
       } else {
         setGuestDataValid(false)
       }
+    } else if (!session && (!guestName.trim() || !guestEmail.trim())) {
+      setGuestDataValid(false)
     }
-  }, [guestName, guestEmail, session, showGuestForm])
+  }, [guestName, guestEmail, session])
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId || sending) return
