@@ -19,7 +19,10 @@ const inter = Inter({
   display: 'swap',
   preload: true,
   adjustFontFallback: true,
+  variable: '--font-inter',
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+  // Voorkom dat Next.js automatisch font varianten probeert te laden voor speciale karakters
+  weight: ['400', '500', '600', '700'],
 })
 
 // Uitgebreide SEO Metadata
@@ -292,7 +295,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#2563eb" />
         <link rel="canonical" href="https://koubyte.be" />
       </head>
-      <body className={`${inter.className} overflow-x-hidden max-w-screen w-full`}>
+      <body className={`${inter.variable} ${inter.className} overflow-x-hidden max-w-screen w-full`}>
         <Providers session={session}>
           {/* Toon klanten Navbar ALLEEN voor niet-admins */}
           {showClientLayout && <Navbar session={session} />}
