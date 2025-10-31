@@ -141,7 +141,7 @@ export default function QuotePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden w-full px-3 sm:px-4">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     )
@@ -210,8 +210,8 @@ export default function QuotePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-3 sm:px-4 overflow-x-hidden w-full">
+      <div className="container mx-auto max-w-6xl w-full overflow-x-hidden">
         {/* Hero Section */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6">

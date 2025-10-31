@@ -85,10 +85,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden w-full">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 sm:py-16">
-        <div className="container mx-auto max-w-4xl px-4">
+        <div className="container mx-auto max-w-4xl px-3 sm:px-4 w-full overflow-x-hidden">
           <Link href="/blog">
             <Button variant="ghost" className="mb-6 text-white hover:bg-white/20">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -138,7 +138,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto max-w-4xl px-4 py-8 sm:py-12">
+      <div className="container mx-auto max-w-4xl px-3 sm:px-4 py-8 sm:py-12 overflow-x-hidden w-full">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <article className="lg:col-span-3">

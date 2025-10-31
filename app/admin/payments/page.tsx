@@ -181,7 +181,7 @@ export default function AdminPaymentsPage() {
   })
 
   return (
-    <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
+    <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-3 sm:px-4 w-full overflow-x-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
           Betalingen Beheer

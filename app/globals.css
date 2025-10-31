@@ -370,9 +370,97 @@ select:focus-visible {
   background: linear-gradient(180deg, #2563eb, #1e40af);
 }
 
-/* Smooth Scroll */
+/* Smooth Scroll en Prevent Horizontal Scroll */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  position: relative;
+}
+
+/* Prevent horizontal scroll globally - CRITICAL FIX */
+* {
+  box-sizing: border-box;
+}
+
+*:not(html):not(body) {
+  max-width: 100%;
+}
+
+/* Ensure all containers respect viewport */
+.container,
+.container-fluid,
+[class*="container"] {
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Force all sections and divs to respect viewport */
+section,
+.section,
+main {
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure all root page divs respect viewport */
+div[class*="overflow"] {
+  max-width: 100vw;
+}
+
+/* Responsive padding fix - smaller padding on mobile */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* Prevent table overflow */
+table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: auto;
+}
+
+/* Prevent image overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container utility voor responsive design */
+.container-responsive {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-responsive {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 /* Card Hover Effects */

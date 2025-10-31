@@ -70,10 +70,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden w-full">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 sm:py-16 lg:py-20">
-        <div className="container mx-auto max-w-7xl px-4">
+        <div className="container mx-auto max-w-7xl px-3 sm:px-4 w-full overflow-x-hidden">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
               <FileText className="w-8 h-8" />
@@ -88,7 +88,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 py-8 sm:py-12">
+      <div className="container mx-auto max-w-7xl px-3 sm:px-4 py-8 sm:py-12 overflow-x-hidden w-full">
         {/* Filters - Client Component */}
         <BlogFilters 
           initialCategory={category} 

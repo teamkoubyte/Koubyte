@@ -226,7 +226,7 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <div className="container mx-auto max-w-7xl py-8 px-4">
+      <div className="container mx-auto max-w-7xl py-8 px-3 sm:px-4 w-full overflow-x-hidden">
         <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

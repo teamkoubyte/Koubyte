@@ -111,10 +111,10 @@ export default function DienstenPage() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-x-hidden max-w-full w-full">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-24 px-4">
-        <div className="container mx-auto max-w-6xl text-center">
+      <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-24 px-3 sm:px-4 overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-6xl text-center w-full overflow-x-hidden">
           <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 animate-fadeInDown">
             Onze IT-Diensten
           </h1>
@@ -138,9 +138,9 @@ export default function DienstenPage() {
       )}
 
       {/* Category Filter */}
-      <section className="py-6 sm:py-8 px-4 bg-white border-b sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex gap-2.5 sm:gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+      <section className="py-6 sm:py-8 px-3 sm:px-4 bg-white border-b sticky top-0 z-40 shadow-sm overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-6xl overflow-x-hidden w-full">
+          <div className="flex gap-2 sm:gap-2.5 overflow-x-auto pb-2 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {categories.map((cat) => (
               <button
                 key={cat.value}

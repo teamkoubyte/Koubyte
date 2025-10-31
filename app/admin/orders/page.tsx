@@ -147,7 +147,7 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <>
+    <div className="w-full overflow-x-hidden">
       {toast && (
         <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
           toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'
@@ -220,7 +220,7 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-4">
+      <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-3 sm:px-4 w-full overflow-x-hidden">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4 sm:mb-6 lg:mb-8">Bestellingen Beheer</h1>
 
       {/* Stats */}
@@ -422,8 +422,7 @@ export default function AdminOrdersPage() {
           )
         })}
       </div>
-      </div>
-    </>
+    </div>
   )
 }
 

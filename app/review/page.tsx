@@ -97,8 +97,8 @@ export default function ReviewPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto max-w-2xl">
+      <div className="min-h-screen flex items-center justify-center py-16 px-3 sm:px-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-2xl w-full overflow-x-hidden px-3 sm:px-4">
           <div className="bg-white border-2 border-green-500 rounded-2xl p-12 text-center shadow-2xl">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-10 w-10 text-green-600" />
@@ -130,8 +130,8 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-16 px-4">
-      <div className="container mx-auto max-w-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-16 px-3 sm:px-4 overflow-x-hidden w-full">
+      <div className="container mx-auto max-w-2xl w-full overflow-x-hidden">
         {toast && (
           <div className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${
             toast.type === 'success' ? 'bg-green-50 border-green-500 text-green-900' : toast.type === 'error' ? 'bg-red-50 border-red-500 text-red-900' : 'bg-blue-50 border-blue-500 text-blue-900'

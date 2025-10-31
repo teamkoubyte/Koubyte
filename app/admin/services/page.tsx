@@ -190,7 +190,7 @@ export default function AdminServicesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto max-w-7xl py-6 sm:py-8 px-3 sm:px-4 w-full overflow-x-hidden space-y-6">
       {/* Toast Notification */}
       {toast && (
         <div className="fixed top-4 right-4 z-50 animate-slideInRight">

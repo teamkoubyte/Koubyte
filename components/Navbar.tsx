@@ -29,15 +29,15 @@ export default function Navbar({ session }: NavbarProps) {
 
   return (
     <nav 
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 w-full overflow-x-hidden ${
         scrolled 
           ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-slate-200' 
           : 'bg-white border-b border-slate-100'
       }`}
       id="main-navbar"
     >
-      <div className="container mx-auto max-w-7xl px-4" data-cart="container">
-        <div className="flex justify-between items-center h-20">
+      <div className="container mx-auto max-w-7xl px-3 sm:px-4 w-full overflow-x-hidden" data-cart="container">
+        <div className="flex justify-between items-center h-20 min-w-0">
           {/* Logo - Simpel en Professioneel */}
           <Link href={homeUrl} className="flex items-center group">
             <span className="text-3xl font-bold logo-sharp">
@@ -46,8 +46,8 @@ export default function Navbar({ session }: NavbarProps) {
             </span>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-1">
+          {/* Desktop Menu - Verberg eerder voor betere responsive design */}
+          <div className="hidden xl:flex items-center space-x-1 min-w-0 flex-1 justify-end">
             <Link href={homeUrl} className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
               Home
             </Link>
@@ -124,10 +124,10 @@ export default function Navbar({ session }: NavbarProps) {
             </div>
           </div>
 
-          {/* Mobile Menu Knop */}
+          {/* Mobile Menu Knop - Toon eerder (xl in plaats van lg) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]"
+            className="xl:hidden p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]"
             aria-label={mobileMenuOpen ? 'Sluit menu' : 'Open menu'}
           >
             {mobileMenuOpen ? 
@@ -137,9 +137,9 @@ export default function Navbar({ session }: NavbarProps) {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Toon eerder (xl in plaats van lg) */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-4 space-y-2 animate-fadeInDown border-t border-slate-100">
+          <div className="xl:hidden py-4 space-y-2 animate-fadeInDown border-t border-slate-100 w-full overflow-x-hidden">
             <Link 
               href={homeUrl} 
               className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"

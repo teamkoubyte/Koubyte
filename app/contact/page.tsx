@@ -112,8 +112,8 @@ export default function ContactPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto max-w-2xl">
+      <div className="min-h-screen flex items-center justify-center py-16 px-3 sm:px-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-2xl w-full overflow-x-hidden px-3 sm:px-4">
           <div className="bg-white border-2 border-green-500 rounded-2xl p-12 text-center shadow-2xl animate-fadeInUp">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-10 w-10 text-green-600" />
@@ -138,7 +138,7 @@ export default function ContactPage() {
     <div className="flex flex-col">
       {/* Hero Sectie */}
       <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-20 sm:py-24 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
+        <div className="container mx-auto max-w-4xl text-center w-full overflow-x-hidden px-3 sm:px-4">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-900 mb-5 sm:mb-6 animate-fadeInDown">
             Neem contact op
           </h1>
@@ -153,7 +153,7 @@ export default function ContactPage() {
 
       {/* Contact Methodes */}
       <section className="py-14 sm:py-16 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
+        <div className="container mx-auto max-w-6xl w-full overflow-x-hidden px-3 sm:px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-14 sm:mb-16">
             {/* Telefoon Card */}
             <Card className="border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group">
@@ -219,7 +219,7 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl mx-auto w-full overflow-x-hidden px-3 sm:px-4">
             <Card className="border-2 shadow-2xl">
               <CardContent className="p-6 md:p-12">
                 <div className="text-center mb-8">

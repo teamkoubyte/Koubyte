@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-x-hidden max-w-full w-full">
       {/* Hero Sectie - Professioneel en Subtiel */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
         {/* Subtiele Achtergrond Elementen */}
@@ -28,8 +28,8 @@ export default function HomePage() {
         </div>
 
         {/* Content */}
-        <div className="container mx-auto max-w-7xl px-4 py-20 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 py-12 sm:py-16 lg:py-20 relative z-10 overflow-x-hidden w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Links - Tekst */}
             <div className="space-y-8 animate-fadeInUp">
               <div className="inline-block">
@@ -112,8 +112,8 @@ export default function HomePage() {
       </section>
 
       {/* Diensten Overzicht */}
-      <section className="py-24 px-4 bg-white">
-        <div className="container mx-auto max-w-7xl">
+      <section className="py-24 px-3 sm:px-4 bg-white overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-7xl w-full overflow-x-hidden">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
               Wat we voor je kunnen betekenen
@@ -123,7 +123,7 @@ export default function HomePage() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Hardware & Reparatie */}
             <div className="group bg-white p-8 rounded-2xl border-2 border-slate-200 hover:border-blue-500 hover:shadow-xl transition-all duration-300">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">

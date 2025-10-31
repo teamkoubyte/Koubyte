@@ -217,7 +217,7 @@ export default function AdminDiscountsPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl py-8 px-4">
+    <div className="container mx-auto max-w-7xl py-8 px-3 sm:px-4 w-full overflow-x-hidden">
       {toast && (
         <div
           className={`fixed top-4 right-4 z-[100000] border-2 rounded-lg shadow-2xl p-4 min-w-[280px] max-w-md animate-slideInRight ${

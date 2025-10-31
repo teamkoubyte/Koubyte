@@ -421,7 +421,7 @@ export default function CheckoutPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto max-w-2xl">
+        <div className="container mx-auto max-w-2xl overflow-x-hidden w-full px-3 sm:px-4">
           <div className="bg-white border-2 border-green-500 rounded-2xl p-12 text-center shadow-2xl">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-10 w-10 text-green-600" />
@@ -482,8 +482,8 @@ export default function CheckoutPage() {
         />
       )}
       
-      <div className="min-h-screen py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto max-w-7xl">
+      <div className="min-h-screen py-16 px-3 sm:px-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden w-full">
+        <div className="container mx-auto max-w-7xl overflow-x-hidden w-full">
         {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-center">
@@ -732,7 +732,7 @@ export default function CheckoutPage() {
 
           {/* STEP 2: Contact Gegevens */}
           {currentStep === 2 && (
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto overflow-x-hidden w-full px-3 sm:px-4">
               <Card className="shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-3xl text-center mb-6">Contactgegevens</CardTitle>
@@ -1203,7 +1203,7 @@ export default function CheckoutPage() {
 
           {/* STEP 3: Betaling */}
           {currentStep === 3 && (
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto overflow-x-hidden w-full px-3 sm:px-4">
               <Card className="shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-3xl text-center">Betaalmethode</CardTitle>

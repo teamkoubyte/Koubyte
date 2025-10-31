@@ -141,7 +141,7 @@ export default function DashboardPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="container mx-auto max-w-6xl py-16 px-4">
+      <div className="container mx-auto max-w-6xl py-16 px-3 sm:px-4 w-full overflow-x-hidden">
         <p>Laden...</p>
       </div>
     )

@@ -126,7 +126,7 @@ export default function AdminAppointmentsPage() {
   ]
 
   return (
-    <div className="container mx-auto max-w-7xl py-8 px-4">
+    <div className="container mx-auto max-w-7xl py-8 px-3 sm:px-4 w-full overflow-x-hidden">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-4xl font-bold text-slate-900 mb-1 sm:mb-2">Afspraken Beheer</h1>
         <p className="text-slate-600 text-sm sm:text-base">Bekijk en beheer alle afspraken</p>

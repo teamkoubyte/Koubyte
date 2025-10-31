@@ -19,11 +19,11 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
 
   return (
     <nav 
-      className="bg-white border-b-2 border-slate-200 shadow-sm sticky top-0 z-50"
+      className="bg-white border-b-2 border-slate-200 shadow-sm sticky top-0 z-50 w-full overflow-x-hidden"
       id="admin-navbar"
     >
-      <div className="container mx-auto max-w-7xl px-4" data-cart="container">
-        <div className="flex justify-between items-center h-16">
+      <div className="container mx-auto max-w-7xl px-3 sm:px-4 w-full overflow-x-hidden" data-cart="container">
+        <div className="flex justify-between items-center h-16 min-w-0">
           {/* Logo - Admin Panel */}
           <Link href="/admin" className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -38,8 +38,8 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
+          {/* Desktop Menu - Verberg eerder voor betere responsive design */}
+          <div className="hidden lg:flex items-center space-x-1 min-w-0 flex-1 justify-end flex-wrap">
             <Link 
               href="/admin" 
               className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
@@ -147,10 +147,10 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Toon eerder (lg in plaats van md) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2.5 sm:p-3 rounded-lg hover:bg-slate-100 transition-colors text-slate-900"
+            className="lg:hidden p-2.5 sm:p-3 rounded-lg hover:bg-slate-100 transition-colors text-slate-900"
             aria-label="Menu"
           >
             <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,9 +163,9 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Toon eerder (lg in plaats van md) */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-1.5 sm:space-y-2 border-t border-slate-200">
+          <div className="lg:hidden py-4 space-y-1.5 sm:space-y-2 border-t border-slate-200 w-full overflow-x-hidden">
             <Link 
               href="/admin"
               onClick={() => setMobileMenuOpen(false)}

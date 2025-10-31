@@ -114,7 +114,7 @@ export default function BookPage() {
 
   if (success) {
     return (
-      <div className="container mx-auto max-w-2xl py-12 sm:py-16 px-4">
+      <div className="container mx-auto max-w-2xl py-12 sm:py-16 px-3 sm:px-4 w-full overflow-x-hidden">
         <Card className="border-green-200 bg-green-50">
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-16 w-16 mx-auto mb-4 text-green-600" />
