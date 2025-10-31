@@ -62,6 +62,12 @@ export default function Navbar({ session }: NavbarProps) {
             <Link href="/faq" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
               Veelgestelde vragen
             </Link>
+            <Link href="/blog" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
+              Blog
+            </Link>
+            <Link href="/quote" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
+              Offerte
+            </Link>
             <Link href="/contact" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
               Contact
             </Link>
@@ -162,6 +168,20 @@ export default function Navbar({ session }: NavbarProps) {
               onClick={() => setMobileMenuOpen(false)}
             >
               Veelgestelde vragen
+            </Link>
+            <Link 
+              href="/blog" 
+              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Blog
+            </Link>
+            <Link 
+              href="/quote" 
+              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Offerte
             </Link>
             <Link 
               href="/contact" 

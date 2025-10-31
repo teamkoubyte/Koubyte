@@ -277,6 +277,8 @@ export default async function RootLayout({
           </main>
           {/* Toon Footer ALLEEN voor niet-admins */}
           {showClientLayout && <Footer />}
+          {/* Chat Widget ALLEEN voor niet-admins */}
+          {showClientLayout && <ChatWidget />}
           <CookieConsent />
         </Providers>
         <Analytics />

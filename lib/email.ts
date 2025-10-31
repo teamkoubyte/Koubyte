@@ -807,12 +807,13 @@ export async function sendOrderConfirmationEmail(email: string, data: {
   }
 }
 
-// Verstuur admin notification email voor nieuwe orders/afspraken
-export async function sendAdminNotificationEmail(type: 'order' | 'appointment' | 'contact', data: {
+// Verstuur admin notification email voor nieuwe orders/afspraken/contact/quote
+export async function sendAdminNotificationEmail(type: 'order' | 'appointment' | 'contact' | 'quote', data: {
   orderNumber?: string
   customerName: string
   customerEmail: string
   total?: number
+  estimatedPrice?: number
   date?: string
   time?: string
   service?: string
@@ -828,6 +829,8 @@ export async function sendAdminNotificationEmail(type: 'order' | 'appointment' |
       if (data.orderNumber) console.log(`Ordernummer: ${data.orderNumber}`)
       console.log(`Klant: ${data.customerName} (${data.customerEmail})`)
       if (data.total) console.log(`Totaal: €${data.total.toFixed(2)}`)
+      if (data.estimatedPrice) console.log(`Geschatte prijs: €${data.estimatedPrice.toFixed(2)}`)
+      if (data.service) console.log(`Dienst: ${data.service}`)
       console.log('========================================\n')
       return
     }
@@ -841,7 +844,8 @@ export async function sendAdminNotificationEmail(type: 'order' | 'appointment' |
     const typeLabels = {
       order: 'Nieuwe Bestelling',
       appointment: 'Nieuwe Afspraak',
-      contact: 'Nieuw Contactformulier'
+      contact: 'Nieuw Contactformulier',
+      quote: 'Nieuwe Offerte Aanvraag'
     }
 
     await transporter.sendMail({
@@ -941,6 +945,12 @@ export async function sendAdminNotificationEmail(type: 'order' | 'appointment' |
               <div class="info-row">
                 <span class="info-label">Totaal:</span>
                 <span class="info-value">€${data.total.toFixed(2)}</span>
+              </div>
+              ` : ''}
+              ${data.estimatedPrice ? `
+              <div class="info-row">
+                <span class="info-label">Geschatte prijs:</span>
+                <span class="info-value">€${data.estimatedPrice.toFixed(2)}</span>
               </div>
               ` : ''}
               ${data.date ? `

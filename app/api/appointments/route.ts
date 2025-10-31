@@ -24,6 +24,31 @@ export async function POST(request: Request) {
     // Check of er een sessie is
     const session = await getServerSession(authOptions)
     
+    // Check voor conflicten (bestaande afspraak op zelfde datum/tijd)
+    const existingAppointment = await prisma.appointment.findFirst({
+      where: {
+        date: validatedData.date,
+        time: validatedData.time,
+        status: {
+          not: 'cancelled', // Geannuleerde afspraken tellen niet mee
+        },
+      },
+    })
+
+    if (existingAppointment) {
+      return NextResponse.json(
+        { 
+          error: 'Dit tijdslot is al bezet. Kies een andere datum of tijd.',
+          conflict: true,
+          existingAppointment: {
+            date: existingAppointment.date,
+            time: existingAppointment.time,
+          }
+        },
+        { status: 409 }
+      )
+    }
+    
     // Maak afspraak aan
     const appointmentData: any = {
       date: validatedData.date,

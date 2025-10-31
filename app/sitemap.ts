@@ -66,6 +66,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
   ]
 
   try {
@@ -88,7 +94,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
-    return [...staticPages, ...servicePages]
+    // Haal alle gepubliceerde blogposts op
+    const blogPosts = await prisma.blogPost.findMany({
+      where: { published: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: 'desc' },
+    })
+
+    // Dynamische blog post pagina's
+    const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.updatedAt || new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }))
+
+    return [...staticPages, ...servicePages, ...blogPages]
   } catch (error) {
     console.error('Error generating sitemap:', error)
     // Return alleen statische pagina's als database query faalt

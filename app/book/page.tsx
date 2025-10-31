@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Calendar, Clock, AlertCircle } from 'lucide-react'
+import { Calendar, Clock, AlertCircle, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function BookPage() {
@@ -30,6 +30,9 @@ export default function BookPage() {
     description: '',
   })
 
+  const [availableSlots, setAvailableSlots] = useState<string[]>([])
+  const [checkingAvailability, setCheckingAvailability] = useState(false)
+
   const services = [
     'Hardware reparatie',
     'Software installatie',
@@ -42,10 +45,38 @@ export default function BookPage() {
     'Anders',
   ]
 
-  const timeSlots = [
+  const allTimeSlots = [
     '09:00', '10:00', '11:00', '12:00',
     '13:00', '14:00', '15:00', '16:00', '17:00',
   ]
+
+  // Check beschikbaarheid wanneer datum wordt geselecteerd
+  useEffect(() => {
+    if (formData.date) {
+      checkAvailability(formData.date)
+    } else {
+      setAvailableSlots(allTimeSlots)
+    }
+  }, [formData.date])
+
+  const checkAvailability = async (date: string) => {
+    setCheckingAvailability(true)
+    try {
+      const response = await fetch(`/api/appointments/availability?date=${date}`)
+      if (response.ok) {
+        const data = await response.json()
+        setAvailableSlots(data.availableSlots || allTimeSlots)
+      } else {
+        // Fallback naar alle slots als API faalt
+        setAvailableSlots(allTimeSlots)
+      }
+    } catch (error) {
+      console.error('Error checking availability:', error)
+      setAvailableSlots(allTimeSlots)
+    } finally {
+      setCheckingAvailability(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,7 +93,11 @@ export default function BookPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || 'Kon afspraak niet maken')
+        if (data.conflict) {
+          setError(`${data.error || 'Dit tijdslot is al bezet.'} Kies een andere datum of tijd.`)
+        } else {
+          setError(data.error || 'Kon afspraak niet maken')
+        }
       } else {
         setSuccess(true)
         setTimeout(() => {
@@ -159,18 +194,48 @@ export default function BookPage() {
 
             <div>
               <Label htmlFor="time">Tijdstip *</Label>
-              <Select value={formData.time} onValueChange={(value) => setFormData({ ...formData, time: value })}>
+              <Select 
+                value={formData.time} 
+                onValueChange={(value) => setFormData({ ...formData, time: value })}
+                disabled={!formData.date || checkingAvailability}
+              >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecteer tijd" />
+                  <SelectValue placeholder={
+                    checkingAvailability 
+                      ? 'Beschikbaarheid controleren...' 
+                      : !formData.date 
+                        ? 'Selecteer eerst een datum' 
+                        : 'Selecteer tijd'
+                  } />
                 </SelectTrigger>
                 <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
+                  {availableSlots.length > 0 ? (
+                    availableSlots.map((slot) => (
+                      <SelectItem key={slot} value={slot}>
+                        {slot} ✓ Beschikbaar
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>
+                      Geen beschikbare tijdslots
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
+              {checkingAvailability && (
+                <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Beschikbaarheid controleren...
+                </p>
+              )}
+              {formData.date && !checkingAvailability && availableSlots.length === 0 && (
+                <p className="text-xs text-red-600 mt-1">Deze dag is volledig volgeboekt. Kies een andere datum.</p>
+              )}
+              {formData.date && !checkingAvailability && availableSlots.length > 0 && (
+                <p className="text-xs text-green-600 mt-1">
+                  {availableSlots.length} tijdslot{availableSlots.length !== 1 ? 's' : ''} beschikbaar
+                </p>
+              )}
             </div>
 
             <div>

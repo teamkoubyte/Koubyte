@@ -34,6 +34,7 @@ model User {
   orders             Order[]
   verificationTokens VerificationToken[]
   resetPasswordTokens ResetPasswordToken[]
+  chatMessages       ChatMessage[]
 }
 
 // NextAuth Account model
@@ -184,6 +185,30 @@ model ContactMessage {
   status    String   @default("new") // new, read, replied
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Live chat messages
+model ChatMessage {
+  id            String   @id @default(cuid())
+  conversationId String   // Unieke ID per conversatie (bijv. user email of random ID)
+  userId        String?  // Optioneel: user ID als ingelogd
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Sender informatie (voor gasten zonder account)
+  senderName    String?  // Naam van sender (voor gasten)
+  senderEmail   String?  // Email van sender (voor gasten)
+  
+  // Message details
+  message       String
+  senderType    String   @default("client") // client, admin
+  read          Boolean  @default(false)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([conversationId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 // Diensten model (voor e-commerce)

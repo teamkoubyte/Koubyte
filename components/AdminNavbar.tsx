@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package, Wrench } from 'lucide-react'
+import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package, Wrench, FileText, Calculator, CreditCard } from 'lucide-react'
 import { useState } from 'react'
 
 interface AdminNavbarProps {
@@ -47,12 +47,19 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
               <LayoutDashboard className="w-4 h-4 inline mr-2" />
               Dashboard
             </Link>
-            <Link 
+            <Link
               href="/admin/appointments" 
               className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
             >
               <Calendar className="w-4 h-4 inline mr-2" />
               Afspraken
+            </Link>
+            <Link
+              href="/admin/calendar" 
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Calendar className="w-4 h-4 inline mr-2" />
+              Kalender
             </Link>
             <Link 
               href="/admin/users" 
@@ -67,6 +74,13 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             >
               <MessageSquare className="w-4 h-4 inline mr-2" />
               Berichten
+            </Link>
+            <Link
+              href="/admin/chat"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <MessageSquare className="w-4 h-4 inline mr-2" />
+              Live Chat
             </Link>
             <Link
               href="/admin/reviews"
@@ -88,6 +102,27 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             >
               <Wrench className="w-4 h-4 inline mr-2" />
               Services
+            </Link>
+            <Link
+              href="/admin/blog"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <FileText className="w-4 h-4 inline mr-2" />
+              Blog
+            </Link>
+            <Link
+              href="/admin/quotes"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Calculator className="w-4 h-4 inline mr-2" />
+              Offertes
+            </Link>
+            <Link
+              href="/admin/payments"
+              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <CreditCard className="w-4 h-4 inline mr-2" />
+              Betalingen
             </Link>
 
             <div className="ml-4 flex items-center gap-3 border-l border-slate-200 pl-4">
@@ -141,6 +176,14 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
               Afspraken
             </Link>
             <Link 
+              href="/admin/calendar"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <Calendar className="w-4 h-4 inline mr-2" />
+              Kalender
+            </Link>
+            <Link 
               href="/admin/users"
               onClick={() => setMobileMenuOpen(false)}
               className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
@@ -155,6 +198,14 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             >
               <MessageSquare className="w-4 h-4 inline mr-2" />
               Berichten
+            </Link>
+            <Link
+              href="/admin/chat"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+            >
+              <MessageSquare className="w-4 h-4 inline mr-2" />
+              Live Chat
             </Link>
                 <Link
                   href="/admin/reviews"
@@ -179,6 +230,30 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
                 >
                   <Wrench className="w-4 h-4 inline mr-2" />
                   Services
+                </Link>
+                <Link
+                  href="/admin/blog"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <FileText className="w-4 h-4 inline mr-2" />
+                  Blog
+                </Link>
+                <Link
+                  href="/admin/quotes"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <Calculator className="w-4 h-4 inline mr-2" />
+                  Offertes
+                </Link>
+                <Link
+                  href="/admin/payments"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+                >
+                  <CreditCard className="w-4 h-4 inline mr-2" />
+                  Betalingen
                 </Link>
 
             <div className="pt-4 border-t border-slate-200">
