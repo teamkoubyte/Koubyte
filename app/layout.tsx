@@ -149,10 +149,10 @@ async function getStructuredData() {
       ],
       priceRange: '€€',
       sameAs: [
-        'https://facebook.com/Koubyte',
+        'https://www.facebook.com/people/Koubyte/61576324675690/',
         'https://x.com/Koubyte',
-        'https://instagram.com/Koubyte',
-        'https://linkedin.com/company/Koubyte',
+        'https://www.instagram.com/koubyte/',
+        'https://be.linkedin.com/in/koubyte',
       ],
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
