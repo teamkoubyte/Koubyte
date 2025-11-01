@@ -81,8 +81,12 @@ export default function Navbar({ session }: NavbarProps) {
       const clickedOnDesktopButton = desktopButton && (desktopButton.contains(target) || desktopButton === target)
       const clickedOnMobileButton = mobileButton && (mobileButton.contains(target) || mobileButton === target)
       
-      // If click is outside both menus AND not on either button, close the menu
-      if (!clickedInsideDesktopMenu && !clickedInsideMobileMenu && !clickedOnDesktopButton && !clickedOnMobileButton) {
+      // Check if click is on hamburger menu button - don't close user menu in that case
+      const hamburgerButton = (target as Element)?.closest('button[aria-label*="menu" i]')
+      const isHamburgerButton = hamburgerButton && hamburgerButton.getAttribute('aria-label')?.toLowerCase().includes('menu')
+      
+      // If click is outside both menus AND not on either button AND not on hamburger button, close the menu
+      if (!clickedInsideDesktopMenu && !clickedInsideMobileMenu && !clickedOnDesktopButton && !clickedOnMobileButton && !isHamburgerButton) {
         setUserMenuOpen(false)
       }
     }
@@ -92,7 +96,7 @@ export default function Navbar({ session }: NavbarProps) {
       const timeoutId = setTimeout(() => {
         document.addEventListener('click', handleClickOutside, true)
         document.addEventListener('touchend', handleClickOutside as any, true)
-      }, 200)
+      }, 300)
 
       return () => {
         clearTimeout(timeoutId)
@@ -102,10 +106,20 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [userMenuOpen])
 
-  // Close user menu when mobile menu opens
+  // Close user menu when mobile menu opens (but allow both to be open simultaneously)
   useEffect(() => {
+    // Only close user menu if mobile menu is being opened AND user menu is already open
+    // This prevents interference but allows user menu to open even when mobile menu is open
     if (mobileMenuOpen && userMenuOpen) {
-      setUserMenuOpen(false)
+      // Don't immediately close - allow user to interact with user menu first
+      // Only close if mobile menu was just opened
+      const timeoutId = setTimeout(() => {
+        // Only close if both are still open (mobile menu might have been closed)
+        if (mobileMenuOpen && userMenuOpen) {
+          setUserMenuOpen(false)
+        }
+      }, 150)
+      return () => clearTimeout(timeoutId)
     }
   }, [mobileMenuOpen])
 
@@ -347,7 +361,7 @@ export default function Navbar({ session }: NavbarProps) {
                 
                 {/* User Dropdown Menu */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[100] animate-fadeInDown backdrop-blur-sm">
+                  <div className="fixed sm:absolute right-2 sm:right-0 top-20 sm:top-full mt-0 sm:mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm">
                     {/* Gebruikersinfo */}
                     <div className="px-5 py-4 bg-gradient-to-r from-blue-50 via-blue-50/50 to-slate-50 border-b border-slate-200/60">
                       <p className="font-semibold text-slate-900 text-sm mb-0.5 leading-tight">{session.user.name || 'Gebruiker'}</p>
@@ -441,7 +455,10 @@ export default function Navbar({ session }: NavbarProps) {
             
             {/* Hamburger Menu Knop */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setMobileMenuOpen(!mobileMenuOpen)
+              }}
               className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]"
               aria-label={mobileMenuOpen ? 'Sluit menu' : 'Open menu'}
             >
