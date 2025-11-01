@@ -212,7 +212,7 @@ export default function Navbar({ session }: NavbarProps) {
                       
                       {/* Desktop User Dropdown Menu */}
                       {userMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[100] animate-fadeInDown backdrop-blur-sm">
+                        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm">
                           {/* Gebruikersinfo */}
                           <div className="px-5 py-4 bg-gradient-to-r from-blue-50 via-blue-50/50 to-slate-50 border-b border-slate-200/60">
                             <p className="font-semibold text-slate-900 text-sm mb-0.5 leading-tight">{session.user.name || 'Gebruiker'}</p>
