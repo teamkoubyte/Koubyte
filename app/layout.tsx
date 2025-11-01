@@ -131,7 +131,7 @@ async function getStructuredData() {
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'BE',
-        addressLocality: 'België',
+        addressLocality: 'Antwerpen',
         addressRegion: 'Vlaanderen',
       },
       geo: {

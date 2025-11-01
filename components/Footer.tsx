@@ -117,7 +117,7 @@ export default function Footer() {
                   <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-xs text-slate-500 mb-1">Locatie</div>
-                    <div className="font-semibold">België</div>
+                    <div className="font-semibold">Antwerpen, België</div>
                   </div>
                 </div>
               </li>
