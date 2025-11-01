@@ -71,7 +71,7 @@ export default function Navbar({ session }: NavbarProps) {
       const desktopMenu = desktopUserMenuRef.current
       const mobileMenu = mobileUserMenuRef.current
       
-      // Check if click is inside either menu
+      // Check if click is inside either menu container (which includes the button)
       const clickedInsideDesktop = desktopMenu && desktopMenu.contains(target)
       const clickedInsideMobile = mobileMenu && mobileMenu.contains(target)
       
@@ -84,14 +84,14 @@ export default function Navbar({ session }: NavbarProps) {
     if (userMenuOpen) {
       // Use timeout to prevent immediate closing when opening
       const timeoutId = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside)
-        document.addEventListener('touchstart', handleClickOutside as any)
-      }, 100)
+        document.addEventListener('mousedown', handleClickOutside, true)
+        document.addEventListener('touchstart', handleClickOutside as any, true)
+      }, 150)
 
       return () => {
         clearTimeout(timeoutId)
-        document.removeEventListener('mousedown', handleClickOutside)
-        document.removeEventListener('touchstart', handleClickOutside as any)
+        document.removeEventListener('mousedown', handleClickOutside, true)
+        document.removeEventListener('touchstart', handleClickOutside as any, true)
       }
     }
   }, [userMenuOpen])
@@ -175,7 +175,10 @@ export default function Navbar({ session }: NavbarProps) {
                     // Normale gebruikers zien gebruikersmenu dropdown
                     <div className="relative" ref={desktopUserMenuRef}>
                       <button
-                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setUserMenuOpen(!userMenuOpen)
+                        }}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
                         aria-label="Gebruikersmenu"
                       >
@@ -320,7 +323,10 @@ export default function Navbar({ session }: NavbarProps) {
             {session && session.user.role !== 'admin' && (
               <div className="relative" ref={mobileUserMenuRef}>
                 <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setUserMenuOpen(!userMenuOpen)
+                  }}
                   className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98] relative"
                   aria-label="Gebruikersmenu"
                 >
