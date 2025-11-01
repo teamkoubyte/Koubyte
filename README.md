@@ -171,11 +171,13 @@ Het project kan ook gerund worden op:
 
 ## 📝 TODO / Verbeteringen
 
-- [ ] Blog pagina met echte content
+- [x] Social media links bijgewerkt (Facebook, Instagram, X, LinkedIn)
+- [x] Blog content structuur voorbereid (zie BLOG_CONTENT_GUIDE.md)
+- [ ] Blog pagina met echte content (gebruik BLOG_CONTENT_GUIDE.md)
 - [ ] Review systeem voltooien
-- [ ] Offerten calculator
-- [ ] Live chat functionaliteit
-- [ ] PayPal/Bank integratie
+- [x] Offerten calculator (verbeterd)
+- [x] Live chat functionaliteit (werkend)
+- [ ] PayPal/Klarna directe integratie (optioneel - werkt via Stripe)
 - [ ] Kalender integratie
 - [ ] SMS notificaties
 - [ ] Multi-language support
