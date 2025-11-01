@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, LogIn, ShoppingCart, User } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { signOut } from 'next-auth/react'
 import ShoppingCartWidget from './ShoppingCart'
@@ -15,6 +15,7 @@ interface NavbarProps {
 export default function Navbar({ session }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [cartItemCount, setCartItemCount] = useState(0)
   
   // Admin homepage is /admin, anders is het /
   const homeUrl = session?.user?.role === 'admin' ? '/admin' : '/'
@@ -26,6 +27,37 @@ export default function Navbar({ session }: NavbarProps) {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Fetch cart item count voor mobiele shopping cart icon
+  useEffect(() => {
+    if (session?.user?.id && session.user.role !== 'admin') {
+      fetch('/api/cart')
+        .then(res => res.json())
+        .then(data => {
+          if (data.cartItems && Array.isArray(data.cartItems)) {
+            const count = data.cartItems.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0)
+            setCartItemCount(count)
+          }
+        })
+        .catch(() => setCartItemCount(0))
+      
+      // Listen for cart updates
+      const handleCartUpdate = () => {
+        fetch('/api/cart')
+          .then(res => res.json())
+          .then(data => {
+            if (data.cartItems && Array.isArray(data.cartItems)) {
+              const count = data.cartItems.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0)
+              setCartItemCount(count)
+            }
+          })
+          .catch(() => setCartItemCount(0))
+      }
+      
+      window.addEventListener('cart-updated', handleCartUpdate)
+      return () => window.removeEventListener('cart-updated', handleCartUpdate)
+    }
+  }, [session])
 
   return (
     <nav 
@@ -124,17 +156,46 @@ export default function Navbar({ session }: NavbarProps) {
             </div>
           </div>
 
-          {/* Mobile Menu Knop - Toon eerder (xl in plaats van lg) */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]"
-            aria-label={mobileMenuOpen ? 'Sluit menu' : 'Open menu'}
-          >
-            {mobileMenuOpen ? 
-              <X className="h-6 w-6 text-slate-700" /> : 
-              <Menu className="h-6 w-6 text-slate-700" />
-            }
-          </button>
+          {/* Mobile Icons + Menu Knop - Iconen naast hamburger menu */}
+          <div className="xl:hidden flex items-center gap-2">
+            {/* Shopping Cart Icon - Alleen voor ingelogde gebruikers (geen admin) */}
+            {session && session.user.role !== 'admin' && (
+              <Link href="/checkout" className="relative p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]">
+                <ShoppingCart className="h-6 w-6 text-slate-700" />
+                {cartItemCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItemCount > 9 ? '9+' : cartItemCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            
+            {/* Login Icon - Alleen als niet ingelogd */}
+            {!session && (
+              <Link href="/auth/login" className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]">
+                <LogIn className="h-6 w-6 text-slate-700" />
+              </Link>
+            )}
+            
+            {/* User/Dashboard Icon - Alleen als ingelogd (geen admin) */}
+            {session && session.user.role !== 'admin' && (
+              <Link href="/dashboard" className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]">
+                <User className="h-6 w-6 text-slate-700" />
+              </Link>
+            )}
+            
+            {/* Hamburger Menu Knop */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]"
+              aria-label={mobileMenuOpen ? 'Sluit menu' : 'Open menu'}
+            >
+              {mobileMenuOpen ? 
+                <X className="h-6 w-6 text-slate-700" /> : 
+                <Menu className="h-6 w-6 text-slate-700" />
+              }
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu - Toon eerder (xl in plaats van lg) */}
