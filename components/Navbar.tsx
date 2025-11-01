@@ -64,19 +64,24 @@ export default function Navbar({ session }: NavbarProps) {
 
   // Close user menu when clicking outside (for both desktop and mobile)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (!userMenuOpen) return
+      
       const target = event.target as Node
       const desktopMenu = desktopUserMenuRef.current
       const mobileMenu = mobileUserMenuRef.current
       
-      // Close if click is outside both menus
-      if (userMenuOpen) {
-        const clickedOutsideDesktop = desktopMenu && !desktopMenu.contains(target)
-        const clickedOutsideMobile = mobileMenu && !mobileMenu.contains(target)
-        
-        if (clickedOutsideDesktop && clickedOutsideMobile) {
-          setUserMenuOpen(false)
-        }
+      // Check if click is outside desktop menu (if it exists)
+      const clickedOutsideDesktop = !desktopMenu || !desktopMenu.contains(target)
+      
+      // Check if click is outside mobile menu (if it exists)
+      const clickedOutsideMobile = !mobileMenu || !mobileMenu.contains(target)
+      
+      // Close if click is outside the relevant menu
+      // On desktop: check desktop menu, on mobile: check mobile menu
+      // But if both exist (unlikely), close only if outside both
+      if (clickedOutsideDesktop && clickedOutsideMobile) {
+        setUserMenuOpen(false)
       }
     }
 
@@ -181,7 +186,7 @@ export default function Navbar({ session }: NavbarProps) {
                       
                       {/* Desktop User Dropdown Menu */}
                       {userMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 animate-fadeInDown">
+                        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-[100] animate-fadeInDown">
                           {/* Gebruikersinfo */}
                           <div className="px-4 py-3 border-b border-slate-200">
                             <p className="font-semibold text-slate-900 text-sm">{session.user.name || 'Gebruiker'}</p>
@@ -322,7 +327,7 @@ export default function Navbar({ session }: NavbarProps) {
                 
                 {/* User Dropdown Menu */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 animate-fadeInDown">
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-[100] animate-fadeInDown">
                     {/* Gebruikersinfo */}
                     <div className="px-4 py-3 border-b border-slate-200">
                       <p className="font-semibold text-slate-900 text-sm">{session.user.name || 'Gebruiker'}</p>
