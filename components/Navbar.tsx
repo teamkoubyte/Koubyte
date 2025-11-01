@@ -541,16 +541,11 @@ export default function Navbar({ session }: NavbarProps) {
                       </Button>
                     </Link>
                   ) : (
-                    // Normale gebruikers zien dashboard EN checkout (mobiel alternatief voor cart)
+                    // Normale gebruikers zien alleen checkout (mobiel alternatief voor cart)
                     <>
                       <Link href="/checkout" onClick={() => setMobileMenuOpen(false)}>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
                           🛒 Winkelwagen
-                        </Button>
-                      </Link>
-                      <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                        <Button variant="outline" className="w-full rounded-lg font-semibold border-slate-300">
-                          Dashboard
                         </Button>
                       </Link>
                     </>
