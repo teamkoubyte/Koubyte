@@ -186,88 +186,90 @@ export default function Navbar({ session }: NavbarProps) {
                       
                       {/* Desktop User Dropdown Menu */}
                       {userMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-[100] animate-fadeInDown">
+                        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden z-[100] animate-fadeInDown">
                           {/* Gebruikersinfo */}
-                          <div className="px-4 py-3 border-b border-slate-200">
-                            <p className="font-semibold text-slate-900 text-sm">{session.user.name || 'Gebruiker'}</p>
-                            <p className="text-xs text-slate-600">{session.user.email}</p>
+                          <div className="px-4 py-4 bg-gradient-to-r from-blue-50 to-slate-50 border-b border-slate-200">
+                            <p className="font-semibold text-slate-900 text-sm mb-1">{session.user.name || 'Gebruiker'}</p>
+                            <p className="text-xs text-slate-500 truncate">{session.user.email}</p>
                           </div>
                           
                           {/* Menu Items */}
-                          <div className="py-1">
+                          <div className="py-2">
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                             >
-                              <LayoutDashboard className="h-5 w-5 text-slate-600" />
+                              <LayoutDashboard className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                               <span className="text-sm font-medium">Mijn Koubyte</span>
                             </Link>
                             
                             <Link
                               href="/dashboard/privacy"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                             >
-                              <Settings className="h-5 w-5 text-slate-600" />
+                              <Settings className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                               <span className="text-sm font-medium">Gegevens en voorkeuren</span>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                             >
-                              <Heart className="h-5 w-5 text-slate-600" />
+                              <Heart className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                               <span className="text-sm font-medium">Verlanglijstje</span>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                             >
-                              <Calendar className="h-5 w-5 text-slate-600" />
+                              <Calendar className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                               <span className="text-sm font-medium">Mijn afspraken</span>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                             >
-                              <Package className="h-5 w-5 text-slate-600" />
+                              <Package className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                               <span className="text-sm font-medium">Mijn bestellingen</span>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                             >
-                              <Star className="h-5 w-5 text-slate-600" />
+                              <Star className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                               <span className="text-sm font-medium">Mijn reviews</span>
                             </Link>
                             
-                            <div className="border-t border-slate-200 my-1" />
+                            <div className="border-t border-slate-200 my-2" />
                             
                             <Link
                               href="/faq"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all duration-150 group"
                             >
-                              <HelpCircle className="h-5 w-5 text-slate-600" />
+                              <HelpCircle className="h-4 w-4 text-slate-500 group-hover:text-slate-700 transition-colors" />
                               <span className="text-sm font-medium">Help & Support</span>
                             </Link>
+                            
+                            <div className="border-t border-slate-200 my-2" />
                             
                             <button
                               onClick={() => {
                                 setUserMenuOpen(false)
                                 signOut({ callbackUrl: '/' })
                               }}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-150 group rounded-b-lg"
                             >
-                              <LogOut className="h-5 w-5" />
+                              <LogOut className="h-4 w-4 group-hover:text-red-700 transition-colors" />
                               <span className="text-sm font-medium">Uitloggen</span>
                             </button>
                           </div>
@@ -327,88 +329,90 @@ export default function Navbar({ session }: NavbarProps) {
                 
                 {/* User Dropdown Menu */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-[100] animate-fadeInDown">
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden z-[100] animate-fadeInDown">
                     {/* Gebruikersinfo */}
-                    <div className="px-4 py-3 border-b border-slate-200">
-                      <p className="font-semibold text-slate-900 text-sm">{session.user.name || 'Gebruiker'}</p>
-                      <p className="text-xs text-slate-600">{session.user.email}</p>
+                    <div className="px-4 py-4 bg-gradient-to-r from-blue-50 to-slate-50 border-b border-slate-200">
+                      <p className="font-semibold text-slate-900 text-sm mb-1">{session.user.name || 'Gebruiker'}</p>
+                      <p className="text-xs text-slate-500 truncate">{session.user.email}</p>
                     </div>
                     
                     {/* Menu Items */}
-                    <div className="py-1">
+                    <div className="py-2">
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                       >
-                        <LayoutDashboard className="h-5 w-5 text-slate-600" />
+                        <LayoutDashboard className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm font-medium">Mijn Koubyte</span>
                       </Link>
                       
                       <Link
                         href="/dashboard/privacy"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                       >
-                        <Settings className="h-5 w-5 text-slate-600" />
+                        <Settings className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm font-medium">Gegevens en voorkeuren</span>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                       >
-                        <Heart className="h-5 w-5 text-slate-600" />
+                        <Heart className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm font-medium">Verlanglijstje</span>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                       >
-                        <Calendar className="h-5 w-5 text-slate-600" />
+                        <Calendar className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm font-medium">Mijn afspraken</span>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                       >
-                        <Package className="h-5 w-5 text-slate-600" />
+                        <Package className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm font-medium">Mijn bestellingen</span>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 group"
                       >
-                        <Star className="h-5 w-5 text-slate-600" />
+                        <Star className="h-4 w-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm font-medium">Mijn reviews</span>
                       </Link>
                       
-                      <div className="border-t border-slate-200 my-1" />
+                      <div className="border-t border-slate-200 my-2" />
                       
                       <Link
                         href="/faq"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all duration-150 group"
                       >
-                        <HelpCircle className="h-5 w-5 text-slate-600" />
+                        <HelpCircle className="h-4 w-4 text-slate-500 group-hover:text-slate-700 transition-colors" />
                         <span className="text-sm font-medium">Help & Support</span>
                       </Link>
+                      
+                      <div className="border-t border-slate-200 my-2" />
                       
                       <button
                         onClick={() => {
                           setUserMenuOpen(false)
                           signOut({ callbackUrl: '/' })
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-150 group"
                       >
-                        <LogOut className="h-5 w-5" />
+                        <LogOut className="h-4 w-4 group-hover:text-red-700 transition-colors" />
                         <span className="text-sm font-medium">Uitloggen</span>
                       </button>
                     </div>
