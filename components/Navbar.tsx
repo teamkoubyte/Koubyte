@@ -17,7 +17,8 @@ export default function Navbar({ session }: NavbarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [cartItemCount, setCartItemCount] = useState(0)
-  const userMenuRef = useRef<HTMLDivElement>(null)
+  const desktopUserMenuRef = useRef<HTMLDivElement>(null)
+  const mobileUserMenuRef = useRef<HTMLDivElement>(null)
   
   // Admin homepage is /admin, anders is het /
   const homeUrl = session?.user?.role === 'admin' ? '/admin' : '/'
@@ -61,19 +62,41 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [session])
 
-  // Close user menu when clicking outside
+  // Close user menu when clicking outside (for both desktop and mobile)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false)
+      const target = event.target as Node
+      const desktopMenu = desktopUserMenuRef.current
+      const mobileMenu = mobileUserMenuRef.current
+      
+      // Close if click is outside both menus
+      if (userMenuOpen) {
+        const clickedOutsideDesktop = desktopMenu && !desktopMenu.contains(target)
+        const clickedOutsideMobile = mobileMenu && !mobileMenu.contains(target)
+        
+        if (clickedOutsideDesktop && clickedOutsideMobile) {
+          setUserMenuOpen(false)
+        }
       }
     }
 
     if (userMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+      // Use capture phase to catch clicks early
+      document.addEventListener('mousedown', handleClickOutside, true)
+      document.addEventListener('touchstart', handleClickOutside as any, true)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside, true)
+        document.removeEventListener('touchstart', handleClickOutside as any, true)
+      }
     }
   }, [userMenuOpen])
+
+  // Close user menu when mobile menu opens
+  useEffect(() => {
+    if (mobileMenuOpen && userMenuOpen) {
+      setUserMenuOpen(false)
+    }
+  }, [mobileMenuOpen])
 
   return (
     <nav 
@@ -145,7 +168,7 @@ export default function Navbar({ session }: NavbarProps) {
                     </Link>
                   ) : (
                     // Normale gebruikers zien gebruikersmenu dropdown
-                    <div className="relative" ref={userMenuRef}>
+                    <div className="relative" ref={desktopUserMenuRef}>
                       <button
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
@@ -288,7 +311,7 @@ export default function Navbar({ session }: NavbarProps) {
             
             {/* User Menu Dropdown - Alleen als ingelogd (geen admin) */}
             {session && session.user.role !== 'admin' && (
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative" ref={mobileUserMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98] relative"
