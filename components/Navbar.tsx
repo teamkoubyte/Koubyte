@@ -19,6 +19,8 @@ export default function Navbar({ session }: NavbarProps) {
   const [cartItemCount, setCartItemCount] = useState(0)
   const desktopUserMenuRef = useRef<HTMLDivElement>(null)
   const mobileUserMenuRef = useRef<HTMLDivElement>(null)
+  const desktopUserButtonRef = useRef<HTMLButtonElement>(null)
+  const mobileUserButtonRef = useRef<HTMLButtonElement>(null)
   
   // Admin homepage is /admin, anders is het /
   const homeUrl = session?.user?.role === 'admin' ? '/admin' : '/'
@@ -70,28 +72,32 @@ export default function Navbar({ session }: NavbarProps) {
       const target = event.target as Node
       const desktopMenu = desktopUserMenuRef.current
       const mobileMenu = mobileUserMenuRef.current
+      const desktopButton = desktopUserButtonRef.current
+      const mobileButton = mobileUserButtonRef.current
       
-      // Check if click is inside either menu container (which includes the button)
-      const clickedInsideDesktop = desktopMenu && desktopMenu.contains(target)
-      const clickedInsideMobile = mobileMenu && mobileMenu.contains(target)
+      // Check if click is inside either menu container OR the button itself
+      const clickedInsideDesktopMenu = desktopMenu && desktopMenu.contains(target)
+      const clickedInsideMobileMenu = mobileMenu && mobileMenu.contains(target)
+      const clickedOnDesktopButton = desktopButton && (desktopButton.contains(target) || desktopButton === target)
+      const clickedOnMobileButton = mobileButton && (mobileButton.contains(target) || mobileButton === target)
       
-      // If click is outside both menus, close the menu
-      if (!clickedInsideDesktop && !clickedInsideMobile) {
+      // If click is outside both menus AND not on either button, close the menu
+      if (!clickedInsideDesktopMenu && !clickedInsideMobileMenu && !clickedOnDesktopButton && !clickedOnMobileButton) {
         setUserMenuOpen(false)
       }
     }
 
     if (userMenuOpen) {
-      // Use timeout to prevent immediate closing when opening
+      // Use longer timeout to prevent immediate closing when opening
       const timeoutId = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside, true)
-        document.addEventListener('touchstart', handleClickOutside as any, true)
-      }, 150)
+        document.addEventListener('click', handleClickOutside, true)
+        document.addEventListener('touchend', handleClickOutside as any, true)
+      }, 200)
 
       return () => {
         clearTimeout(timeoutId)
-        document.removeEventListener('mousedown', handleClickOutside, true)
-        document.removeEventListener('touchstart', handleClickOutside as any, true)
+        document.removeEventListener('click', handleClickOutside, true)
+        document.removeEventListener('touchend', handleClickOutside as any, true)
       }
     }
   }, [userMenuOpen])
@@ -175,12 +181,15 @@ export default function Navbar({ session }: NavbarProps) {
                     // Normale gebruikers zien gebruikersmenu dropdown
                     <div className="relative" ref={desktopUserMenuRef}>
                       <button
+                        ref={desktopUserButtonRef}
                         onClick={(e) => {
+                          e.preventDefault()
                           e.stopPropagation()
-                          setUserMenuOpen(!userMenuOpen)
+                          setUserMenuOpen((prev) => !prev)
                         }}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
                         aria-label="Gebruikersmenu"
+                        aria-expanded={userMenuOpen}
                       >
                         <User className="h-5 w-5 text-slate-700" />
                         <span className="hidden lg:block text-slate-700">{session.user.name || 'Account'}</span>
@@ -323,12 +332,15 @@ export default function Navbar({ session }: NavbarProps) {
             {session && session.user.role !== 'admin' && (
               <div className="relative" ref={mobileUserMenuRef}>
                 <button
+                  ref={mobileUserButtonRef}
                   onClick={(e) => {
+                    e.preventDefault()
                     e.stopPropagation()
-                    setUserMenuOpen(!userMenuOpen)
+                    setUserMenuOpen((prev) => !prev)
                   }}
                   className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98] relative"
                   aria-label="Gebruikersmenu"
+                  aria-expanded={userMenuOpen}
                 >
                   <User className="h-6 w-6 text-slate-700" />
                 </button>
