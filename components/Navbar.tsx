@@ -71,27 +71,27 @@ export default function Navbar({ session }: NavbarProps) {
       const desktopMenu = desktopUserMenuRef.current
       const mobileMenu = mobileUserMenuRef.current
       
-      // Check if click is outside desktop menu (if it exists)
-      const clickedOutsideDesktop = !desktopMenu || !desktopMenu.contains(target)
+      // Check if click is inside either menu
+      const clickedInsideDesktop = desktopMenu && desktopMenu.contains(target)
+      const clickedInsideMobile = mobileMenu && mobileMenu.contains(target)
       
-      // Check if click is outside mobile menu (if it exists)
-      const clickedOutsideMobile = !mobileMenu || !mobileMenu.contains(target)
-      
-      // Close if click is outside the relevant menu
-      // On desktop: check desktop menu, on mobile: check mobile menu
-      // But if both exist (unlikely), close only if outside both
-      if (clickedOutsideDesktop && clickedOutsideMobile) {
+      // If click is outside both menus, close the menu
+      if (!clickedInsideDesktop && !clickedInsideMobile) {
         setUserMenuOpen(false)
       }
     }
 
     if (userMenuOpen) {
-      // Use capture phase to catch clicks early
-      document.addEventListener('mousedown', handleClickOutside, true)
-      document.addEventListener('touchstart', handleClickOutside as any, true)
+      // Use timeout to prevent immediate closing when opening
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside)
+        document.addEventListener('touchstart', handleClickOutside as any)
+      }, 100)
+
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside, true)
-        document.removeEventListener('touchstart', handleClickOutside as any, true)
+        clearTimeout(timeoutId)
+        document.removeEventListener('mousedown', handleClickOutside)
+        document.removeEventListener('touchstart', handleClickOutside as any)
       }
     }
   }, [userMenuOpen])
