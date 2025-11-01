@@ -39,12 +39,26 @@ export default function AdminCalendarPage() {
     try {
       setLoading(true)
       const response = await fetch('/api/admin/appointments')
-      if (response.ok) {
-        const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      
+      // Zorg dat data een array is
+      if (Array.isArray(data)) {
         setAppointments(data)
+      } else if (data.appointments && Array.isArray(data.appointments)) {
+        setAppointments(data.appointments)
+      } else {
+        console.warn('Unexpected data format from appointments API:', data)
+        setAppointments([])
       }
     } catch (error) {
       console.error('Error fetching appointments:', error)
+      // Graceful fallback: toon lege kalender
+      setAppointments([])
     } finally {
       setLoading(false)
     }

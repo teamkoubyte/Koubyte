@@ -83,14 +83,27 @@ export default function ReviewPage() {
         }),
       })
 
+      const data = await response.json()
+      
       if (response.ok) {
         setSuccess(true)
+        showToast('Review succesvol ingediend!', 'success')
       } else {
-        showToast('Er ging iets mis. Probeer het opnieuw.', 'error')
+        // Toon specifieke error message indien beschikbaar
+        const errorMessage = data?.error || data?.message || 'Er ging iets mis. Probeer het opnieuw.'
+        
+        // Check voor validatie errors
+        if (data?.details && Array.isArray(data.details)) {
+          const validationErrors = data.details.map((d: any) => d.message).join(', ')
+          showToast(`Validatiefout: ${validationErrors}`, 'error')
+        } else {
+          showToast(errorMessage, 'error')
+        }
       }
     } catch (error) {
       console.error('Review error:', error)
-      showToast('Er ging iets mis.', 'error')
+      const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis bij het versturen van je review. Controleer je internetverbinding en probeer het opnieuw.'
+      showToast(errorMessage, 'error')
     } finally {
       setLoading(false)
     }

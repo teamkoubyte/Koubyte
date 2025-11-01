@@ -32,13 +32,31 @@ export default function AdminReviewsPage() {
 
   const fetchReviews = async () => {
     try {
+      setLoading(true)
       const response = await fetch('/api/admin/reviews')
-      if (response.ok) {
-        const data = await response.json()
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      
+      // Zorg dat data.reviews een array is
+      if (data.reviews && Array.isArray(data.reviews)) {
         setReviews(data.reviews)
+      } else if (Array.isArray(data)) {
+        setReviews(data)
+      } else {
+        console.warn('Unexpected data format from reviews API:', data)
+        setReviews([])
+        showToast('Ongeldig dataformaat ontvangen', 'error')
       }
     } catch (error) {
       console.error('Fetch reviews error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Fout bij ophalen reviews'
+      showToast(errorMessage, 'error')
+      setReviews([])
     } finally {
       setLoading(false)
     }

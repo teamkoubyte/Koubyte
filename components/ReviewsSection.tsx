@@ -22,14 +22,27 @@ export default function ReviewsSection() {
 
   useEffect(() => {
     fetch('/api/reviews')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
       .then(data => {
-        setReviews(data.reviews.slice(0, 6)) // Toon laatste 6
-        setStats(data.stats)
+        if (data.reviews && Array.isArray(data.reviews)) {
+          setReviews(data.reviews.slice(0, 6)) // Toon laatste 6
+          setStats(data.stats || { total: 0, averageRating: 0 })
+        } else {
+          setReviews([])
+          setStats({ total: 0, averageRating: 0 })
+        }
         setLoading(false)
       })
       .catch(err => {
         console.error('Fetch reviews error:', err)
+        // Graceful fallback: toon geen reviews, maar site blijft werken
+        setReviews([])
+        setStats({ total: 0, averageRating: 0 })
         setLoading(false)
       })
   }, [])
