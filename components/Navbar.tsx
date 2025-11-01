@@ -92,11 +92,11 @@ export default function Navbar({ session }: NavbarProps) {
     }
 
     if (userMenuOpen) {
-      // Use longer timeout to prevent immediate closing when opening
+      // Use shorter timeout - menu should work immediately
       const timeoutId = setTimeout(() => {
         document.addEventListener('click', handleClickOutside, true)
         document.addEventListener('touchend', handleClickOutside as any, true)
-      }, 300)
+      }, 100)
 
       return () => {
         clearTimeout(timeoutId)
@@ -106,20 +106,16 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [userMenuOpen])
 
-  // Close user menu when mobile menu opens (but allow both to be open simultaneously)
+  // Close mobile menu when user menu opens, and vice versa
   useEffect(() => {
-    // Only close user menu if mobile menu is being opened AND user menu is already open
-    // This prevents interference but allows user menu to open even when mobile menu is open
+    if (userMenuOpen && mobileMenuOpen) {
+      setMobileMenuOpen(false)
+    }
+  }, [userMenuOpen])
+  
+  useEffect(() => {
     if (mobileMenuOpen && userMenuOpen) {
-      // Don't immediately close - allow user to interact with user menu first
-      // Only close if mobile menu was just opened
-      const timeoutId = setTimeout(() => {
-        // Only close if both are still open (mobile menu might have been closed)
-        if (mobileMenuOpen && userMenuOpen) {
-          setUserMenuOpen(false)
-        }
-      }, 150)
-      return () => clearTimeout(timeoutId)
+      setUserMenuOpen(false)
     }
   }, [mobileMenuOpen])
 
