@@ -346,6 +346,10 @@ export default function Navbar({ session }: NavbarProps) {
                   onClick={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
+                    // Close mobile menu when opening user menu
+                    if (mobileMenuOpen) {
+                      setMobileMenuOpen(false)
+                    }
                     setUserMenuOpen((prev) => !prev)
                   }}
                   className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98] relative"
