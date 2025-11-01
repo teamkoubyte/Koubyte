@@ -28,7 +28,7 @@ export default function Footer() {
             {/* Social Links - Echte Koubyte Accounts */}
             <div className="flex space-x-3 pt-4">
               <a 
-                href="https://facebook.com/Koubyte" 
+                href="https://www.facebook.com/people/Koubyte/61576324675690/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 rounded-lg flex items-center justify-center transition-all duration-300"
@@ -46,7 +46,7 @@ export default function Footer() {
                 <XIcon className="w-5 h-5" />
               </a>
               <a 
-                href="https://instagram.com/Koubyte" 
+                href="https://www.instagram.com/koubyte/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-slate-100 hover:bg-pink-600 hover:text-white text-slate-600 rounded-lg flex items-center justify-center transition-all duration-300"
@@ -55,7 +55,7 @@ export default function Footer() {
                 <Instagram className="w-5 h-5" />
               </a>
               <a 
-                href="https://linkedin.com/company/Koubyte" 
+                href="https://be.linkedin.com/in/koubyte" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-slate-100 hover:bg-blue-700 hover:text-white text-slate-600 rounded-lg flex items-center justify-center transition-all duration-300"
