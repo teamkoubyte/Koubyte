@@ -73,48 +73,42 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [session])
 
-  // Close all dropdowns when clicking outside
+  // Close all dropdowns when clicking outside - SIMPLIFIED VERSION
   useEffect(() => {
+    if (!userMenuOpen && !servicesMenuOpen && !infoMenuOpen && !accountMenuOpen) return
+
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as Node
+      const target = event.target as HTMLElement
       
-      // Check all menu refs
-      const menuRefs = [
-        { menu: desktopUserMenuRef.current, button: desktopUserButtonRef.current, setOpen: setUserMenuOpen },
-        { menu: mobileUserMenuRef.current, button: mobileUserButtonRef.current, setOpen: setUserMenuOpen },
-        { menu: servicesMenuRef.current, button: servicesButtonRef.current, setOpen: setServicesMenuOpen },
-        { menu: infoMenuRef.current, button: infoButtonRef.current, setOpen: setInfoMenuOpen },
-        { menu: accountMenuRef.current, button: accountButtonRef.current, setOpen: setAccountMenuOpen },
-      ]
+      // Don't close if clicking on any dropdown button or inside any dropdown menu
+      const isClickOnButton = target.closest('button[aria-expanded="true"]') || 
+                              target.closest('[ref]') ||
+                              target.closest('.relative')
       
-      // Check if click is on any nav button (hamburger, cart, etc.)
-      const clickedOnNavButton = (target as Element)?.closest('button[aria-label*="menu" i], a[href="/checkout"], button[aria-label*="cart" i]')
+      const isClickInMenu = target.closest('[class*="absolute"][class*="top-full"]') ||
+                           target.closest('[class*="z-[9999]"]')
       
-      // Check each menu and close if click is outside
-      menuRefs.forEach(({ menu, button, setOpen }) => {
-        if (!menu || !button) return
-        
-        const clickedInsideMenu = menu.contains(target) || menu === target
-        const clickedOnButton = button.contains(target) || button === target
-        
-        if (!clickedInsideMenu && !clickedOnButton && !clickedOnNavButton) {
-          setOpen(false)
-        }
-      })
+      const isNavButton = target.closest('button[aria-label*="menu" i]') ||
+                         target.closest('a[href="/checkout"]') ||
+                         target.closest('button[aria-label*="cart" i]')
+      
+      // Only close if NOT clicking on buttons or inside menus
+      if (!isClickOnButton && !isClickInMenu && !isNavButton) {
+        setServicesMenuOpen(false)
+        setInfoMenuOpen(false)
+        setAccountMenuOpen(false)
+        setUserMenuOpen(false)
+      }
     }
 
-    // Only add listeners if at least one menu is open
-    if (userMenuOpen || servicesMenuOpen || infoMenuOpen || accountMenuOpen) {
-      const timeoutId = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside, true)
-        document.addEventListener('touchstart', handleClickOutside as any, true)
-      }, 150)
+    // Delay adding listener to allow menu to render
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+    }, 250)
 
-      return () => {
-        clearTimeout(timeoutId)
-        document.removeEventListener('mousedown', handleClickOutside, true)
-        document.removeEventListener('touchstart', handleClickOutside as any, true)
-      }
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
     }
   }, [userMenuOpen, servicesMenuOpen, infoMenuOpen, accountMenuOpen])
 
@@ -167,12 +161,15 @@ export default function Navbar({ session }: NavbarProps) {
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  setServicesMenuOpen((prev) => !prev)
-                  setInfoMenuOpen(false)
-                  setAccountMenuOpen(false)
+                  const newState = !servicesMenuOpen
+                  setServicesMenuOpen(newState)
+                  if (newState) {
+                    setInfoMenuOpen(false)
+                    setAccountMenuOpen(false)
+                  }
                 }}
                 onMouseEnter={() => {
-                  if (!mobileMenuOpen) {
+                  if (!mobileMenuOpen && window.innerWidth >= 1280) {
                     setServicesMenuOpen(true)
                     setInfoMenuOpen(false)
                     setAccountMenuOpen(false)
@@ -189,7 +186,13 @@ export default function Navbar({ session }: NavbarProps) {
               {servicesMenuOpen && (
                 <div 
                   className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
-                  onMouseLeave={() => setServicesMenuOpen(false)}
+                  onMouseEnter={() => setServicesMenuOpen(true)}
+                  onMouseLeave={() => {
+                    // Only close on mouse leave if not on mobile
+                    if (window.innerWidth >= 1280) {
+                      setServicesMenuOpen(false)
+                    }
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="py-2">
@@ -240,12 +243,15 @@ export default function Navbar({ session }: NavbarProps) {
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  setInfoMenuOpen((prev) => !prev)
-                  setServicesMenuOpen(false)
-                  setAccountMenuOpen(false)
+                  const newState = !infoMenuOpen
+                  setInfoMenuOpen(newState)
+                  if (newState) {
+                    setServicesMenuOpen(false)
+                    setAccountMenuOpen(false)
+                  }
                 }}
                 onMouseEnter={() => {
-                  if (!mobileMenuOpen) {
+                  if (!mobileMenuOpen && window.innerWidth >= 1280) {
                     setInfoMenuOpen(true)
                     setServicesMenuOpen(false)
                     setAccountMenuOpen(false)
@@ -262,7 +268,13 @@ export default function Navbar({ session }: NavbarProps) {
               {infoMenuOpen && (
                 <div 
                   className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
-                  onMouseLeave={() => setInfoMenuOpen(false)}
+                  onMouseEnter={() => setInfoMenuOpen(true)}
+                  onMouseLeave={() => {
+                    // Only close on mouse leave if not on mobile
+                    if (window.innerWidth >= 1280) {
+                      setInfoMenuOpen(false)
+                    }
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="py-2">
@@ -353,9 +365,12 @@ export default function Navbar({ session }: NavbarProps) {
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
-                          setUserMenuOpen((prev) => !prev)
-                          setServicesMenuOpen(false)
-                          setInfoMenuOpen(false)
+                          const newState = !userMenuOpen
+                          setUserMenuOpen(newState)
+                          if (newState) {
+                            setServicesMenuOpen(false)
+                            setInfoMenuOpen(false)
+                          }
                         }}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
                         aria-label="Gebruikersmenu"
@@ -370,8 +385,12 @@ export default function Navbar({ session }: NavbarProps) {
                       {userMenuOpen && (
                         <div 
                           className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
-                          onClick={(e) => e.stopPropagation()}
-                          onMouseLeave={() => setUserMenuOpen(false)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                          }}
+                          onMouseDown={(e) => {
+                            e.stopPropagation()
+                          }}
                         >
                           {/* Gebruikersinfo Header */}
                           <div className="px-5 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 border-b border-blue-400/20">
@@ -499,9 +518,12 @@ export default function Navbar({ session }: NavbarProps) {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        setAccountMenuOpen((prev) => !prev)
-                        setServicesMenuOpen(false)
-                        setInfoMenuOpen(false)
+                        const newState = !accountMenuOpen
+                        setAccountMenuOpen(newState)
+                        if (newState) {
+                          setServicesMenuOpen(false)
+                          setInfoMenuOpen(false)
+                        }
                       }}
                       className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
                       aria-expanded={accountMenuOpen}
@@ -514,7 +536,12 @@ export default function Navbar({ session }: NavbarProps) {
                     {accountMenuOpen && (
                       <div 
                         className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
+                        onMouseDown={(e) => {
+                          e.stopPropagation()
+                        }}
                       >
                         <div className="py-2">
                           <Link
