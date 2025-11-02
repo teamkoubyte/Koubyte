@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Menu, X, LogIn, ShoppingCart, User, LayoutDashboard, Settings, Heart, Package, Calendar, Star, HelpCircle, LogOut, ChevronDown } from 'lucide-react'
+import { Menu, X, LogIn, ShoppingCart, User, LayoutDashboard, Settings, Heart, Package, Calendar, Star, HelpCircle, LogOut, ChevronDown, Wrench, DollarSign, FileText, Info, Users, BookOpen, MessageSquare } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { signOut } from 'next-auth/react'
 import ShoppingCartWidget from './ShoppingCart'
@@ -15,12 +15,21 @@ interface NavbarProps {
 export default function Navbar({ session }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false)
+  const [infoMenuOpen, setInfoMenuOpen] = useState(false)
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [cartItemCount, setCartItemCount] = useState(0)
   const desktopUserMenuRef = useRef<HTMLDivElement>(null)
   const mobileUserMenuRef = useRef<HTMLDivElement>(null)
   const desktopUserButtonRef = useRef<HTMLButtonElement>(null)
   const mobileUserButtonRef = useRef<HTMLButtonElement>(null)
+  const servicesMenuRef = useRef<HTMLDivElement>(null)
+  const servicesButtonRef = useRef<HTMLButtonElement>(null)
+  const infoMenuRef = useRef<HTMLDivElement>(null)
+  const infoButtonRef = useRef<HTMLButtonElement>(null)
+  const accountMenuRef = useRef<HTMLDivElement>(null)
+  const accountButtonRef = useRef<HTMLButtonElement>(null)
   
   // Admin homepage is /admin, anders is het /
   const homeUrl = session?.user?.role === 'admin' ? '/admin' : '/'
@@ -64,44 +73,50 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [session])
 
-  // Close user menu when clicking outside (for both desktop and mobile)
+  // Close all dropdowns when clicking outside
   useEffect(() => {
-    if (!userMenuOpen) return
-
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       const target = event.target as Node
-      const desktopMenu = desktopUserMenuRef.current
-      const mobileMenu = mobileUserMenuRef.current
-      const desktopButton = desktopUserButtonRef.current
-      const mobileButton = mobileUserButtonRef.current
       
-      // Check if click is inside either menu container OR the button itself
-      const clickedInsideDesktopMenu = desktopMenu && (desktopMenu.contains(target) || desktopMenu === target)
-      const clickedInsideMobileMenu = mobileMenu && (mobileMenu.contains(target) || mobileMenu === target)
-      const clickedOnDesktopButton = desktopButton && (desktopButton.contains(target) || desktopButton === target)
-      const clickedOnMobileButton = mobileButton && (mobileButton.contains(target) || mobileButton === target)
+      // Check all menu refs
+      const menuRefs = [
+        { menu: desktopUserMenuRef.current, button: desktopUserButtonRef.current, setOpen: setUserMenuOpen },
+        { menu: mobileUserMenuRef.current, button: mobileUserButtonRef.current, setOpen: setUserMenuOpen },
+        { menu: servicesMenuRef.current, button: servicesButtonRef.current, setOpen: setServicesMenuOpen },
+        { menu: infoMenuRef.current, button: infoButtonRef.current, setOpen: setInfoMenuOpen },
+        { menu: accountMenuRef.current, button: accountButtonRef.current, setOpen: setAccountMenuOpen },
+      ]
       
-      // Check if click is on hamburger menu button or shopping cart
+      // Check if click is on any nav button (hamburger, cart, etc.)
       const clickedOnNavButton = (target as Element)?.closest('button[aria-label*="menu" i], a[href="/checkout"], button[aria-label*="cart" i]')
       
-      // If click is outside both menus AND not on either button AND not on nav buttons, close the menu
-      if (!clickedInsideDesktopMenu && !clickedInsideMobileMenu && !clickedOnDesktopButton && !clickedOnMobileButton && !clickedOnNavButton) {
-        setUserMenuOpen(false)
+      // Check each menu and close if click is outside
+      menuRefs.forEach(({ menu, button, setOpen }) => {
+        if (!menu || !button) return
+        
+        const clickedInsideMenu = menu.contains(target) || menu === target
+        const clickedOnButton = button.contains(target) || button === target
+        
+        if (!clickedInsideMenu && !clickedOnButton && !clickedOnNavButton) {
+          setOpen(false)
+        }
+      })
+    }
+
+    // Only add listeners if at least one menu is open
+    if (userMenuOpen || servicesMenuOpen || infoMenuOpen || accountMenuOpen) {
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside, true)
+        document.addEventListener('touchstart', handleClickOutside as any, true)
+      }, 150)
+
+      return () => {
+        clearTimeout(timeoutId)
+        document.removeEventListener('mousedown', handleClickOutside, true)
+        document.removeEventListener('touchstart', handleClickOutside as any, true)
       }
     }
-
-    // Add event listeners with a small delay to prevent immediate closing
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside, true)
-      document.addEventListener('touchstart', handleClickOutside as any, true)
-    }, 150)
-
-    return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('mousedown', handleClickOutside, true)
-      document.removeEventListener('touchstart', handleClickOutside as any, true)
-    }
-  }, [userMenuOpen])
+  }, [userMenuOpen, servicesMenuOpen, infoMenuOpen, accountMenuOpen])
 
   // Close mobile menu when user menu opens, and vice versa
   useEffect(() => {
@@ -135,33 +150,175 @@ export default function Navbar({ session }: NavbarProps) {
             </span>
           </Link>
 
-          {/* Desktop Menu - Verberg eerder voor betere responsive design */}
-          <div className="hidden xl:flex items-center space-x-1 min-w-0 flex-1 justify-end">
-            <Link href={homeUrl} className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
+          {/* Desktop Menu - Allemaal dropdown menu's */}
+          <div className="hidden xl:flex items-center space-x-2 min-w-0 flex-1 justify-end">
+            {/* Home - Directe link */}
+            <Link 
+              href={homeUrl} 
+              className="px-4 py-2 text-slate-700 hover:text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200"
+            >
               Home
             </Link>
-            <Link href="/about" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Over mij
-            </Link>
-            <Link href="/diensten" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Diensten
-            </Link>
-            <Link href="/pricing" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Prijzen
-            </Link>
-            <Link href="/faq" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Veelgestelde vragen
-            </Link>
-            <Link href="/blog" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Blog
-            </Link>
-            <Link href="/quote" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Offerte
-            </Link>
-            <Link href="/contact" className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-slate-50 transition-all duration-200">
-              Contact
-            </Link>
 
+            {/* Diensten Dropdown */}
+            <div className="relative" ref={servicesMenuRef}>
+              <button
+                ref={servicesButtonRef}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setServicesMenuOpen((prev) => !prev)
+                  setInfoMenuOpen(false)
+                  setAccountMenuOpen(false)
+                }}
+                onMouseEnter={() => {
+                  if (!mobileMenuOpen) {
+                    setServicesMenuOpen(true)
+                    setInfoMenuOpen(false)
+                    setAccountMenuOpen(false)
+                  }
+                }}
+                className="flex items-center gap-1.5 px-4 py-2 text-slate-700 hover:text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200 group"
+                aria-expanded={servicesMenuOpen}
+              >
+                <Wrench className="h-4 w-4" />
+                <span>Diensten</span>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${servicesMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {servicesMenuOpen && (
+                <div 
+                  className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                  onMouseLeave={() => setServicesMenuOpen(false)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="py-2">
+                    <Link
+                      href="/diensten"
+                      onClick={() => setServicesMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <Wrench className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Onze Diensten</div>
+                        <div className="text-xs text-slate-500">Bekijk alle IT-diensten</div>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/pricing"
+                      onClick={() => setServicesMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <DollarSign className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Prijzen</div>
+                        <div className="text-xs text-slate-500">Transparante tarieven</div>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/quote"
+                      onClick={() => setServicesMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <FileText className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Offerte Aanvragen</div>
+                        <div className="text-xs text-slate-500">Gratis prijsopgave</div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Informatie Dropdown */}
+            <div className="relative" ref={infoMenuRef}>
+              <button
+                ref={infoButtonRef}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setInfoMenuOpen((prev) => !prev)
+                  setServicesMenuOpen(false)
+                  setAccountMenuOpen(false)
+                }}
+                onMouseEnter={() => {
+                  if (!mobileMenuOpen) {
+                    setInfoMenuOpen(true)
+                    setServicesMenuOpen(false)
+                    setAccountMenuOpen(false)
+                  }
+                }}
+                className="flex items-center gap-1.5 px-4 py-2 text-slate-700 hover:text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200 group"
+                aria-expanded={infoMenuOpen}
+              >
+                <Info className="h-4 w-4" />
+                <span>Informatie</span>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${infoMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {infoMenuOpen && (
+                <div 
+                  className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                  onMouseLeave={() => setInfoMenuOpen(false)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="py-2">
+                    <Link
+                      href="/about"
+                      onClick={() => setInfoMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <Users className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Over Mij</div>
+                        <div className="text-xs text-slate-500">Leer meer over Koubyte</div>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/faq"
+                      onClick={() => setInfoMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <HelpCircle className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Veelgestelde Vragen</div>
+                        <div className="text-xs text-slate-500">Vind snel antwoorden</div>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/blog"
+                      onClick={() => setInfoMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <BookOpen className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Blog</div>
+                        <div className="text-xs text-slate-500">IT-tips & handleidingen</div>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/contact"
+                      onClick={() => setInfoMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                    >
+                      <MessageSquare className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                      <div>
+                        <div className="font-semibold text-sm">Contact</div>
+                        <div className="text-xs text-slate-500">Neem contact op</div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Account Actions - Shopping Cart, Notifications, Account Menu */}
             <div className="ml-4 flex items-center gap-3">
               {/* Shopping Cart Widget - alleen voor ingelogde gebruikers en HIDDEN op mobiel */}
               {session && session.user.role !== 'admin' && (
@@ -180,7 +337,7 @@ export default function Navbar({ session }: NavbarProps) {
                   {session.user.role === 'admin' ? (
                     // Admin ziet alleen link naar admin panel
                     <Link href="/admin">
-                      <Button className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold">
+                      <Button className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
                         Admin Panel
                       </Button>
                     </Link>
@@ -189,15 +346,16 @@ export default function Navbar({ session }: NavbarProps) {
                     <div className="relative" ref={desktopUserMenuRef}>
                       <button
                         ref={desktopUserButtonRef}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          // Toggle menu state
-                          setUserMenuOpen((prev) => !prev)
-                        }}
                         onMouseDown={(e) => {
                           // Prevent menu from closing immediately when button is clicked
                           e.preventDefault()
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          setUserMenuOpen((prev) => !prev)
+                          setServicesMenuOpen(false)
+                          setInfoMenuOpen(false)
                         }}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
                         aria-label="Gebruikersmenu"
@@ -205,75 +363,96 @@ export default function Navbar({ session }: NavbarProps) {
                       >
                         <User className="h-5 w-5 text-slate-700" />
                         <span className="hidden lg:block text-slate-700">{session.user.name || 'Account'}</span>
-                        <ChevronDown className={`h-4 w-4 text-slate-600 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`h-4 w-4 text-slate-600 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                       </button>
                       
                       {/* Desktop User Dropdown Menu */}
                       {userMenuOpen && (
                         <div 
-                          className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                          className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
                           onClick={(e) => e.stopPropagation()}
+                          onMouseLeave={() => setUserMenuOpen(false)}
                         >
-                          {/* Gebruikersinfo */}
-                          <div className="px-5 py-4 bg-gradient-to-r from-blue-50 via-blue-50/50 to-slate-50 border-b border-slate-200/60">
-                            <p className="font-semibold text-slate-900 text-sm mb-0.5 leading-tight">{session.user.name || 'Gebruiker'}</p>
-                            <p className="text-xs text-slate-500 truncate leading-tight">{session.user.email}</p>
+                          {/* Gebruikersinfo Header */}
+                          <div className="px-5 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 border-b border-blue-400/20">
+                            <p className="font-bold text-white text-base mb-1 leading-tight">{session.user.name || 'Gebruiker'}</p>
+                            <p className="text-xs text-blue-100 truncate leading-tight">{session.user.email}</p>
                           </div>
                           
                           {/* Menu Items */}
-                          <div className="py-1.5">
+                          <div className="py-2">
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                             >
-                              <LayoutDashboard className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Mijn Koubyte</span>
+                              <LayoutDashboard className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Mijn Koubyte</div>
+                                <div className="text-xs text-slate-500">Dashboard overzicht</div>
+                              </div>
                             </Link>
                             
                             <Link
                               href="/dashboard/privacy"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                             >
-                              <Settings className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Gegevens en voorkeuren</span>
+                              <Settings className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Gegevens & Voorkeuren</div>
+                                <div className="text-xs text-slate-500">Privacy instellingen</div>
+                              </div>
+                            </Link>
+                            
+                            <div className="border-t border-slate-200/60 my-1.5" />
+                            
+                            <Link
+                              href="/dashboard"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                            >
+                              <Calendar className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Mijn Afspraken</div>
+                                <div className="text-xs text-slate-500">Bekijk & beheer</div>
+                              </div>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                             >
-                              <Heart className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Verlanglijstje</span>
+                              <Package className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Mijn Bestellingen</div>
+                                <div className="text-xs text-slate-500">Bestelgeschiedenis</div>
+                              </div>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                             >
-                              <Calendar className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Mijn afspraken</span>
+                              <Heart className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Verlanglijstje</div>
+                                <div className="text-xs text-slate-500">Opgeslagen items</div>
+                              </div>
                             </Link>
                             
                             <Link
                               href="/dashboard"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                             >
-                              <Package className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Mijn bestellingen</span>
-                            </Link>
-                            
-                            <Link
-                              href="/dashboard"
-                              onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
-                            >
-                              <Star className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Mijn reviews</span>
+                              <Star className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Mijn Reviews</div>
+                                <div className="text-xs text-slate-500">Bekijk je reviews</div>
+                              </div>
                             </Link>
                             
                             <div className="border-t border-slate-200/60 my-1.5" />
@@ -281,10 +460,13 @@ export default function Navbar({ session }: NavbarProps) {
                             <Link
                               href="/faq"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-slate-50/80 hover:text-slate-900 transition-all duration-200 group rounded-none"
+                              className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 group"
                             >
-                              <HelpCircle className="h-4 w-4 text-slate-400 group-hover:text-slate-700 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Help & Support</span>
+                              <HelpCircle className="h-5 w-5 text-slate-400 group-hover:text-slate-700 transition-colors flex-shrink-0" />
+                              <div className="flex-1">
+                                <div className="font-semibold text-sm">Help & Support</div>
+                                <div className="text-xs text-slate-500">Vragen of hulp nodig?</div>
+                              </div>
                             </Link>
                             
                             <div className="border-t border-slate-200/60 my-1.5" />
@@ -294,10 +476,13 @@ export default function Navbar({ session }: NavbarProps) {
                                 setUserMenuOpen(false)
                                 signOut({ callbackUrl: '/' })
                               }}
-                              className="w-full flex items-center gap-3 px-5 py-2.5 text-red-600 hover:bg-red-50/80 hover:text-red-700 transition-all duration-200 group"
+                              className="w-full flex items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 group"
                             >
-                              <LogOut className="h-4 w-4 group-hover:text-red-700 transition-colors flex-shrink-0" />
-                              <span className="text-sm font-medium">Uitloggen</span>
+                              <LogOut className="h-5 w-5 group-hover:text-red-700 transition-colors flex-shrink-0" />
+                              <div className="flex-1 text-left">
+                                <div className="font-semibold text-sm">Uitloggen</div>
+                                <div className="text-xs text-red-500/80">Afmelden van je account</div>
+                              </div>
                             </button>
                           </div>
                         </div>
@@ -307,16 +492,72 @@ export default function Navbar({ session }: NavbarProps) {
                 </>
               ) : (
                 <>
-                  <Link href="/auth/login">
-                    <Button variant="ghost" className="rounded-lg font-semibold text-slate-700">
-                      Inloggen
-                    </Button>
-                  </Link>
-                  <Link href="/book">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300">
-                      Afspraak maken
-                    </Button>
-                  </Link>
+                  {/* Account Dropdown voor niet-ingelogde gebruikers */}
+                  <div className="relative" ref={accountMenuRef}>
+                    <button
+                      ref={accountButtonRef}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setAccountMenuOpen((prev) => !prev)
+                        setServicesMenuOpen(false)
+                        setInfoMenuOpen(false)
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
+                      aria-expanded={accountMenuOpen}
+                    >
+                      <User className="h-5 w-5 text-slate-700" />
+                      <span>Account</span>
+                      <ChevronDown className={`h-4 w-4 text-slate-600 transition-transform duration-200 ${accountMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    {accountMenuOpen && (
+                      <div 
+                        className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="py-2">
+                          <Link
+                            href="/auth/login"
+                            onClick={() => setAccountMenuOpen(false)}
+                            className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                          >
+                            <LogIn className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                            <div>
+                              <div className="font-semibold text-sm">Inloggen</div>
+                              <div className="text-xs text-slate-500">Log in op je account</div>
+                            </div>
+                          </Link>
+                          
+                          <Link
+                            href="/auth/register"
+                            onClick={() => setAccountMenuOpen(false)}
+                            className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                          >
+                            <User className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                            <div>
+                              <div className="font-semibold text-sm">Registreren</div>
+                              <div className="text-xs text-slate-500">Maak een nieuw account</div>
+                            </div>
+                          </Link>
+                          
+                          <div className="border-t border-slate-200/60 my-1.5" />
+                          
+                          <Link
+                            href="/book"
+                            onClick={() => setAccountMenuOpen(false)}
+                            className="flex items-center gap-3 px-5 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 transition-all duration-200 group mx-2 mb-2 rounded-lg"
+                          >
+                            <Calendar className="h-4 w-4 text-blue-600 group-hover:text-blue-700 transition-colors flex-shrink-0" />
+                            <div>
+                              <div className="font-semibold text-sm">Afspraak Maken</div>
+                              <div className="text-xs text-blue-600/80">Plan direct je afspraak</div>
+                            </div>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </div>
@@ -373,72 +614,92 @@ export default function Navbar({ session }: NavbarProps) {
                   <User className="h-6 w-6 text-slate-700" />
                 </button>
                 
-                {/* User Dropdown Menu */}
+                {/* User Dropdown Menu Mobile */}
                 {userMenuOpen && (
                   <div 
-                    className="fixed sm:absolute right-2 sm:right-0 top-20 sm:top-full mt-0 sm:mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                    className="fixed sm:absolute right-2 sm:right-0 top-20 sm:top-full mt-0 sm:mt-2 w-80 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Gebruikersinfo */}
-                    <div className="px-5 py-4 bg-gradient-to-r from-blue-50 via-blue-50/50 to-slate-50 border-b border-slate-200/60">
-                      <p className="font-semibold text-slate-900 text-sm mb-0.5 leading-tight">{session.user.name || 'Gebruiker'}</p>
-                      <p className="text-xs text-slate-500 truncate leading-tight">{session.user.email}</p>
+                    {/* Gebruikersinfo Header */}
+                    <div className="px-5 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 border-b border-blue-400/20">
+                      <p className="font-bold text-white text-base mb-1 leading-tight">{session.user.name || 'Gebruiker'}</p>
+                      <p className="text-xs text-blue-100 truncate leading-tight">{session.user.email}</p>
                     </div>
                     
                     {/* Menu Items */}
-                    <div className="py-1.5">
+                    <div className="py-2">
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                       >
-                        <LayoutDashboard className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Mijn Koubyte</span>
+                        <LayoutDashboard className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Mijn Koubyte</div>
+                          <div className="text-xs text-slate-500">Dashboard overzicht</div>
+                        </div>
                       </Link>
                       
                       <Link
                         href="/dashboard/privacy"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                       >
-                        <Settings className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Gegevens en voorkeuren</span>
+                        <Settings className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Gegevens & Voorkeuren</div>
+                          <div className="text-xs text-slate-500">Privacy instellingen</div>
+                        </div>
+                      </Link>
+                      
+                      <div className="border-t border-slate-200/60 my-1.5" />
+                      
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+                      >
+                        <Calendar className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Mijn Afspraken</div>
+                          <div className="text-xs text-slate-500">Bekijk & beheer</div>
+                        </div>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                       >
-                        <Heart className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Verlanglijstje</span>
+                        <Package className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Mijn Bestellingen</div>
+                          <div className="text-xs text-slate-500">Bestelgeschiedenis</div>
+                        </div>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                       >
-                        <Calendar className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Mijn afspraken</span>
+                        <Heart className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Verlanglijstje</div>
+                          <div className="text-xs text-slate-500">Opgeslagen items</div>
+                        </div>
                       </Link>
                       
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
                       >
-                        <Package className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Mijn bestellingen</span>
-                      </Link>
-                      
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 transition-all duration-200 group rounded-none"
-                      >
-                        <Star className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Mijn reviews</span>
+                        <Star className="h-5 w-5 text-slate-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Mijn Reviews</div>
+                          <div className="text-xs text-slate-500">Bekijk je reviews</div>
+                        </div>
                       </Link>
                       
                       <div className="border-t border-slate-200/60 my-1.5" />
@@ -446,10 +707,13 @@ export default function Navbar({ session }: NavbarProps) {
                       <Link
                         href="/faq"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-2.5 text-slate-700 hover:bg-slate-50/80 hover:text-slate-900 transition-all duration-200 group rounded-none"
+                        className="flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 group"
                       >
-                        <HelpCircle className="h-4 w-4 text-slate-400 group-hover:text-slate-700 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Help & Support</span>
+                        <HelpCircle className="h-5 w-5 text-slate-400 group-hover:text-slate-700 transition-colors flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm">Help & Support</div>
+                          <div className="text-xs text-slate-500">Vragen of hulp nodig?</div>
+                        </div>
                       </Link>
                       
                       <div className="border-t border-slate-200/60 my-1.5" />
@@ -459,10 +723,13 @@ export default function Navbar({ session }: NavbarProps) {
                           setUserMenuOpen(false)
                           signOut({ callbackUrl: '/' })
                         }}
-                        className="w-full flex items-center gap-3 px-5 py-2.5 text-red-600 hover:bg-red-50/80 hover:text-red-700 transition-all duration-200 group"
+                        className="w-full flex items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 group"
                       >
-                        <LogOut className="h-4 w-4 group-hover:text-red-700 transition-colors flex-shrink-0" />
-                        <span className="text-sm font-medium">Uitloggen</span>
+                        <LogOut className="h-5 w-5 group-hover:text-red-700 transition-colors flex-shrink-0" />
+                        <div className="flex-1 text-left">
+                          <div className="font-semibold text-sm">Uitloggen</div>
+                          <div className="text-xs text-red-500/80">Afmelden van je account</div>
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -487,107 +754,164 @@ export default function Navbar({ session }: NavbarProps) {
           </div>
         </div>
 
-        {/* Mobile Menu - Toon eerder (xl in plaats van lg) */}
+        {/* Mobile Menu - Met dropdown structuur */}
         {mobileMenuOpen && (
-          <div className="xl:hidden py-4 space-y-2 animate-fadeInDown border-t border-slate-100 w-full overflow-x-hidden">
+          <div className="xl:hidden py-4 space-y-1 animate-fadeInDown border-t border-slate-100 w-full overflow-x-hidden">
+            {/* Home */}
             <Link 
               href={homeUrl} 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
+              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-all duration-200"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
-            </Link>
-            <Link 
-              href="/about" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Over mij
-            </Link>
-            <Link 
-              href="/diensten" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Diensten
-            </Link>
-            <Link 
-              href="/pricing" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Prijzen
-            </Link>
-            <Link 
-              href="/faq" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Veelgestelde vragen
-            </Link>
-            <Link 
-              href="/blog" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Blog
-            </Link>
-            <Link 
-              href="/quote" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Offerte
-            </Link>
-            <Link 
-              href="/contact" 
-              className="block px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-slate-50 font-medium rounded-lg transition-all duration-200"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact
+              <span className="text-lg">🏠</span>
+              <span>Home</span>
             </Link>
             
+            {/* Diensten Dropdown Mobile */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setServicesMenuOpen(!servicesMenuOpen)}
+                className="w-full flex items-center justify-between px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <Wrench className="h-5 w-5" />
+                  <span>Diensten</span>
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${servicesMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {servicesMenuOpen && (
+                <div className="ml-4 space-y-1 bg-slate-50 rounded-lg py-2">
+                  <Link 
+                    href="/diensten" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setServicesMenuOpen(false)
+                    }}
+                  >
+                    <Wrench className="h-4 w-4" />
+                    <span className="text-sm font-medium">Onze Diensten</span>
+                  </Link>
+                  <Link 
+                    href="/pricing" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setServicesMenuOpen(false)
+                    }}
+                  >
+                    <DollarSign className="h-4 w-4" />
+                    <span className="text-sm font-medium">Prijzen</span>
+                  </Link>
+                  <Link 
+                    href="/quote" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setServicesMenuOpen(false)
+                    }}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span className="text-sm font-medium">Offerte Aanvragen</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+            
+            {/* Informatie Dropdown Mobile */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setInfoMenuOpen(!infoMenuOpen)}
+                className="w-full flex items-center justify-between px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <Info className="h-5 w-5" />
+                  <span>Informatie</span>
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${infoMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {infoMenuOpen && (
+                <div className="ml-4 space-y-1 bg-slate-50 rounded-lg py-2">
+                  <Link 
+                    href="/about" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setInfoMenuOpen(false)
+                    }}
+                  >
+                    <Users className="h-4 w-4" />
+                    <span className="text-sm font-medium">Over Mij</span>
+                  </Link>
+                  <Link 
+                    href="/faq" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setInfoMenuOpen(false)
+                    }}
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    <span className="text-sm font-medium">Veelgestelde Vragen</span>
+                  </Link>
+                  <Link 
+                    href="/blog" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setInfoMenuOpen(false)
+                    }}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    <span className="text-sm font-medium">Blog</span>
+                  </Link>
+                  <Link 
+                    href="/contact" 
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setInfoMenuOpen(false)
+                    }}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-sm font-medium">Contact</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+            
+            {/* Mobile Account Section */}
             <div className="pt-4 border-t border-slate-200 space-y-2">
               {session ? (
                 <>
                   {session.user.role === 'admin' ? (
-                    // Admin ziet alleen link naar admin panel
                     <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold">
+                      <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold shadow-md">
                         Admin Panel
                       </Button>
                     </Link>
                   ) : (
-                    // Normale gebruikers zien alleen checkout (mobiel alternatief voor cart)
                     <>
                       <Link href="/checkout" onClick={() => setMobileMenuOpen(false)}>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md">
                           🛒 Winkelwagen
                         </Button>
                       </Link>
                     </>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    className="w-full rounded-lg font-semibold" 
-                    onClick={() => {
-                      setMobileMenuOpen(false)
-                      signOut()
-                    }}
-                  >
-                    Uitloggen
-                  </Button>
                 </>
               ) : (
                 <>
                   <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full rounded-lg font-semibold text-slate-700">
+                    <Button variant="outline" className="w-full rounded-lg font-semibold text-slate-700 border-2">
                       Inloggen
                     </Button>
                   </Link>
                   <Link href="/book" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md">
-                      Afspraak maken
+                      📅 Afspraak maken
                     </Button>
                   </Link>
                 </>
