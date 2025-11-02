@@ -24,11 +24,14 @@ export default function Navbar({ session }: NavbarProps) {
   const mobileUserMenuRef = useRef<HTMLDivElement>(null)
   const desktopUserButtonRef = useRef<HTMLButtonElement>(null)
   const mobileUserButtonRef = useRef<HTMLButtonElement>(null)
-  const servicesMenuRef = useRef<HTMLDivElement>(null)
+  const servicesMenuContainerRef = useRef<HTMLDivElement>(null)
+  const servicesMenuDropdownRef = useRef<HTMLDivElement>(null)
   const servicesButtonRef = useRef<HTMLButtonElement>(null)
-  const infoMenuRef = useRef<HTMLDivElement>(null)
+  const infoMenuContainerRef = useRef<HTMLDivElement>(null)
+  const infoMenuDropdownRef = useRef<HTMLDivElement>(null)
   const infoButtonRef = useRef<HTMLButtonElement>(null)
-  const accountMenuRef = useRef<HTMLDivElement>(null)
+  const accountMenuContainerRef = useRef<HTMLDivElement>(null)
+  const accountMenuDropdownRef = useRef<HTMLDivElement>(null)
   const accountButtonRef = useRef<HTMLButtonElement>(null)
   
   // Admin homepage is /admin, anders is het /
@@ -83,9 +86,12 @@ export default function Navbar({ session }: NavbarProps) {
       
       // Check all refs to see if click is inside any menu or button
       const allMenuRefs = [
-        servicesMenuRef.current,
-        infoMenuRef.current,
-        accountMenuRef.current,
+        servicesMenuContainerRef.current,
+        servicesMenuDropdownRef.current,
+        infoMenuContainerRef.current,
+        infoMenuDropdownRef.current,
+        accountMenuContainerRef.current,
+        accountMenuDropdownRef.current,
         desktopUserMenuRef.current,
         mobileUserMenuRef.current,
       ]
@@ -180,7 +186,7 @@ export default function Navbar({ session }: NavbarProps) {
             </Link>
 
             {/* Diensten Dropdown */}
-            <div className="relative" ref={servicesMenuRef}>
+            <div className="relative" ref={servicesMenuContainerRef}>
               <button
                 ref={servicesButtonRef}
                 onClick={(e) => {
@@ -192,6 +198,10 @@ export default function Navbar({ session }: NavbarProps) {
                     setInfoMenuOpen(false)
                     setAccountMenuOpen(false)
                   }
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
                 }}
                 onMouseEnter={() => {
                   if (!mobileMenuOpen && window.innerWidth >= 1280) {
@@ -210,15 +220,25 @@ export default function Navbar({ session }: NavbarProps) {
               
               {servicesMenuOpen && (
                 <div 
+                  ref={servicesMenuDropdownRef}
                   className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
-                  onMouseEnter={() => setServicesMenuOpen(true)}
+                  onMouseEnter={() => {
+                    setServicesMenuOpen(true)
+                  }}
                   onMouseLeave={() => {
                     // Only close on mouse leave if not on mobile
                     if (window.innerWidth >= 1280) {
                       setServicesMenuOpen(false)
                     }
                   }}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
                 >
                   <div className="py-2">
                     <Link
@@ -262,7 +282,7 @@ export default function Navbar({ session }: NavbarProps) {
             </div>
 
             {/* Informatie Dropdown */}
-            <div className="relative" ref={infoMenuRef}>
+            <div className="relative" ref={infoMenuContainerRef}>
               <button
                 ref={infoButtonRef}
                 onClick={(e) => {
@@ -292,6 +312,7 @@ export default function Navbar({ session }: NavbarProps) {
               
               {infoMenuOpen && (
                 <div 
+                  ref={infoMenuDropdownRef}
                   className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
                   onMouseEnter={() => setInfoMenuOpen(true)}
                   onMouseLeave={() => {
@@ -537,7 +558,7 @@ export default function Navbar({ session }: NavbarProps) {
               ) : (
                 <>
                   {/* Account Dropdown voor niet-ingelogde gebruikers */}
-                  <div className="relative" ref={accountMenuRef}>
+                  <div className="relative" ref={accountMenuContainerRef}>
                     <button
                       ref={accountButtonRef}
                       onClick={(e) => {
@@ -560,6 +581,7 @@ export default function Navbar({ session }: NavbarProps) {
                     
                     {accountMenuOpen && (
                       <div 
+                        ref={accountMenuDropdownRef}
                         className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
                         onClick={(e) => {
                           e.stopPropagation()
