@@ -73,27 +73,50 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [session])
 
-  // Close all dropdowns when clicking outside - SIMPLIFIED VERSION
+  // Close all dropdowns when clicking outside - WORKING VERSION
   useEffect(() => {
     if (!userMenuOpen && !servicesMenuOpen && !infoMenuOpen && !accountMenuOpen) return
 
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       const target = event.target as HTMLElement
+      if (!target) return
       
-      // Don't close if clicking on any dropdown button or inside any dropdown menu
-      const isClickOnButton = target.closest('button[aria-expanded="true"]') || 
-                              target.closest('[ref]') ||
-                              target.closest('.relative')
+      // Check all refs to see if click is inside any menu or button
+      const allMenuRefs = [
+        servicesMenuRef.current,
+        infoMenuRef.current,
+        accountMenuRef.current,
+        desktopUserMenuRef.current,
+        mobileUserMenuRef.current,
+      ]
       
-      const isClickInMenu = target.closest('[class*="absolute"][class*="top-full"]') ||
-                           target.closest('[class*="z-[9999]"]')
+      const allButtonRefs = [
+        servicesButtonRef.current,
+        infoButtonRef.current,
+        accountButtonRef.current,
+        desktopUserButtonRef.current,
+        mobileUserButtonRef.current,
+      ]
       
-      const isNavButton = target.closest('button[aria-label*="menu" i]') ||
-                         target.closest('a[href="/checkout"]') ||
-                         target.closest('button[aria-label*="cart" i]')
+      // Check if click is inside any menu container
+      const clickedInMenu = allMenuRefs.some(ref => {
+        if (!ref) return false
+        return ref.contains(target) || ref === target
+      })
       
-      // Only close if NOT clicking on buttons or inside menus
-      if (!isClickOnButton && !isClickInMenu && !isNavButton) {
+      // Check if click is on any button
+      const clickedOnButton = allButtonRefs.some(ref => {
+        if (!ref) return false
+        return ref.contains(target) || ref === target
+      })
+      
+      // Check if click is on nav buttons (hamburger, cart, etc.)
+      const clickedOnNavButton = target.closest('button[aria-label*="menu" i]') ||
+                                 target.closest('a[href="/checkout"]') ||
+                                 target.closest('[data-cart]')
+      
+      // Only close if click is truly outside
+      if (!clickedInMenu && !clickedOnButton && !clickedOnNavButton) {
         setServicesMenuOpen(false)
         setInfoMenuOpen(false)
         setAccountMenuOpen(false)
@@ -101,14 +124,16 @@ export default function Navbar({ session }: NavbarProps) {
       }
     }
 
-    // Delay adding listener to allow menu to render
+    // Delay adding listener to allow menu to render first
     const timeoutId = setTimeout(() => {
-      document.addEventListener('click', handleClickOutside, true)
-    }, 250)
+      document.addEventListener('mousedown', handleClickOutside, true)
+      document.addEventListener('touchstart', handleClickOutside as any, true)
+    }, 300)
 
     return () => {
       clearTimeout(timeoutId)
-      document.removeEventListener('click', handleClickOutside, true)
+      document.removeEventListener('mousedown', handleClickOutside, true)
+      document.removeEventListener('touchstart', handleClickOutside as any, true)
     }
   }, [userMenuOpen, servicesMenuOpen, infoMenuOpen, accountMenuOpen])
 
