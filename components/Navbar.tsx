@@ -76,11 +76,12 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [session])
 
-  // Close all dropdowns when clicking outside - WORKING VERSION
+  // Close all dropdowns when clicking outside - SIMPLIFIED VERSION
   useEffect(() => {
+    // Don't add listener if no menus are open
     if (!userMenuOpen && !servicesMenuOpen && !infoMenuOpen && !accountMenuOpen) return
 
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+    const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
       if (!target) return
       
@@ -121,12 +122,15 @@ export default function Navbar({ session }: NavbarProps) {
                                  target.closest('a[href="/checkout"]') ||
                                  target.closest('[data-cart]')
       
-      // Only close if click is truly outside
+      // Only close if click is truly outside all protected elements
       if (!clickedInMenu && !clickedOnButton && !clickedOnNavButton) {
-        setServicesMenuOpen(false)
-        setInfoMenuOpen(false)
-        setAccountMenuOpen(false)
-        setUserMenuOpen(false)
+        // Use setTimeout to ensure state updates happen after click is processed
+        setTimeout(() => {
+          setServicesMenuOpen(false)
+          setInfoMenuOpen(false)
+          setAccountMenuOpen(false)
+          setUserMenuOpen(false)
+        }, 0)
       }
     }
 
