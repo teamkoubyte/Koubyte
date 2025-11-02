@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { signOut } from 'next-auth/react'
 import { LayoutDashboard, LogOut, Users, Calendar, MessageSquare, Star, Package, Wrench, FileText, Calculator, CreditCard, Tag } from 'lucide-react'
@@ -12,9 +13,17 @@ interface AdminNavbarProps {
 
 export default function AdminNavbar({ userName }: AdminNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' })
+  }
+
+  const isActive = (path: string) => {
+    if (path === '/admin') {
+      return pathname === '/admin'
+    }
+    return pathname.startsWith(path)
   }
 
   return (
@@ -42,91 +51,110 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
           <div className="hidden lg:flex items-center space-x-1 min-w-0 flex-1 justify-end flex-wrap">
             <Link 
               href="/admin" 
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <LayoutDashboard className="w-4 h-4 inline mr-2" />
               Dashboard
             </Link>
             <Link
               href="/admin/appointments" 
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/appointments') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Calendar className="w-4 h-4 inline mr-2" />
               Afspraken
             </Link>
             <Link
               href="/admin/calendar" 
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/calendar') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Calendar className="w-4 h-4 inline mr-2" />
               Kalender
             </Link>
             <Link 
               href="/admin/users" 
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/users') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Users className="w-4 h-4 inline mr-2" />
               Gebruikers
             </Link>
             <Link 
               href="/admin/messages" 
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/messages') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <MessageSquare className="w-4 h-4 inline mr-2" />
               Berichten
             </Link>
             <Link
-              href="/admin/chat"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-            >
-              <MessageSquare className="w-4 h-4 inline mr-2" />
-              Live Chat
-            </Link>
-            <Link
               href="/admin/reviews"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/reviews') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Star className="w-4 h-4 inline mr-2" />
               Reviews
             </Link>
             <Link
               href="/admin/orders"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/orders') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Package className="w-4 h-4 inline mr-2" />
               Bestellingen
             </Link>
             <Link
               href="/admin/services"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/services') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Wrench className="w-4 h-4 inline mr-2" />
               Diensten
             </Link>
             <Link
-              href="/admin/discounts"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-            >
-              <Tag className="w-4 h-4 inline mr-2" />
-              Kortingscodes
-            </Link>
-            <Link
-              href="/admin/blog"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-            >
-              <FileText className="w-4 h-4 inline mr-2" />
-              Blog
-            </Link>
-            <Link
               href="/admin/quotes"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/quotes') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Calculator className="w-4 h-4 inline mr-2" />
               Offertes
             </Link>
             <Link
               href="/admin/payments"
-              className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`px-4 py-2 font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/payments') 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <CreditCard className="w-4 h-4 inline mr-2" />
               Betalingen
@@ -169,7 +197,11 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             <Link 
               href="/admin"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <LayoutDashboard className="w-4 h-4 inline mr-2" />
               Dashboard
@@ -177,7 +209,11 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             <Link 
               href="/admin/appointments"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/appointments')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Calendar className="w-4 h-4 inline mr-2" />
               Afspraken
@@ -185,7 +221,11 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             <Link 
               href="/admin/calendar"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/calendar')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Calendar className="w-4 h-4 inline mr-2" />
               Kalender
@@ -193,7 +233,11 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             <Link 
               href="/admin/users"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/users')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <Users className="w-4 h-4 inline mr-2" />
               Gebruikers
@@ -201,75 +245,75 @@ export default function AdminNavbar({ userName }: AdminNavbarProps) {
             <Link 
               href="/admin/messages"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/messages')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
               <MessageSquare className="w-4 h-4 inline mr-2" />
               Berichten
             </Link>
             <Link
-              href="/admin/chat"
+              href="/admin/reviews"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/reviews')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
             >
-              <MessageSquare className="w-4 h-4 inline mr-2" />
-              Live Chat
+              <Star className="w-4 h-4 inline mr-2" />
+              Reviews
             </Link>
-                <Link
-                  href="/admin/reviews"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <Star className="w-4 h-4 inline mr-2" />
-                  Reviews
-                </Link>
-                <Link
-                  href="/admin/orders"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <Package className="w-4 h-4 inline mr-2" />
-                  Bestellingen
-                </Link>
-                <Link
-                  href="/admin/services"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <Wrench className="w-4 h-4 inline mr-2" />
-                  Diensten
-                </Link>
-                <Link
-                  href="/admin/discounts"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <Tag className="w-4 h-4 inline mr-2" />
-                  Kortingscodes
-                </Link>
-                <Link
-                  href="/admin/blog"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <FileText className="w-4 h-4 inline mr-2" />
-                  Blog
-                </Link>
-                <Link
-                  href="/admin/quotes"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <Calculator className="w-4 h-4 inline mr-2" />
-                  Offertes
-                </Link>
-                <Link
-                  href="/admin/payments"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 sm:py-3.5 text-sm sm:text-base text-slate-600 hover:text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-all"
-                >
-                  <CreditCard className="w-4 h-4 inline mr-2" />
-                  Betalingen
-                </Link>
+            <Link
+              href="/admin/orders"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/orders')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <Package className="w-4 h-4 inline mr-2" />
+              Bestellingen
+            </Link>
+            <Link
+              href="/admin/services"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/services')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <Wrench className="w-4 h-4 inline mr-2" />
+              Diensten
+            </Link>
+            <Link
+              href="/admin/quotes"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/quotes')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <Calculator className="w-4 h-4 inline mr-2" />
+              Offertes
+            </Link>
+            <Link
+              href="/admin/payments"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-4 py-3 sm:py-3.5 text-sm sm:text-base font-medium rounded-lg transition-all flex items-center ${
+                isActive('/admin/payments')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <CreditCard className="w-4 h-4 inline mr-2" />
+              Betalingen
+            </Link>
 
             <div className="pt-4 border-t border-slate-200">
               <div className="px-4 py-2 text-sm">
