@@ -178,8 +178,8 @@ export default function Navbar({ session }: NavbarProps) {
             </span>
           </Link>
 
-          {/* Desktop Menu - Allemaal dropdown menu's */}
-          <div className="hidden xl:flex items-center space-x-2 min-w-0 flex-1 justify-end">
+          {/* Desktop Menu - Allemaal dropdown menu's - Zichtbaar vanaf lg (1024px) */}
+          <div className="hidden lg:flex items-center space-x-2 min-w-0 flex-1 justify-end">
             {/* Home - Directe link */}
             <Link 
               href={homeUrl} 
@@ -207,7 +207,7 @@ export default function Navbar({ session }: NavbarProps) {
                   e.stopPropagation()
                 }}
                 onMouseEnter={() => {
-                  if (!mobileMenuOpen && window.innerWidth >= 1280) {
+                  if (!mobileMenuOpen && window.innerWidth >= 1024) {
                     setServicesMenuOpen(true)
                     setInfoMenuOpen(false)
                     setAccountMenuOpen(false)
@@ -229,8 +229,8 @@ export default function Navbar({ session }: NavbarProps) {
                     setServicesMenuOpen(true)
                   }}
                   onMouseLeave={() => {
-                    // Only close on mouse leave if not on mobile
-                    if (window.innerWidth >= 1280) {
+                    // Only close on mouse leave if not on mobile/tablet
+                    if (window.innerWidth >= 1024) {
                       setServicesMenuOpen(false)
                     }
                   }}
@@ -298,8 +298,8 @@ export default function Navbar({ session }: NavbarProps) {
                     setAccountMenuOpen(false)
                   }
                 }}
-                onMouseEnter={() => {
-                  if (!mobileMenuOpen && window.innerWidth >= 1280) {
+                  onMouseEnter={() => {
+                  if (!mobileMenuOpen && window.innerWidth >= 1024) {
                     setInfoMenuOpen(true)
                     setServicesMenuOpen(false)
                     setAccountMenuOpen(false)
@@ -383,7 +383,7 @@ export default function Navbar({ session }: NavbarProps) {
             <div className="ml-4 flex items-center gap-3">
               {/* Shopping Cart Widget - alleen voor ingelogde gebruikers en HIDDEN op mobiel */}
               {session && session.user.role !== 'admin' && (
-                <div className="hidden xl:block">
+                <div className="hidden lg:block">
                   <ShoppingCartWidget />
                 </div>
               )}
@@ -640,8 +640,8 @@ export default function Navbar({ session }: NavbarProps) {
             </div>
           </div>
 
-          {/* Mobile Icons + Menu Knop - Iconen naast hamburger menu */}
-          <div className="xl:hidden flex items-center gap-2">
+          {/* Mobile Icons + Menu Knop - Iconen naast hamburger menu - Verborgen vanaf lg */}
+          <div className="lg:hidden flex items-center gap-2">
             {/* Shopping Cart Icon - Alleen voor ingelogde gebruikers (geen admin) */}
             {session && session.user.role !== 'admin' && (
               <Link href="/checkout" className="relative p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98]">
@@ -831,9 +831,9 @@ export default function Navbar({ session }: NavbarProps) {
           </div>
         </div>
 
-        {/* Mobile Menu - Met dropdown structuur */}
+        {/* Mobile Menu - Met dropdown structuur - Verborgen vanaf lg */}
         {mobileMenuOpen && (
-          <div className="xl:hidden py-4 space-y-1 animate-fadeInDown border-t border-slate-100 w-full overflow-x-hidden">
+          <div className="lg:hidden py-4 space-y-1 animate-fadeInDown border-t border-slate-100 w-full overflow-x-hidden">
             {/* Home */}
             <Link 
               href={homeUrl} 
