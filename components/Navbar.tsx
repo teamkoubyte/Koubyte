@@ -66,9 +66,9 @@ export default function Navbar({ session }: NavbarProps) {
 
   // Close user menu when clicking outside (for both desktop and mobile)
   useEffect(() => {
+    if (!userMenuOpen) return
+
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (!userMenuOpen) return
-      
       const target = event.target as Node
       const desktopMenu = desktopUserMenuRef.current
       const mobileMenu = mobileUserMenuRef.current
@@ -76,33 +76,30 @@ export default function Navbar({ session }: NavbarProps) {
       const mobileButton = mobileUserButtonRef.current
       
       // Check if click is inside either menu container OR the button itself
-      const clickedInsideDesktopMenu = desktopMenu && desktopMenu.contains(target)
-      const clickedInsideMobileMenu = mobileMenu && mobileMenu.contains(target)
+      const clickedInsideDesktopMenu = desktopMenu && (desktopMenu.contains(target) || desktopMenu === target)
+      const clickedInsideMobileMenu = mobileMenu && (mobileMenu.contains(target) || mobileMenu === target)
       const clickedOnDesktopButton = desktopButton && (desktopButton.contains(target) || desktopButton === target)
       const clickedOnMobileButton = mobileButton && (mobileButton.contains(target) || mobileButton === target)
       
-      // Check if click is on hamburger menu button - don't close user menu in that case
-      const hamburgerButton = (target as Element)?.closest('button[aria-label*="menu" i]')
-      const isHamburgerButton = hamburgerButton && hamburgerButton.getAttribute('aria-label')?.toLowerCase().includes('menu')
+      // Check if click is on hamburger menu button or shopping cart
+      const clickedOnNavButton = (target as Element)?.closest('button[aria-label*="menu" i], a[href="/checkout"], button[aria-label*="cart" i]')
       
-      // If click is outside both menus AND not on either button AND not on hamburger button, close the menu
-      if (!clickedInsideDesktopMenu && !clickedInsideMobileMenu && !clickedOnDesktopButton && !clickedOnMobileButton && !isHamburgerButton) {
+      // If click is outside both menus AND not on either button AND not on nav buttons, close the menu
+      if (!clickedInsideDesktopMenu && !clickedInsideMobileMenu && !clickedOnDesktopButton && !clickedOnMobileButton && !clickedOnNavButton) {
         setUserMenuOpen(false)
       }
     }
 
-    if (userMenuOpen) {
-      // Use shorter timeout - menu should work immediately
-      const timeoutId = setTimeout(() => {
-        document.addEventListener('click', handleClickOutside, true)
-        document.addEventListener('touchend', handleClickOutside as any, true)
-      }, 100)
+    // Add event listeners with a small delay to prevent immediate closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside, true)
+      document.addEventListener('touchstart', handleClickOutside as any, true)
+    }, 150)
 
-      return () => {
-        clearTimeout(timeoutId)
-        document.removeEventListener('click', handleClickOutside, true)
-        document.removeEventListener('touchend', handleClickOutside as any, true)
-      }
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('mousedown', handleClickOutside, true)
+      document.removeEventListener('touchstart', handleClickOutside as any, true)
     }
   }, [userMenuOpen])
 
@@ -195,7 +192,12 @@ export default function Navbar({ session }: NavbarProps) {
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
+                          // Toggle menu state
                           setUserMenuOpen((prev) => !prev)
+                        }}
+                        onMouseDown={(e) => {
+                          // Prevent menu from closing immediately when button is clicked
+                          e.preventDefault()
                         }}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
                         aria-label="Gebruikersmenu"
@@ -208,7 +210,10 @@ export default function Navbar({ session }: NavbarProps) {
                       
                       {/* Desktop User Dropdown Menu */}
                       {userMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm">
+                        <div 
+                          className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {/* Gebruikersinfo */}
                           <div className="px-5 py-4 bg-gradient-to-r from-blue-50 via-blue-50/50 to-slate-50 border-b border-slate-200/60">
                             <p className="font-semibold text-slate-900 text-sm mb-0.5 leading-tight">{session.user.name || 'Gebruiker'}</p>
@@ -350,7 +355,16 @@ export default function Navbar({ session }: NavbarProps) {
                     if (mobileMenuOpen) {
                       setMobileMenuOpen(false)
                     }
+                    // Toggle menu state
                     setUserMenuOpen((prev) => !prev)
+                  }}
+                  onMouseDown={(e) => {
+                    // Prevent menu from closing immediately when button is clicked
+                    e.preventDefault()
+                  }}
+                  onTouchStart={(e) => {
+                    // Prevent menu from closing immediately on touch
+                    e.stopPropagation()
                   }}
                   className="p-3 rounded-xl hover:bg-slate-100 transition-colors touch-manipulation active:scale-[0.98] relative"
                   aria-label="Gebruikersmenu"
@@ -361,7 +375,10 @@ export default function Navbar({ session }: NavbarProps) {
                 
                 {/* User Dropdown Menu */}
                 {userMenuOpen && (
-                  <div className="fixed sm:absolute right-2 sm:right-0 top-20 sm:top-full mt-0 sm:mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm">
+                  <div 
+                    className="fixed sm:absolute right-2 sm:right-0 top-20 sm:top-full mt-0 sm:mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {/* Gebruikersinfo */}
                     <div className="px-5 py-4 bg-gradient-to-r from-blue-50 via-blue-50/50 to-slate-50 border-b border-slate-200/60">
                       <p className="font-semibold text-slate-900 text-sm mb-0.5 leading-tight">{session.user.name || 'Gebruiker'}</p>
