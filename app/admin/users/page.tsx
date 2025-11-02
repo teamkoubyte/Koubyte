@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
-import { User, Mail, Calendar, Trash2, Shield, ShoppingCart, CalendarDays, Loader2, Users } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { User, Mail, Calendar, Trash2, Shield, ShoppingCart, CalendarDays, Loader2, Users, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 interface UserData {
@@ -23,10 +24,17 @@ export const dynamic = 'force-dynamic'
 export default function AdminUsersPage() {
   const { data: session } = useSession()
   const [users, setUsers] = useState<UserData[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<UserData[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [roleFilter, setRoleFilter] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<'name' | 'email' | 'createdAt'>('createdAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ message, type })
@@ -36,6 +44,72 @@ export default function AdminUsersPage() {
   useEffect(() => {
     fetchUsers()
   }, [])
+
+  // Filter en sort gebruikers
+  useEffect(() => {
+    let filtered = [...users]
+
+    // Zoek filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(u => 
+        u.name.toLowerCase().includes(query) || 
+        u.email.toLowerCase().includes(query)
+      )
+    }
+
+    // Rol filter
+    if (roleFilter !== 'all') {
+      filtered = filtered.filter(u => u.role === roleFilter)
+    }
+
+    // Sorteren
+    filtered.sort((a, b) => {
+      let aVal: any
+      let bVal: any
+
+      switch (sortBy) {
+        case 'name':
+          aVal = a.name.toLowerCase()
+          bVal = b.name.toLowerCase()
+          break
+        case 'email':
+          aVal = a.email.toLowerCase()
+          bVal = b.email.toLowerCase()
+          break
+        case 'createdAt':
+          aVal = new Date(a.createdAt).getTime()
+          bVal = new Date(b.createdAt).getTime()
+          break
+        default:
+          return 0
+      }
+
+      if (sortOrder === 'asc') {
+        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0
+      } else {
+        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0
+      }
+    })
+
+    setFilteredUsers(filtered)
+    setCurrentPage(1) // Reset naar eerste pagina bij filter wijziging
+  }, [users, searchQuery, roleFilter, sortBy, sortOrder])
+
+  // Paginatie berekeningen
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex)
+
+  const toggleSort = (field: 'name' | 'email' | 'createdAt') => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(field)
+      setSortOrder('desc')
+    }
+  }
 
 
   const fetchUsers = async () => {
@@ -165,9 +239,9 @@ export default function AdminUsersPage() {
   }
 
   const stats = {
-    total: users.length,
-    admins: users.filter(u => u.role === 'admin').length,
-    clients: users.filter(u => u.role === 'client').length,
+    total: filteredUsers.length,
+    admins: filteredUsers.filter(u => u.role === 'admin').length,
+    clients: filteredUsers.filter(u => u.role === 'client').length,
   }
 
   return (
@@ -240,6 +314,62 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
+      {/* Zoek en Filter Bar */}
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Zoekbalk */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <Input
+              type="text"
+              placeholder="Zoeken op naam of email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          {/* Rol Filter */}
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Filter op rol" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle rollen</SelectItem>
+              <SelectItem value="admin">Administrators</SelectItem>
+              <SelectItem value="client">Klanten</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Sorteer Opties */}
+          <Select value={`${sortBy}-${sortOrder}`} onValueChange={(value) => {
+            const [field, order] = value.split('-')
+            setSortBy(field as 'name' | 'email' | 'createdAt')
+            setSortOrder(order as 'asc' | 'desc')
+          }}>
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Sorteren op" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt-desc">Nieuwste eerst</SelectItem>
+              <SelectItem value="createdAt-asc">Oudste eerst</SelectItem>
+              <SelectItem value="name-asc">Naam A-Z</SelectItem>
+              <SelectItem value="name-desc">Naam Z-A</SelectItem>
+              <SelectItem value="email-asc">Email A-Z</SelectItem>
+              <SelectItem value="email-desc">Email Z-A</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Resultaat telling */}
+        <div className="text-sm text-slate-600">
+          {filteredUsers.length === users.length 
+            ? `Totaal ${users.length} gebruikers`
+            : `${filteredUsers.length} van ${users.length} gebruikers getoond`
+          }
+        </div>
+      </div>
+
       {/* Statistieken */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <Card>
@@ -299,7 +429,56 @@ export default function AdminUsersPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {users.map((user) => (
+          {/* Paginatie Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between bg-slate-50 p-4 rounded-lg">
+              <div className="text-sm text-slate-600">
+                Pagina {currentPage} van {totalPages} ({filteredUsers.length} gebruikers)
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  Vorige
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Volgende
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {paginatedUsers.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Users className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                <p className="text-slate-600">Geen gebruikers gevonden met deze filters</p>
+                {(searchQuery || roleFilter !== 'all') && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery('')
+                      setRoleFilter('all')
+                    }}
+                    className="mt-4"
+                  >
+                    Filters wissen
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            paginatedUsers.map((user) => (
             <Card key={user.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -378,7 +557,53 @@ export default function AdminUsersPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          ))
+          )}
+          
+          {/* Bottom Paginatie Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+              >
+                Eerste
+              </Button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum
+                if (totalPages <= 5) {
+                  pageNum = i + 1
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i
+                } else {
+                  pageNum = currentPage - 2 + i
+                }
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={currentPage === pageNum ? 'bg-blue-600 text-white' : ''}
+                  >
+                    {pageNum}
+                  </Button>
+                )
+              })}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+              >
+                Laatste
+              </Button>
+            </div>
+          )}
         </div>
       )}
       </div>

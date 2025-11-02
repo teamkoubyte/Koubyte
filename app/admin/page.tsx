@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { Calendar, Users, MessageSquare, Star, Package, TrendingUp, DollarSign, FileText, CreditCard } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import ErrorDisplay from '@/components/ErrorDisplay'
+import DashboardCharts from '@/components/admin/DashboardCharts'
+import { subDays, format } from 'date-fns'
+import { nl } from 'date-fns/locale/nl'
 
 export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
@@ -51,6 +54,70 @@ export default async function AdminPage() {
     ])
 
     const revenue = totalRevenue._sum?.finalAmount || 0
+
+    // Haal data voor grafieken op (laatste 7 dagen)
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = subDays(new Date(), 6 - i)
+      return format(date, 'yyyy-MM-dd')
+    })
+
+    const revenueData = await Promise.all(
+      last7Days.map(async (date) => {
+        const dayRevenue = await prisma.order.aggregate({
+          where: {
+            paymentStatus: 'paid',
+            createdAt: {
+              gte: new Date(date),
+              lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
+            },
+          },
+          _sum: { finalAmount: true },
+        }).catch(() => ({ _sum: { finalAmount: null } }))
+
+        return {
+          name: format(new Date(date), 'EEE d', { locale: nl }),
+          revenue: dayRevenue._sum?.finalAmount || 0,
+        }
+      })
+    )
+
+    const appointmentsData = await Promise.all(
+      last7Days.map(async (date) => {
+        const count = await prisma.appointment.count({
+          where: {
+            createdAt: {
+              gte: new Date(date),
+              lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
+            },
+          },
+        }).catch(() => 0)
+
+        return {
+          name: format(new Date(date), 'EEE d', { locale: nl }),
+          appointments: count,
+          value: count,
+        }
+      })
+    )
+
+    const ordersData = await Promise.all(
+      last7Days.map(async (date) => {
+        const count = await prisma.order.count({
+          where: {
+            createdAt: {
+              gte: new Date(date),
+              lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
+            },
+          },
+        }).catch(() => 0)
+
+        return {
+          name: format(new Date(date), 'EEE d', { locale: nl }),
+          orders: count,
+          value: count,
+        }
+      })
+    )
 
     // Haal recente activiteiten op
     const [
@@ -217,6 +284,13 @@ export default async function AdminPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Grafieken */}
+      <DashboardCharts 
+        revenueData={revenueData}
+        appointmentsData={appointmentsData}
+        ordersData={ordersData}
+      />
 
       {/* Recente Activiteiten */}
       <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">Recente Activiteiten</h2>
