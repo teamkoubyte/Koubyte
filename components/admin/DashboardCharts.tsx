@@ -2,18 +2,27 @@
 
 import { LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
-interface ChartData {
+interface RevenueData {
   name: string
+  revenue: number
+}
+
+interface AppointmentsData {
+  name: string
+  appointments: number
   value: number
-  revenue?: number
-  appointments?: number
-  orders?: number
+}
+
+interface OrdersData {
+  name: string
+  orders: number
+  value: number
 }
 
 interface DashboardChartsProps {
-  revenueData: ChartData[]
-  appointmentsData: ChartData[]
-  ordersData: ChartData[]
+  revenueData: RevenueData[]
+  appointmentsData: AppointmentsData[]
+  ordersData: OrdersData[]
 }
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
