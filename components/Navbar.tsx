@@ -130,16 +130,15 @@ export default function Navbar({ session }: NavbarProps) {
       }
     }
 
-    // Delay adding listener to allow menu to render first
+    // Delay adding listener to allow menu to render first - USE CLICK INSTEAD OF MOUSEDOWN
     const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside, true)
-      document.addEventListener('touchstart', handleClickOutside as any, true)
-    }, 300)
+      // Use 'click' event instead of 'mousedown' to avoid closing immediately when button is clicked
+      document.addEventListener('click', handleClickOutside, true)
+    }, 500)
 
     return () => {
       clearTimeout(timeoutId)
-      document.removeEventListener('mousedown', handleClickOutside, true)
-      document.removeEventListener('touchstart', handleClickOutside as any, true)
+      document.removeEventListener('click', handleClickOutside, true)
     }
   }, [userMenuOpen, servicesMenuOpen, infoMenuOpen, accountMenuOpen])
 
