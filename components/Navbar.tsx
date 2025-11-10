@@ -319,12 +319,19 @@ export default function Navbar({ session }: NavbarProps) {
                   className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
                   onMouseEnter={() => setInfoMenuOpen(true)}
                   onMouseLeave={() => {
-                    // Only close on mouse leave if not on mobile
-                    if (window.innerWidth >= 1280) {
+                    // Only close on mouse leave if not on mobile/tablet
+                    if (window.innerWidth >= 1024) {
                       setInfoMenuOpen(false)
                     }
                   }}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
                 >
                   <div className="py-2">
                     <Link
@@ -408,8 +415,8 @@ export default function Navbar({ session }: NavbarProps) {
                       <button
                         ref={desktopUserButtonRef}
                         onMouseDown={(e) => {
-                          // Prevent menu from closing immediately when button is clicked
                           e.preventDefault()
+                          e.stopPropagation()
                         }}
                         onClick={(e) => {
                           e.preventDefault()
@@ -419,9 +426,18 @@ export default function Navbar({ session }: NavbarProps) {
                           if (newState) {
                             setServicesMenuOpen(false)
                             setInfoMenuOpen(false)
+                            setAccountMenuOpen(false)
                           }
                         }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
+                        onMouseEnter={() => {
+                          if (!mobileMenuOpen && window.innerWidth >= 1024) {
+                            setUserMenuOpen(true)
+                            setServicesMenuOpen(false)
+                            setInfoMenuOpen(false)
+                            setAccountMenuOpen(false)
+                          }
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 hover:border-blue-300 transition-all duration-200"
                         aria-label="Gebruikersmenu"
                         aria-expanded={userMenuOpen}
                       >
@@ -434,10 +450,21 @@ export default function Navbar({ session }: NavbarProps) {
                       {userMenuOpen && (
                         <div 
                           className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                          onMouseEnter={() => {
+                            setUserMenuOpen(true)
+                          }}
+                          onMouseLeave={() => {
+                            // Only close on mouse leave if not on mobile/tablet
+                            if (window.innerWidth >= 1024) {
+                              setUserMenuOpen(false)
+                            }
+                          }}
                           onClick={(e) => {
+                            e.preventDefault()
                             e.stopPropagation()
                           }}
                           onMouseDown={(e) => {
+                            e.preventDefault()
                             e.stopPropagation()
                           }}
                         >
@@ -574,7 +601,18 @@ export default function Navbar({ session }: NavbarProps) {
                           setInfoMenuOpen(false)
                         }
                       }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 transition-colors"
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }}
+                      onMouseEnter={() => {
+                        if (!mobileMenuOpen && window.innerWidth >= 1024) {
+                          setAccountMenuOpen(true)
+                          setServicesMenuOpen(false)
+                          setInfoMenuOpen(false)
+                        }
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border border-slate-300 hover:bg-slate-50 hover:border-blue-300 transition-all duration-200"
                       aria-expanded={accountMenuOpen}
                     >
                       <User className="h-5 w-5 text-slate-700" />
@@ -585,11 +623,22 @@ export default function Navbar({ session }: NavbarProps) {
                     {accountMenuOpen && (
                       <div 
                         ref={accountMenuDropdownRef}
-                        className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                        className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden z-[9999] animate-fadeInDown backdrop-blur-sm"
+                        onMouseEnter={() => {
+                          setAccountMenuOpen(true)
+                        }}
+                        onMouseLeave={() => {
+                          // Only close on mouse leave if not on mobile/tablet
+                          if (window.innerWidth >= 1024) {
+                            setAccountMenuOpen(false)
+                          }
+                        }}
                         onClick={(e) => {
+                          e.preventDefault()
                           e.stopPropagation()
                         }}
                         onMouseDown={(e) => {
+                          e.preventDefault()
                           e.stopPropagation()
                         }}
                       >
