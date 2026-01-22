@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Menu, X, LogIn, ShoppingCart, User, LayoutDashboard, Settings, Heart, Package, Calendar, Star, HelpCircle, LogOut, ChevronDown, Wrench, DollarSign, FileText, Info, Users, BookOpen, MessageSquare } from 'lucide-react'
+import { Menu, X, LogIn, ShoppingCart, User, LayoutDashboard, Settings, Package, Calendar, LogOut, ChevronDown, Wrench, FileText, Info, Users, HelpCircle, BookOpen, MessageSquare } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { signOut } from 'next-auth/react'
 import ShoppingCartWidget from './ShoppingCart'
@@ -14,14 +14,11 @@ interface NavbarProps {
 
 export default function Navbar({ session }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
   const [cartItemCount, setCartItemCount] = useState(0)
   
   const navRef = useRef<HTMLElement>(null)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  
   const homeUrl = session?.user?.role === 'admin' ? '/admin' : '/'
 
   // Scroll effect
@@ -50,11 +47,10 @@ export default function Navbar({ session }: NavbarProps) {
     }
   }, [session])
 
-  // Click outside to close
+  // Click outside to close mobile menu
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null)
         setMobileMenuOpen(false)
       }
     }
@@ -62,79 +58,13 @@ export default function Navbar({ session }: NavbarProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Hover handlers - key fix: keep dropdown open while hovering dropdown content
-  const handleMouseEnter = (dropdown: string) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    setOpenDropdown(dropdown)
-  }
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setOpenDropdown(null), 100)
-  }
-
   const closeAll = () => {
-    setOpenDropdown(null)
     setMobileMenuOpen(false)
     setMobileDropdown(null)
   }
 
-  // Dropdown component for cleaner code
-  const DropdownMenu = ({ id, label, icon: Icon, items }: {
-    id: string
-    label: string
-    icon: any
-    items: { href: string; icon: any; title: string; desc: string }[]
-  }) => (
-    <div 
-      className="relative"
-      onMouseEnter={() => handleMouseEnter(id)}
-      onMouseLeave={handleMouseLeave}
-    >
-      <button
-        onClick={() => setOpenDropdown(openDropdown === id ? null : id)}
-        className={`flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors ${
-          openDropdown === id ? 'text-blue-600 bg-blue-50' : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50'
-        }`}
-      >
-        <Icon className="h-4 w-4" />
-        <span>{label}</span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === id ? 'rotate-180' : ''}`} />
-      </button>
-      
-      {openDropdown === id && (
-        <div 
-          className="absolute left-0 top-full z-50"
-          onMouseEnter={() => handleMouseEnter(id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          {/* Invisible bridge to prevent gap issues */}
-          <div className="h-2" />
-          <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
-            <div className="py-2">
-              {items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeAll}
-                  className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors group"
-                >
-                  <item.icon className="h-4 w-4 text-slate-400 group-hover:text-blue-600 flex-shrink-0" />
-                  <div>
-                    <div className="font-semibold text-sm">{item.title}</div>
-                    <div className="text-xs text-slate-500">{item.desc}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-
   const dienstenItems = [
     { href: '/diensten', icon: Wrench, title: 'Onze Diensten', desc: 'Bekijk alle IT-diensten' },
-    { href: '/pricing', icon: DollarSign, title: 'Prijzen', desc: 'Transparante tarieven' },
     { href: '/quote', icon: FileText, title: 'Offerte Aanvragen', desc: 'Gratis prijsopgave' },
   ]
 
@@ -143,11 +73,6 @@ export default function Navbar({ session }: NavbarProps) {
     { href: '/faq', icon: HelpCircle, title: 'Veelgestelde Vragen', desc: 'Vind snel antwoorden' },
     { href: '/blog', icon: BookOpen, title: 'Blog', desc: 'IT-tips & handleidingen' },
     { href: '/contact', icon: MessageSquare, title: 'Contact', desc: 'Neem contact op' },
-  ]
-
-  const accountItems = [
-    { href: '/auth/login', icon: LogIn, title: 'Inloggen', desc: 'Log in op je account' },
-    { href: '/auth/register', icon: User, title: 'Registreren', desc: 'Maak een nieuw account' },
   ]
 
   return (
@@ -168,14 +93,70 @@ export default function Navbar({ session }: NavbarProps) {
             </span>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu - Pure CSS Dropdowns */}
           <div className="hidden lg:flex items-center gap-1">
             <Link href={homeUrl} className="px-4 py-2 text-slate-700 hover:text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors">
               Home
             </Link>
 
-            <DropdownMenu id="diensten" label="Diensten" icon={Wrench} items={dienstenItems} />
-            <DropdownMenu id="info" label="Informatie" icon={Info} items={infoItems} />
+            {/* Diensten Dropdown - Pure CSS */}
+            <div className="relative group">
+              <button className="flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors text-slate-700 hover:text-blue-600 hover:bg-blue-50 group-hover:text-blue-600 group-hover:bg-blue-50">
+                <Wrench className="h-4 w-4" />
+                <span>Diensten</span>
+                <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+              </button>
+              
+              {/* Dropdown - appears on hover */}
+              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                  <div className="py-2">
+                    {dienstenItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                      >
+                        <item.icon className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                        <div>
+                          <div className="font-semibold text-sm">{item.title}</div>
+                          <div className="text-xs text-slate-500">{item.desc}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Informatie Dropdown - Pure CSS */}
+            <div className="relative group">
+              <button className="flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors text-slate-700 hover:text-blue-600 hover:bg-blue-50 group-hover:text-blue-600 group-hover:bg-blue-50">
+                <Info className="h-4 w-4" />
+                <span>Informatie</span>
+                <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+              </button>
+              
+              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                  <div className="py-2">
+                    {infoItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                      >
+                        <item.icon className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                        <div>
+                          <div className="font-semibold text-sm">{item.title}</div>
+                          <div className="text-xs text-slate-500">{item.desc}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div className="w-4" />
 
@@ -192,121 +173,89 @@ export default function Navbar({ session }: NavbarProps) {
                     </Button>
                   </Link>
                 ) : (
-                  /* User Menu */
-                  <div 
-                    className="relative"
-                    onMouseEnter={() => handleMouseEnter('user')}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <button
-                      onClick={() => setOpenDropdown(openDropdown === 'user' ? null : 'user')}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors ${
-                        openDropdown === 'user' ? 'border-blue-300 bg-blue-50 text-blue-700' : 'border-slate-300 hover:bg-slate-50 text-slate-700'
-                      }`}
-                    >
+                  /* User Menu - Pure CSS */
+                  <div className="relative group">
+                    <button className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors border-slate-300 hover:bg-slate-50 text-slate-700 group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:text-blue-700">
                       <User className="h-5 w-5" />
                       <span className="max-w-[100px] truncate">{session.user.name || 'Account'}</span>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === 'user' ? 'rotate-180' : ''}`} />
+                      <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
                     </button>
                     
-                    {openDropdown === 'user' && (
-                      <div 
-                        className="absolute right-0 top-full z-50"
-                        onMouseEnter={() => handleMouseEnter('user')}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <div className="h-2" />
-                        <div className="w-72 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
-                          <div className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-500">
-                            <p className="font-bold text-white truncate">{session.user.name}</p>
-                            <p className="text-xs text-blue-100 truncate">{session.user.email}</p>
-                          </div>
-                          <div className="py-2">
-                            <Link href="/dashboard" onClick={closeAll} className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
-                              <LayoutDashboard className="h-4 w-4" />
-                              <span className="text-sm font-medium">Mijn Koubyte</span>
-                            </Link>
-                            <Link href="/dashboard/privacy" onClick={closeAll} className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
-                              <Settings className="h-4 w-4" />
-                              <span className="text-sm font-medium">Instellingen</span>
-                            </Link>
-                            <Link href="/dashboard" onClick={closeAll} className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
-                              <Calendar className="h-4 w-4" />
-                              <span className="text-sm font-medium">Mijn Afspraken</span>
-                            </Link>
-                            <Link href="/dashboard" onClick={closeAll} className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
-                              <Package className="h-4 w-4" />
-                              <span className="text-sm font-medium">Mijn Bestellingen</span>
-                            </Link>
-                            <div className="border-t border-slate-200 my-1" />
-                            <button
-                              onClick={() => { closeAll(); signOut({ callbackUrl: '/' }) }}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50"
-                            >
-                              <LogOut className="h-4 w-4" />
-                              <span className="text-sm font-medium">Uitloggen</span>
-                            </button>
-                          </div>
+                    <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                      <div className="w-72 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                        <div className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-500">
+                          <p className="font-bold text-white truncate">{session.user.name}</p>
+                          <p className="text-xs text-blue-100 truncate">{session.user.email}</p>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              ) : (
-                /* Account dropdown for non-logged in users */
-                <div 
-                  className="relative"
-                  onMouseEnter={() => handleMouseEnter('account')}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <button
-                    onClick={() => setOpenDropdown(openDropdown === 'account' ? null : 'account')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors ${
-                      openDropdown === 'account' ? 'border-blue-300 bg-blue-50 text-blue-700' : 'border-slate-300 hover:bg-slate-50 text-slate-700'
-                    }`}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>Account</span>
-                    <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === 'account' ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {openDropdown === 'account' && (
-                    <div 
-                      className="absolute right-0 top-full z-50"
-                      onMouseEnter={() => handleMouseEnter('account')}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <div className="h-2" />
-                      <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
                         <div className="py-2">
-                          <Link href="/auth/login" onClick={closeAll} className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 group">
-                            <LogIn className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
-                            <div>
-                              <div className="font-semibold text-sm">Inloggen</div>
-                              <div className="text-xs text-slate-500">Log in op je account</div>
-                            </div>
+                          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                            <LayoutDashboard className="h-4 w-4" />
+                            <span className="text-sm font-medium">Mijn Koubyte</span>
                           </Link>
-                          <Link href="/auth/register" onClick={closeAll} className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700 group">
-                            <User className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
-                            <div>
-                              <div className="font-semibold text-sm">Registreren</div>
-                              <div className="text-xs text-slate-500">Maak een nieuw account</div>
-                            </div>
+                          <Link href="/dashboard/privacy" className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                            <Settings className="h-4 w-4" />
+                            <span className="text-sm font-medium">Instellingen</span>
                           </Link>
-                          <div className="border-t border-slate-200 my-2" />
-                          <div className="px-2 pb-2">
-                            <Link href="/book" onClick={closeAll} className="flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg group">
-                              <Calendar className="h-4 w-4 text-blue-600" />
-                              <div>
-                                <div className="font-semibold text-sm">Afspraak Maken</div>
-                                <div className="text-xs text-blue-600/80">Plan direct je afspraak</div>
-                              </div>
-                            </Link>
-                          </div>
+                          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                            <Calendar className="h-4 w-4" />
+                            <span className="text-sm font-medium">Mijn Afspraken</span>
+                          </Link>
+                          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                            <Package className="h-4 w-4" />
+                            <span className="text-sm font-medium">Mijn Bestellingen</span>
+                          </Link>
+                          <div className="border-t border-slate-200 my-1" />
+                          <button
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50"
+                          >
+                            <LogOut className="h-4 w-4" />
+                            <span className="text-sm font-medium">Uitloggen</span>
+                          </button>
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
+                )
+              ) : (
+                /* Account dropdown for non-logged in users - Pure CSS */
+                <div className="relative group">
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors border-slate-300 hover:bg-slate-50 text-slate-700 group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:text-blue-700">
+                    <User className="h-5 w-5" />
+                    <span>Account</span>
+                    <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                  </button>
+                  
+                  <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+                      <div className="py-2">
+                        <Link href="/auth/login" className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                          <LogIn className="h-4 w-4 text-slate-400" />
+                          <div>
+                            <div className="font-semibold text-sm">Inloggen</div>
+                            <div className="text-xs text-slate-500">Log in op je account</div>
+                          </div>
+                        </Link>
+                        <Link href="/auth/register" className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
+                          <User className="h-4 w-4 text-slate-400" />
+                          <div>
+                            <div className="font-semibold text-sm">Registreren</div>
+                            <div className="text-xs text-slate-500">Maak een nieuw account</div>
+                          </div>
+                        </Link>
+                        <div className="border-t border-slate-200 my-2" />
+                        <div className="px-2 pb-2">
+                          <Link href="/book" className="flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg">
+                            <Calendar className="h-4 w-4 text-blue-600" />
+                            <div>
+                              <div className="font-semibold text-sm">Afspraak Maken</div>
+                              <div className="text-xs text-blue-600/80">Plan direct je afspraak</div>
+                            </div>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
