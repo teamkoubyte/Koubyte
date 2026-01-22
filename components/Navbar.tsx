@@ -100,15 +100,15 @@ export default function Navbar({ session }: NavbarProps) {
             </Link>
 
             {/* Diensten Dropdown - Pure CSS */}
-            <div className="relative group">
-              <button className="flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors text-slate-700 hover:text-blue-600 hover:bg-blue-50 group-hover:text-blue-600 group-hover:bg-blue-50">
+            <div className="relative group/diensten">
+              <button className="flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors text-slate-700 hover:text-blue-600 hover:bg-blue-50 group-hover/diensten:text-blue-600 group-hover/diensten:bg-blue-50">
                 <Wrench className="h-4 w-4" />
                 <span>Diensten</span>
-                <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                <ChevronDown className="h-4 w-4 transition-transform group-hover/diensten:rotate-180" />
               </button>
               
               {/* Dropdown - appears on hover */}
-              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="absolute left-0 top-full pt-2 hidden group-hover/diensten:block z-50">
                 <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
                   <div className="py-2">
                     {dienstenItems.map((item) => (
@@ -130,14 +130,14 @@ export default function Navbar({ session }: NavbarProps) {
             </div>
 
             {/* Informatie Dropdown - Pure CSS */}
-            <div className="relative group">
-              <button className="flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors text-slate-700 hover:text-blue-600 hover:bg-blue-50 group-hover:text-blue-600 group-hover:bg-blue-50">
+            <div className="relative group/info">
+              <button className="flex items-center gap-1.5 px-4 py-2 font-medium rounded-lg transition-colors text-slate-700 hover:text-blue-600 hover:bg-blue-50 group-hover/info:text-blue-600 group-hover/info:bg-blue-50">
                 <Info className="h-4 w-4" />
                 <span>Informatie</span>
-                <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                <ChevronDown className="h-4 w-4 transition-transform group-hover/info:rotate-180" />
               </button>
               
-              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="absolute left-0 top-full pt-2 hidden group-hover/info:block z-50">
                 <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
                   <div className="py-2">
                     {infoItems.map((item) => (
@@ -174,14 +174,14 @@ export default function Navbar({ session }: NavbarProps) {
                   </Link>
                 ) : (
                   /* User Menu - Pure CSS */
-                  <div className="relative group">
-                    <button className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors border-slate-300 hover:bg-slate-50 text-slate-700 group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:text-blue-700">
+                  <div className="relative group/user">
+                    <button className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors border-slate-300 hover:bg-slate-50 text-slate-700 group-hover/user:border-blue-300 group-hover/user:bg-blue-50 group-hover/user:text-blue-700">
                       <User className="h-5 w-5" />
                       <span className="max-w-[100px] truncate">{session.user.name || 'Account'}</span>
-                      <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                      <ChevronDown className="h-4 w-4 transition-transform group-hover/user:rotate-180" />
                     </button>
                     
-                    <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="absolute right-0 top-full pt-2 hidden group-hover/user:block z-50">
                       <div className="w-72 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
                         <div className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-500">
                           <p className="font-bold text-white truncate">{session.user.name}</p>
@@ -219,14 +219,14 @@ export default function Navbar({ session }: NavbarProps) {
                 )
               ) : (
                 /* Account dropdown for non-logged in users - Pure CSS */
-                <div className="relative group">
-                  <button className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors border-slate-300 hover:bg-slate-50 text-slate-700 group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:text-blue-700">
+                <div className="relative group/account">
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium border transition-colors border-slate-300 hover:bg-slate-50 text-slate-700 group-hover/account:border-blue-300 group-hover/account:bg-blue-50 group-hover/account:text-blue-700">
                     <User className="h-5 w-5" />
                     <span>Account</span>
-                    <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                    <ChevronDown className="h-4 w-4 transition-transform group-hover/account:rotate-180" />
                   </button>
                   
-                  <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <div className="absolute right-0 top-full pt-2 hidden group-hover/account:block z-50">
                     <div className="w-64 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
                       <div className="py-2">
                         <Link href="/auth/login" className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-700">
