@@ -74,7 +74,6 @@ export default function Footer() {
                 { href: '/', label: 'Home' },
                 { href: '/about', label: 'Over mij' },
                 { href: '/diensten', label: 'Diensten' },
-                { href: '/pricing', label: 'Prijzen' },
                 { href: '/faq', label: 'Veelgestelde vragen' },
                 { href: '/contact', label: 'Contact' },
               ].map((link) => (
