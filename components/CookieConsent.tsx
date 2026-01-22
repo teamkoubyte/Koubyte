@@ -32,8 +32,8 @@ export default function CookieConsent() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-fadeInUp">
       <div className="container mx-auto max-w-6xl">
-        <div className="bg-white rounded-2xl shadow-2xl border-2 border-slate-200 p-6 md:p-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+        <div className="bg-white rounded-2xl shadow-2xl border-2 border-slate-200 p-6 md:p-8 relative">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6 pr-10">
             <div className="flex-1">
               <h3 className="text-xl font-bold text-slate-900 mb-2">
                 🍪 Deze website gebruikt cookies

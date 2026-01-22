@@ -74,8 +74,8 @@ export default function ShoppingCartWidget() {
         const data = await response.json()
         setCartItems(data.cartItems || [])
       }
-    } catch (error) {
-      console.error('Error fetching cart:', error)
+    } catch {
+      // Silent fail - cart will be empty
     }
   }
 
@@ -99,8 +99,7 @@ export default function ShoppingCartWidget() {
         console.error('Error updating quantity:', error)
         showToast('Kon aantal niet bijwerken: ' + (error.error || 'Onbekende fout'), 'error')
       }
-    } catch (error) {
-      console.error('Error updating quantity:', error)
+    } catch {
       showToast('Er ging iets mis bij het bijwerken', 'error')
     } finally {
       setLoading(false)
@@ -110,22 +109,16 @@ export default function ShoppingCartWidget() {
   const removeItem = async (cartItemId: string) => {
     setLoading(true)
     try {
-      console.log('Removing cart item:', cartItemId)
       const response = await fetch(`/api/cart?id=${cartItemId}`, {
         method: 'DELETE',
       })
-
-      console.log('Delete response status:', response.status)
       
       if (response.ok) {
-        console.log('Item removed successfully')
         await fetchCart()
         // Trigger cart update event
         window.dispatchEvent(new CustomEvent('cart-updated'))
       } else {
         let errorText = await response.text()
-        console.error('Error removing item - status:', response.status)
-        console.error('Error removing item - response:', errorText)
         
         try {
           const errorJson = JSON.parse(errorText)
@@ -135,7 +128,6 @@ export default function ShoppingCartWidget() {
         }
       }
     } catch (error) {
-      console.error('Exception removing item:', error)
       showToast('Er ging iets mis bij het verwijderen: ' + (error instanceof Error ? error.message : 'Onbekende fout'), 'error')
     } finally {
       setLoading(false)

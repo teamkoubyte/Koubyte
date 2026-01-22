@@ -19,17 +19,16 @@ export function BlogShareButton({ title, excerpt }: BlogShareButtonProps) {
           text: excerpt,
           url,
         })
-      } catch (error) {
-        // User cancelled or error occurred
-        console.log('Share cancelled')
+      } catch {
+        // User cancelled or error occurred - silent fail
       }
     } else {
       // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(url)
         alert('Link gekopieerd naar klembord!')
-      } catch (error) {
-        console.error('Failed to copy:', error)
+      } catch {
+        // Could not copy - silent fail
       }
     }
   }
