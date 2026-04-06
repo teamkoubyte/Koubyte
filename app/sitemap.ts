@@ -43,12 +43,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/review`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    },
-    {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -59,12 +53,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
     },
   ]
 
@@ -93,35 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
-    // Haal alle gepubliceerde blogposts op (als BlogPost tabel bestaat)
-    let blogPages: MetadataRoute.Sitemap = []
-    try {
-      const blogPosts = await prisma.blogPost.findMany({
-        where: { published: true },
-        select: {
-          slug: true,
-          updatedAt: true,
-        },
-        orderBy: { updatedAt: 'desc' },
-      })
-
-      // Dynamische blog post pagina's
-      blogPages = blogPosts.map((post) => ({
-        url: `${baseUrl}/blog/${post.slug}`,
-        lastModified: post.updatedAt || new Date(),
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-      }))
-    } catch (blogError: any) {
-      // BlogPost tabel bestaat mogelijk niet - skip blog pages
-      if (blogError?.code === 'P2021') {
-        console.log('BlogPost tabel niet gevonden, blog pagina\'s worden overgeslagen')
-      } else {
-        console.error('Error fetching blog posts for sitemap:', blogError)
-      }
-    }
-
-    return [...staticPages, ...servicePages, ...blogPages]
+    return [...staticPages, ...servicePages]
   } catch (error) {
     console.error('Error generating sitemap:', error)
     // Return alleen statische pagina's als database query faalt

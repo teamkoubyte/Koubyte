@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react'
-import FooterStats from './FooterStats'
 
 // X (Twitter) SVG Icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -137,15 +136,7 @@ export default function Footer() {
                   Algemene voorwaarden
                 </Link>
               </li>
-              <li>
-                <Link href="/review" className="text-slate-600 hover:text-blue-600 transition-colors">
-                  Schrijf een review
-                </Link>
-              </li>
             </ul>
-
-            {/* ECHTE Stats uit Database */}
-            <FooterStats />
           </div>
         </div>
 

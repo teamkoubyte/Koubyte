@@ -26,7 +26,6 @@ export default function Breadcrumbs({ customLabels = {} }: BreadcrumbsProps) {
     'contact': 'Contact',
     'faq': 'Veelgestelde Vragen',
     'book': 'Afspraak Boeken',
-    'review': 'Review Schrijven',
     'dashboard': 'Dashboard',
     'privacy': 'Privacy Beleid',
     'terms': 'Algemene Voorwaarden',

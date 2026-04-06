@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Wrench, Shield, Zap, Database, Wifi, Monitor, Lock, HelpCircle, ArrowRight, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import ReviewsSection from '@/components/ReviewsSection'
-import RealStats from '@/components/RealStats'
 import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -63,7 +62,6 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              <RealStats />
             </div>
 
             {/* Rechts - Info Cards */}

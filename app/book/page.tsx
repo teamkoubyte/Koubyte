@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,7 +18,6 @@ const ALL_TIME_SLOTS: string[] = [
 
 export const dynamic = 'force-dynamic'
 export default function BookPage() {
-  const { data: session } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -28,8 +26,8 @@ export default function BookPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const [formData, setFormData] = useState({
-    name: session?.user?.name || '',
-    email: session?.user?.email || '',
+    name: '',
+    email: '',
     phone: '',
     date: '',
     time: '',
@@ -103,7 +101,7 @@ export default function BookPage() {
       } else {
         setSuccess(true)
         setTimeout(() => {
-          router.push('/dashboard')
+          router.push('/')
         }, 2000)
       }
     } catch (error) {
@@ -120,7 +118,7 @@ export default function BookPage() {
           <CardContent className="pt-6 text-center">
             <AlertCircle className="h-16 w-16 mx-auto mb-4 text-green-600" />
             <h2 className="text-xl sm:text-2xl font-bold mb-2 text-green-800">Afspraak aangemaakt!</h2>
-            <p className="text-sm sm:text-base text-green-700">Je wordt doorgestuurd naar je dashboard...</p>
+            <p className="text-sm sm:text-base text-green-700">Je wordt doorgestuurd naar de homepage...</p>
           </CardContent>
         </Card>
       </div>
