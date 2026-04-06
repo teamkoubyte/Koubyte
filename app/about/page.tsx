@@ -18,18 +18,18 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto max-w-4xl py-16 px-4">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Over Koubyte</h1>
-        <p className="text-xl text-slate-600">
+    <div className="container mx-auto max-w-4xl py-10 sm:py-14 lg:py-16 px-4 sm:px-6">
+      <div className="text-center mb-8 sm:mb-12">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Over Koubyte</h1>
+        <p className="text-base sm:text-xl text-slate-600">
           Jouw IT-partner die er is wanneer je computer weer eens gek doet
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-8 sm:mb-12">
         <div>
-          <h2 className="text-2xl font-bold mb-4">Hoe Koubyte is ontstaan</h2>
-          <p className="text-slate-600 mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Hoe Koubyte is ontstaan</h2>
+          <p className="text-sm sm:text-base text-slate-600 mb-4">
             Koubyte is geboren uit een simpele gedachte: iedereen verdient toegankelijke IT-hulp zonder gedoe. 
             Wat begon als het helpen van vrienden en familie met computerproblemen is uitgegroeid tot een 
             professionele dienst voor particulieren en kleine bedrijven in de regio.
@@ -75,7 +75,7 @@ export default function AboutPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
         <Card className="text-center">
           <CardContent className="pt-6">
             <Shield className="h-12 w-12 mx-auto mb-4 text-blue-600" />

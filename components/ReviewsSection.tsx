@@ -49,7 +49,7 @@ export default function ReviewsSection() {
 
   if (loading) {
     return (
-      <section className="py-24 px-4 bg-slate-50">
+      <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 bg-slate-50">
         <div className="container mx-auto max-w-7xl">
           <p className="text-center text-slate-600">Reviews laden...</p>
         </div>
@@ -59,7 +59,7 @@ export default function ReviewsSection() {
 
   if (reviews.length === 0) {
     return (
-      <section className="py-24 px-4 bg-slate-50">
+      <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 bg-slate-50">
         <div className="container mx-auto max-w-7xl text-center">
           <h2 className="text-4xl font-bold text-slate-900 mb-4">
             Wees de eerste die een review achterlaat!
