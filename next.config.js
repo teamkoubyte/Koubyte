@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: __dirname,
   
   // Image optimalisatie
   images: {
@@ -70,7 +71,9 @@ const nextConfig = {
   },
   
   // Turbopack configuratie
-  turbopack: {},
+  turbopack: {
+    root: __dirname,
+  },
   
   // Experimental features voor Next.js 16
   experimental: {

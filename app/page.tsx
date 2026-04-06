@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Koubyte - Professionele IT-diensten',
     description: 'Betrouwbare IT-oplossingen voor particulieren en bedrijven',
-    images: ['/og-image.jpg'],
   },
 }
 
@@ -308,9 +307,9 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Link href="/pricing">
+            <Link href="/diensten">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 border-2 border-white px-10 py-6 text-lg font-semibold rounded-lg shadow-lg">
-                Bekijk prijzen
+                Bekijk diensten
               </Button>
             </Link>
           </div>

@@ -146,7 +146,7 @@ export default async function OgImage() {
                   fontSize: '18px',
                 }}
               >
-                ✓
+                V
               </div>
               <span
                 style={{
@@ -183,7 +183,7 @@ export default async function OgImage() {
                   fontSize: '18px',
                 }}
               >
-                ✓
+                V
               </div>
               <span
                 style={{

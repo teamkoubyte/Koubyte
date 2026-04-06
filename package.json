@@ -6,12 +6,12 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && prisma db push --accept-data-loss --skip-generate && next build",
+    "dev": "next dev --turbopack",
+    "build": "prisma generate && node scripts/optional-prisma-db-push.js && next build --turbopack",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma db push --accept-data-loss --skip-generate && next build"
+    "vercel-build": "node scripts/optional-prisma-db-push.js && next build --turbopack"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -50,6 +50,7 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.47",

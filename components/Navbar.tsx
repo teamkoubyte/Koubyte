@@ -14,6 +14,16 @@ interface NavbarProps {
 
 // Custom CSS voor dropdown hover - dit werkt ALTIJD
 const dropdownStyles = `
+  #main-navbar,
+  #main-navbar .container,
+  #main-navbar .nav-dropdown,
+  #main-navbar .nav-dropdown-content {
+    overflow: visible;
+  }
+  #main-navbar .nav-dropdown-content,
+  #main-navbar .nav-dropdown-content > div {
+    max-width: none;
+  }
   .nav-dropdown {
     position: relative;
   }
@@ -76,10 +86,13 @@ export default function Navbar({ session }: NavbarProps) {
       {/* Inject CSS */}
       <style>{dropdownStyles}</style>
       
-      <nav className={`sticky top-0 z-50 transition-all duration-300 w-full ${
+      <nav
+        id="main-navbar"
+        className={`sticky top-0 z-50 transition-all duration-300 w-full ${
         scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-slate-200' : 'bg-white border-b border-slate-100'
-      }`}>
-        <div className="container mx-auto max-w-7xl px-4" data-cart="container">
+      }`}
+      >
+        <div className="container mx-auto !max-w-7xl px-4" data-cart="container">
           <div className="flex justify-between items-center h-16 lg:h-20">
             {/* Logo */}
             <Link href={homeUrl} className="flex-shrink-0">

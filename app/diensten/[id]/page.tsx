@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import type { Service } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import ServiceDetailClient from './ServiceDetailClient'
 
@@ -7,9 +8,14 @@ import ServiceDetailClient from './ServiceDetailClient'
 export const dynamic = 'force-dynamic'
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
-  const service = await prisma.service.findUnique({
-    where: { id },
-  })
+  let service = null
+  try {
+    service = await prisma.service.findUnique({
+      where: { id },
+    })
+  } catch (error) {
+    console.error('Error loading service metadata:', error)
+  }
 
   if (!service) {
     return {
@@ -33,23 +39,33 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 // Server Component - fetch data
 export default async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const service = await prisma.service.findUnique({
-    where: { id },
-  })
+  let service = null
+  try {
+    service = await prisma.service.findUnique({
+      where: { id },
+    })
+  } catch (error) {
+    console.error('Error loading service:', error)
+  }
 
   if (!service) {
     notFound()
   }
 
   // Haal gerelateerde diensten op (zelfde categorie, max 3)
-  const relatedServices = await prisma.service.findMany({
-    where: {
-      category: service.category,
-      id: { not: service.id }, // Exclusief huidige service
-    },
-    take: 3,
-    orderBy: { featured: 'desc' },
-  })
+  let relatedServices: Service[] = []
+  try {
+    relatedServices = await prisma.service.findMany({
+      where: {
+        category: service.category,
+        id: { not: service.id }, // Exclusief huidige service
+      },
+      take: 3,
+      orderBy: { featured: 'desc' },
+    })
+  } catch (error) {
+    console.error('Error loading related services:', error)
+  }
 
   // Genereer structured data voor deze service
   const structuredData = {
@@ -89,16 +105,5 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <ServiceDetailClient service={service} relatedServices={relatedServices} />
     </>
   )
-}
-
-// Generate static params voor alle services (ISR)
-export async function generateStaticParams() {
-  const services = await prisma.service.findMany({
-    select: { id: true },
-  })
-
-  return services.map((service) => ({
-    id: service.id,
-  }))
 }
 

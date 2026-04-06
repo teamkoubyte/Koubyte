@@ -292,8 +292,6 @@ export default async function RootLayout({
         />
         {/* Extra meta tags voor betere SEO */}
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <meta name="theme-color" content="#2563eb" />
-        <link rel="canonical" href="https://koubyte.be" />
       </head>
       <body className={`${inter.variable} ${inter.className} overflow-x-hidden max-w-screen w-full`}>
         <Providers session={session}>
