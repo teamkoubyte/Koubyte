@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const services = [
   {
     category: 'Hardware & Reparatie',
-    color: 'blue',
+    color: '',
     items: [
       {
         name: 'Diagnose & Advies',
@@ -73,7 +73,7 @@ const services = [
   },
   {
     category: 'Software & Systemen',
-    color: 'green',
+    color: '',
     items: [
       {
         name: 'Virus & malware verwijderen',
@@ -135,7 +135,7 @@ const services = [
   },
   {
     category: 'Netwerk & WiFi',
-    color: 'indigo',
+    color: '',
     items: [
       {
         name: 'WiFi instellen & optimaliseren',
@@ -169,7 +169,7 @@ const services = [
   },
   {
     category: 'Data & Backup',
-    color: 'amber',
+    color: '',
     items: [
       {
         name: 'Data overzetten',
@@ -217,7 +217,7 @@ const services = [
   },
   {
     category: 'Onderhoud & Advies',
-    color: 'purple',
+    color: '',
     items: [
       {
         name: 'Jaarlijkse onderhoudsbeurt',
@@ -251,13 +251,6 @@ const services = [
   },
 ]
 
-const colorMap: Record<string, { bg: string; text: string; border: string; badge: string }> = {
-  blue:   { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200',  badge: 'bg-blue-600' },
-  green:  { bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200', badge: 'bg-green-600' },
-  indigo: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200',badge: 'bg-indigo-600' },
-  amber:  { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200', badge: 'bg-amber-600' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200',badge: 'bg-purple-600' },
-}
 
 export default function DienstenPage() {
   return (
@@ -288,72 +281,69 @@ export default function DienstenPage() {
       {/* Services by category */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 bg-white">
         <div className="container mx-auto max-w-6xl space-y-16">
-          {services.map((group) => {
-            const colors = colorMap[group.color]
-            return (
-              <div key={group.category}>
-                <h2 className={`text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-slate-900 pb-3 border-b-2 ${colors.border}`}>
-                  {group.category}
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                  {group.items.map((service) => (
-                    <div
-                      key={service.name}
-                      className={`relative rounded-2xl border-2 p-5 sm:p-6 flex flex-col ${
-                        service.popular ? `${colors.border} shadow-lg` : 'border-slate-200'
-                      } bg-white hover:shadow-xl transition-shadow`}
-                    >
-                      {service.popular && (
-                        <div className={`absolute -top-3 left-5 ${colors.badge} text-white text-xs font-bold px-3 py-1 rounded-full`}>
-                          Populair
-                        </div>
-                      )}
+          {services.map((group) => (
+            <div key={group.category}>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-slate-900 pb-3 border-b-2 border-blue-200">
+                {group.category}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {group.items.map((service) => (
+                  <div
+                    key={service.name}
+                    className={`relative rounded-2xl border-2 p-5 sm:p-6 flex flex-col bg-white hover:shadow-xl transition-shadow ${
+                      service.popular ? 'border-blue-500 shadow-lg' : 'border-slate-200'
+                    }`}
+                  >
+                    {service.popular && (
+                      <div className="absolute -top-3 left-5 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        Populair
+                      </div>
+                    )}
 
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 mb-1">{service.name}</h3>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-slate-900 mb-1">{service.name}</h3>
 
-                        {/* Price */}
-                        <div className="flex items-baseline gap-2 my-3">
-                          <span className={`text-3xl font-extrabold ${colors.text}`}>€{service.price}</span>
-                          <span className="text-sm text-slate-500">{service.unit}</span>
-                        </div>
-
-                        {/* Time */}
-                        <div className="flex items-center gap-1.5 text-sm text-slate-500 mb-3">
-                          <Clock className="w-4 h-4 flex-shrink-0" />
-                          <span>{service.time}</span>
-                        </div>
-
-                        {/* Note */}
-                        {service.note && (
-                          <p className={`text-xs ${colors.text} ${colors.bg} px-3 py-1.5 rounded-lg mb-3`}>
-                            ℹ️ {service.note}
-                          </p>
-                        )}
-
-                        {/* Features */}
-                        <ul className="space-y-1.5 mb-4">
-                          {service.features.map((f, i) => (
-                            <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                              <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
+                      {/* Price */}
+                      <div className="flex items-baseline gap-2 my-3">
+                        <span className="text-3xl font-extrabold text-blue-600">€{service.price}</span>
+                        <span className="text-sm text-slate-500">{service.unit}</span>
                       </div>
 
-                      <Link href="/book" className="mt-auto">
-                        <Button className={`w-full font-semibold ${colors.badge} hover:opacity-90 text-white`}>
-                          <Calendar className="w-4 h-4 mr-2" />
-                          Afspraak maken
-                        </Button>
-                      </Link>
+                      {/* Time */}
+                      <div className="flex items-center gap-1.5 text-sm text-slate-500 mb-3">
+                        <Clock className="w-4 h-4 flex-shrink-0" />
+                        <span>{service.time}</span>
+                      </div>
+
+                      {/* Note */}
+                      {service.note && (
+                        <p className="text-xs text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg mb-3">
+                          ℹ️ {service.note}
+                        </p>
+                      )}
+
+                      {/* Features */}
+                      <ul className="space-y-1.5 mb-4">
+                        {service.features.map((f, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                            <Check className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  ))}
-                </div>
+
+                    <Link href="/book" className="mt-auto">
+                      <Button className="w-full font-semibold bg-blue-600 hover:bg-blue-700 text-white">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Afspraak maken
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       </section>
 
