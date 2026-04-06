@@ -87,7 +87,10 @@ export default function ReviewsSection() {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-8 h-8 fill-yellow-400 text-yellow-400" />
+                <Star
+                  key={i}
+                  className={`w-8 h-8 ${i < Math.round(stats.averageRating) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'}`}
+                />
               ))}
             </div>
             <div className="text-2xl font-bold text-slate-900">

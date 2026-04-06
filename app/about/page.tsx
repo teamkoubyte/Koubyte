@@ -1,5 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Check, Shield, Users, Award, Wrench } from 'lucide-react'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -114,16 +116,16 @@ export default function AboutPage() {
             neem gerust contact op met Koubyte. We staan voor je klaar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/book" className="inline-block">
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700">
+            <Link href="/book">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
                 Plan een afspraak
-              </button>
-            </a>
-            <a href="/contact" className="inline-block">
-              <button className="border border-blue-600 text-blue-600 px-8 py-3 rounded-md hover:bg-blue-50">
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-3">
                 Neem contact op
-              </button>
-            </a>
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

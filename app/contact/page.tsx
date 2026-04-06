@@ -77,14 +77,37 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validate all required fields
+    // Validate all required fields and collect errors synchronously
     const required = ['name', 'email', 'subject', 'message']
+    const newErrors: Record<string, string> = { ...errors }
+
     required.forEach((field) => {
-      validateField(field, formData[field as keyof typeof formData])
+      const value = formData[field as keyof typeof formData]
+      switch (field) {
+        case 'name':
+          if (!value) newErrors.name = 'Naam is verplicht'
+          else delete newErrors.name
+          break
+        case 'email':
+          if (!value) newErrors.email = 'Email is verplicht'
+          else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) newErrors.email = 'Voer een geldig emailadres in'
+          else delete newErrors.email
+          break
+        case 'subject':
+          if (!value) newErrors.subject = 'Onderwerp is verplicht'
+          else delete newErrors.subject
+          break
+        case 'message':
+          if (!value) newErrors.message = 'Bericht is verplicht'
+          else if (value.length < 10) newErrors.message = 'Bericht moet minimaal 10 tekens bevatten'
+          else delete newErrors.message
+          break
+      }
     })
 
-    // Check for errors
-    if (Object.keys(errors).length > 0) {
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
       return
     }
 
