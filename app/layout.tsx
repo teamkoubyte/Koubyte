@@ -6,7 +6,6 @@ import Footer from '@/components/Footer'
 import Providers from '@/components/Providers'
 import CookieConsent from '@/components/CookieConsent'
 import Breadcrumbs from '@/components/Breadcrumbs'
-import ChatWidget from '@/components/ChatWidget'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import Script from 'next/script'
@@ -296,7 +295,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${inter.className} overflow-x-hidden max-w-screen w-full`}>
         <Providers session={session}>
           {/* Toon klanten Navbar ALLEEN voor niet-admins */}
-          {showClientLayout && <Navbar session={session} />}
+          {showClientLayout && <Navbar />}
           {/* Breadcrumbs voor navigatie en SEO */}
           {showClientLayout && <Breadcrumbs />}
           <main className="min-h-screen w-full overflow-x-hidden">
@@ -304,8 +303,6 @@ export default async function RootLayout({
           </main>
           {/* Toon Footer ALLEEN voor niet-admins */}
           {showClientLayout && <Footer />}
-          {/* Chat Widget ALLEEN voor niet-admins */}
-          {showClientLayout && <ChatWidget />}
           <CookieConsent />
         </Providers>
         <Analytics />
