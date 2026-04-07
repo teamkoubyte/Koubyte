@@ -7,16 +7,35 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Calendar, Clock, AlertCircle, Loader2 } from 'lucide-react'
+import { Calendar, Clock, CheckCircle, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-// All time slots constant - buiten component gedefinieerd om dependency issues te vermijden
 const ALL_TIME_SLOTS: string[] = [
-  '09:00', '10:00', '11:00', '12:00',
-  '13:00', '14:00', '15:00', '16:00', '17:00',
+  '08:00', '09:00', '10:00', '11:00', '12:00',
+  '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00',
+]
+
+const SERVICES = [
+  'Diagnose & Advies',
+  'PC of laptop reinigen',
+  'RAM uitbreiden',
+  'SSD of HDD vervangen',
+  'Virus & malware verwijderen',
+  'Windows herinstalleren',
+  'PC optimaliseren & versnellen',
+  'Software installeren & instellen',
+  'WiFi instellen & optimaliseren',
+  'Netwerk installatie',
+  'Data overzetten',
+  'Backup oplossing instellen',
+  'Dataherstel',
+  'Jaarlijkse onderhoudsbeurt',
+  'Remote hulp',
+  'Anders',
 ]
 
 export const dynamic = 'force-dynamic'
+
 export default function BookPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -35,20 +54,8 @@ export default function BookPage() {
     description: '',
   })
 
-  const [availableSlots, setAvailableSlots] = useState<string[]>([])
+  const [availableSlots, setAvailableSlots] = useState<string[]>(ALL_TIME_SLOTS)
   const [checkingAvailability, setCheckingAvailability] = useState(false)
-
-  const services = [
-    'Hardware reparatie',
-    'Software installatie',
-    'Netwerk problemen',
-    'Virus verwijderen',
-    'Systeem onderhoud',
-    'Dataherstel',
-    'Configuratie',
-    'Upgrade',
-    'Anders',
-  ]
 
   const checkAvailability = useCallback(async (date: string) => {
     setCheckingAvailability(true)
@@ -58,18 +65,15 @@ export default function BookPage() {
         const data = await response.json()
         setAvailableSlots(data.availableSlots || ALL_TIME_SLOTS)
       } else {
-        // Fallback naar alle slots als API faalt
         setAvailableSlots(ALL_TIME_SLOTS)
       }
-    } catch (error) {
-      console.error('Error checking availability:', error)
+    } catch {
       setAvailableSlots(ALL_TIME_SLOTS)
     } finally {
       setCheckingAvailability(false)
     }
   }, [])
 
-  // Check beschikbaarheid wanneer datum wordt geselecteerd
   useEffect(() => {
     if (formData.date) {
       checkAvailability(formData.date)
@@ -93,19 +97,16 @@ export default function BookPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        if (data.conflict) {
-          setError(`${data.error || 'Dit tijdslot is al bezet.'} Kies een andere datum of tijd.`)
-        } else {
-          setError(data.error || 'Kon afspraak niet maken')
-        }
+        setError(data.conflict
+          ? `${data.error || 'Dit tijdslot is al bezet.'} Kies een andere datum of tijd.`
+          : data.error || 'Kon de afspraak niet aanmaken. Probeer het opnieuw.'
+        )
       } else {
         setSuccess(true)
-        setTimeout(() => {
-          router.push('/')
-        }, 2000)
+        setTimeout(() => router.push('/'), 3000)
       }
-    } catch (error) {
-      setError('Er ging iets mis. Probeer het opnieuw.')
+    } catch {
+      setError('Er ging iets mis. Probeer het opnieuw of neem telefonisch contact op.')
     } finally {
       setLoading(false)
     }
@@ -113,211 +114,238 @@ export default function BookPage() {
 
   if (success) {
     return (
-      <div className="container mx-auto max-w-2xl py-12 sm:py-16 px-3 sm:px-4 w-full overflow-x-hidden">
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="pt-6 text-center">
-            <AlertCircle className="h-16 w-16 mx-auto mb-4 text-green-600" />
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 text-green-800">Afspraak aangemaakt!</h2>
-            <p className="text-sm sm:text-base text-green-700">Je wordt doorgestuurd naar de homepage...</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-slate-50">
+        <div className="max-w-md w-full bg-white rounded-2xl border-2 border-blue-200 p-10 text-center shadow-xl">
+          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="h-10 w-10 text-blue-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Afspraak aangemaakt!</h2>
+          <p className="text-slate-600 mb-1">Ik neem zo snel mogelijk contact met je op ter bevestiging.</p>
+          <p className="text-sm text-slate-400">Je wordt over enkele seconden doorgestuurd...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto max-w-2xl py-12 sm:py-16 px-4">
-      {/* Annuleringsbeleid - Zoals vermeld in Algemene Voorwaarden */}
-      <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8">
-        <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 sm:mb-3 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-blue-600" />
-          Annuleringsbeleid
-        </h3>
-        <div className="space-y-2 text-sm sm:text-base text-slate-700">
-          <p>✓ <strong>Gratis annuleren tot 24 uur</strong> voor de afspraak</p>
-          <p>• Binnen 24 uur: 50% van de prijs wordt in rekening gebracht</p>
-          <p>• Na aanvang werkzaamheden: volledige prijs verschuldigd</p>
+    <div className="flex flex-col overflow-x-hidden w-full">
+
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-14 sm:py-20 px-4 sm:px-6">
+        <div className="container mx-auto max-w-2xl text-center">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">Afspraak maken</h1>
+          <p className="text-lg text-slate-600">
+            Kies een datum en tijdstip dat voor jou past. Ik bevestig zo snel mogelijk.
+          </p>
         </div>
-      </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl">Afspraak boeken</CardTitle>
-          <CardDescription className="text-sm sm:text-base">
-            Boek een afspraak voor IT-hulp. We nemen zo snel mogelijk contact met je op.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-            <div>
-              <Label htmlFor="name">Naam *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
+      <section className="py-10 sm:py-14 px-4 sm:px-6 bg-white">
+        <div className="container mx-auto max-w-2xl">
+
+          {/* Info banner */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-5 mb-6 flex gap-3">
+            <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-slate-700 space-y-1">
+              <p><strong>Gratis annuleren</strong> tot 24 uur voor de afspraak.</p>
+              <p>Binnen 24 uur: 50% van de prijs. Na aanvang: volledige prijs.</p>
             </div>
+          </div>
 
-            <div>
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl sm:text-2xl">Boek je afspraak</CardTitle>
+              <CardDescription>
+                Ik neem zo snel mogelijk contact op ter bevestiging.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-5">
 
-            <div>
-              <Label htmlFor="phone">Telefoon (optioneel)</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              />
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <Label htmlFor="name">Naam *</Label>
+                    <Input
+                      id="name"
+                      className="mt-1"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Telefoon *</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      className="mt-1"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
 
-            <div>
-              <Label htmlFor="date">Datum *</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                min={new Date().toISOString().split('T')[0]}
-                required
-              />
-            </div>
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    className="mt-1"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="time">Tijdstip *</Label>
-              <Select 
-                value={formData.time} 
-                onValueChange={(value) => setFormData({ ...formData, time: value })}
-                disabled={!formData.date || checkingAvailability}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={
-                    checkingAvailability 
-                      ? 'Beschikbaarheid controleren...' 
-                      : !formData.date 
-                        ? 'Selecteer eerst een datum' 
-                        : 'Selecteer tijd'
-                  } />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableSlots.length > 0 ? (
-                    availableSlots.map((slot) => (
-                      <SelectItem key={slot} value={slot}>
-                        {slot} ✓ Beschikbaar
-                      </SelectItem>
-                    ))
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <Label htmlFor="date">Datum *</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      className="mt-1"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      min={new Date().toISOString().split('T')[0]}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="time">Tijdstip *</Label>
+                    <Select
+                      value={formData.time}
+                      onValueChange={(value) => setFormData({ ...formData, time: value })}
+                      disabled={!formData.date || checkingAvailability}
+                    >
+                      <SelectTrigger className="mt-1 w-full">
+                        <SelectValue placeholder={
+                          checkingAvailability ? 'Controleren...' :
+                          !formData.date ? 'Kies eerst datum' : 'Kies tijdstip'
+                        } />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableSlots.map((slot) => (
+                          <SelectItem key={slot} value={slot}>{slot}</SelectItem>
+                        ))}
+                        {availableSlots.length === 0 && (
+                          <SelectItem value="" disabled>Geen tijdslots beschikbaar</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    {checkingAvailability && (
+                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        Beschikbaarheid controleren...
+                      </p>
+                    )}
+                    {formData.date && !checkingAvailability && availableSlots.length === 0 && (
+                      <p className="text-xs text-red-600 mt-1">Deze dag is volgeboekt. Kies een andere datum.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="service">Type dienst *</Label>
+                  <Select
+                    value={formData.service}
+                    onValueChange={(value) => setFormData({ ...formData, service: value })}
+                  >
+                    <SelectTrigger className="mt-1 w-full">
+                      <SelectValue placeholder="Selecteer dienst" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SERVICES.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Omschrijf je probleem *</Label>
+                  <Textarea
+                    id="description"
+                    className="mt-1"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Beschrijf zo duidelijk mogelijk wat er mis is of wat je nodig hebt..."
+                    rows={4}
+                    required
+                  />
+                </div>
+
+                {/* GDPR */}
+                <div className="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={acceptedPrivacy}
+                      onChange={(e) => setAcceptedPrivacy(e.target.checked)}
+                      required
+                      className="mt-1 w-4 h-4 text-blue-600 rounded"
+                    />
+                    <span className="text-sm text-slate-700">
+                      Ik ga akkoord met het{' '}
+                      <a href="/privacy" target="_blank" className="text-blue-600 underline font-medium">privacybeleid</a>{' '}
+                      en geef toestemming om mijn gegevens te verwerken voor deze afspraak. *
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      required
+                      className="mt-1 w-4 h-4 text-blue-600 rounded"
+                    />
+                    <span className="text-sm text-slate-700">
+                      Ik heb de{' '}
+                      <a href="/terms" target="_blank" className="text-blue-600 underline font-medium">algemene voorwaarden</a>{' '}
+                      gelezen en ga akkoord, inclusief het annuleringsbeleid. *
+                    </span>
+                  </label>
+                </div>
+
+                {/* Garantie */}
+                <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <Clock className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  <p className="text-sm text-slate-700">
+                    <strong>3 maanden garantie</strong> op alle uitgevoerde herstellingen.
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                    {error}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full py-5 sm:py-6 text-base font-semibold bg-blue-600 hover:bg-blue-700"
+                  disabled={loading || !acceptedPrivacy || !acceptedTerms}
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Afspraak aanmaken...
+                    </span>
                   ) : (
-                    <SelectItem value="" disabled>
-                      Geen beschikbare tijdslots
-                    </SelectItem>
+                    <span className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5" />
+                      Afspraak bevestigen
+                    </span>
                   )}
-                </SelectContent>
-              </Select>
-              {checkingAvailability && (
-                <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Beschikbaarheid controleren...
-                </p>
-              )}
-              {formData.date && !checkingAvailability && availableSlots.length === 0 && (
-                <p className="text-xs text-red-600 mt-1">Deze dag is volledig volgeboekt. Kies een andere datum.</p>
-              )}
-              {formData.date && !checkingAvailability && availableSlots.length > 0 && (
-                <p className="text-xs text-green-600 mt-1">
-                  {availableSlots.length} tijdslot{availableSlots.length !== 1 ? 's' : ''} beschikbaar
-                </p>
-              )}
-            </div>
+                </Button>
 
-            <div>
-              <Label htmlFor="service">Type dienst *</Label>
-              <Select value={formData.service} onValueChange={(value) => setFormData({ ...formData, service: value })}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecteer dienst" />
-                </SelectTrigger>
-                <SelectContent>
-                  {services.map((service) => (
-                    <SelectItem key={service} value={service}>
-                      {service}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Beschrijving van het probleem *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Beschrijf je probleem zo gedetailleerd mogelijk..."
-                rows={4}
-                required
-              />
-            </div>
-
-            {/* GDPR Privacy Acceptatie - Wettelijk Verplicht */}
-            <div className="space-y-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={acceptedPrivacy}
-                  onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                  required
-                  className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm text-slate-700">
-                  Ik ga akkoord met het <a href="/privacy" target="_blank" className="text-blue-600 hover:text-blue-700 font-semibold underline">privacybeleid</a> en geef toestemming om mijn persoons gegevens te verwerken voor het plannen en uitvoeren van de afspraak. *
-                </span>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={acceptedTerms}
-                  onChange={(e) => setAcceptedTerms(e.target.checked)}
-                  required
-                  className="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm text-slate-700">
-                  Ik heb de <a href="/terms" target="_blank" className="text-blue-600 hover:text-blue-700 font-semibold underline">algemene voorwaarden</a> gelezen en ga hiermee akkoord, inclusief het annuleringsbeleid. *
-                </span>
-              </label>
-            </div>
-
-            {/* Garantie Informatie - Zoals vermeld in Algemene Voorwaarden */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-slate-700">
-              <p className="font-semibold text-green-800 mb-2">✓ 3 maanden garantie</p>
-              <p>Op alle uitgevoerde reparaties geldt een garantietermijn van 3 maanden.</p>
-            </div>
-
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded text-red-700">
-                {error}
-              </div>
-            )}
-
-            <Button 
-              type="submit" 
-              className="w-full py-5 sm:py-6 text-base sm:text-lg" 
-              disabled={loading || !acceptedPrivacy || !acceptedTerms}
-            >
-              {loading ? 'Afspraak aanmaken...' : 'Afspraak bevestigen'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+                <p className="text-center text-xs text-slate-400">* Verplichte velden</p>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
     </div>
   )
 }
-

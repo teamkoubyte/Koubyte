@@ -193,7 +193,7 @@ export default function ContactPage() {
                   +32 484 52 26 62
                 </a>
                 <Button
-                  onClick={() => openWhatsApp('+32484522662', 'Hallo, ik heb een vraag over jullie IT-diensten.')}
+                  onClick={() => openWhatsApp('+32484522662', 'Hallo, ik heb een vraag over je IT-diensten.')}
                   className="bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold shadow-md w-full"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
@@ -216,7 +216,7 @@ export default function ContactPage() {
                   info@koubyte.be
                 </a>
                 <p className="text-slate-600 text-sm">
-                  We reageren binnen 24 uur op werkdagen
+                  Ik reageer binnen 24 uur
                 </p>
               </CardContent>
             </Card>
@@ -247,7 +247,7 @@ export default function ContactPage() {
               <CardContent className="p-6 md:p-12">
                 <div className="text-center mb-8">
                   <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2 sm:mb-3">Stuur een bericht</h2>
-                  <p className="text-slate-600 text-sm sm:text-base">Vul het formulier in en ik neem zo snel mogelijk contact met je op</p>
+                  <p className="text-slate-600 text-sm sm:text-base">Ik reageer zo snel mogelijk, meestal binnen enkele uren.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

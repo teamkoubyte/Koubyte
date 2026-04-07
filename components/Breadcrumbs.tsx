@@ -22,15 +22,12 @@ export default function Breadcrumbs({ customLabels = {} }: BreadcrumbsProps) {
   // Default labels voor Nederlandse routes
   const defaultLabels: Record<string, string> = {
     'diensten': 'Diensten',
-    'about': 'Over Ons',
+    'about': 'Over mij',
     'contact': 'Contact',
     'faq': 'Veelgestelde Vragen',
-    'book': 'Afspraak Boeken',
-    'dashboard': 'Dashboard',
-    'privacy': 'Privacy Beleid',
+    'book': 'Afspraak Maken',
+    'privacy': 'Privacybeleid',
     'terms': 'Algemene Voorwaarden',
-    'checkout': 'Afrekenen',
-    'success': 'Succesvol',
   }
 
   const labels = { ...defaultLabels, ...customLabels }
