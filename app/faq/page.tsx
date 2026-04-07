@@ -55,7 +55,7 @@ const faqs = [
   },
   {
     question: 'Bied je ook 24/7 support?',
-    answer: '24/7 support is beschikbaar voor zakelijke klanten met een Premium of Zakelijk pakket. Voor particulieren ben ik beschikbaar tijdens normale kantoortijden.',
+    answer: 'Ik werk altijd op afspraak, 7 dagen per week. Stuur een bericht of bel me en we plannen samen een moment dat past — ook \'s avonds of in het weekend.',
   },
 ]
 

@@ -227,16 +227,15 @@ export default function ContactPage() {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-600 transition-colors">
                   <Clock className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Openingstijden</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Beschikbaarheid</h3>
                 <div className="space-y-2 text-slate-700">
                   <div className="flex justify-between">
-                    <span className="font-semibold">Ma - Vr:</span>
-                    <span>09:00 - 18:00</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Weekend:</span>
+                    <span className="font-semibold">7 dagen/week:</span>
                     <span>Op afspraak</span>
                   </div>
+                  <p className="text-sm text-slate-500 pt-1">
+                    Maak een afspraak en ik kom op een moment dat past.
+                  </p>
                 </div>
               </CardContent>
             </Card>
